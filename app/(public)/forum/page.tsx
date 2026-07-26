@@ -83,7 +83,7 @@ export default async function ForumPage({
         </Suspense>
       </div>
 
-      <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 px-6 py-6 md:grid-cols-3">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 px-4 py-6 md:px-6 md:grid-cols-3">
         <div className="md:col-span-2">
           <div className="mb-4 flex items-center justify-between">
             <p className="font-semibold text-black">{topics.length} topics</p>

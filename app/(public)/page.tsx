@@ -3,6 +3,8 @@ import { AGENT_CONTACT_COLUMNS, backfillAgentContacts, createPublicClient } from
 import { homepageMeta } from "@/lib/seo/metadata";
 import { SchemaScript, websiteSchema, organizationSchema } from "@/lib/seo/schemas";
 import { HeroSection, type HeroCity } from "@/components/portal/home/HeroSection";
+import { QuickLinksSection } from "@/components/portal/home/QuickLinksSection";
+import { PopularSearches } from "@/components/portal/home/PopularSearches";
 import { CitiesSection, type CitySummary } from "@/components/portal/home/CitiesSection";
 import { FeaturedListings } from "@/components/portal/home/FeaturedListings";
 import { ProjectsSection } from "@/components/portal/home/ProjectsSection";
@@ -90,6 +92,8 @@ export default async function HomePage() {
       <SchemaScript schema={organizationSchema()} />
 
       <HeroSection cities={heroCities} />
+      <QuickLinksSection />
+      <PopularSearches />
       <CitiesSection cities={cities} />
       <FeaturedListings listings={listings} />
       <ProjectsSection projects={projects} />

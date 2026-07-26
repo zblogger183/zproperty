@@ -19,7 +19,7 @@ const NAV_LINKS = [
   { label: "New Projects", href: "/new-projects", match: "/new-projects" },
   { label: "Agents", href: "/agents", match: "/agents" },
   { label: "Blog", href: "/blog", match: "/blog" },
-  { label: "Tools", href: "/tools", match: "/tools" },
+  { label: "Tools", href: "/tools/emi-calculator", match: "/tools" },
 ];
 
 function isActive(pathname: string, match: string) {
@@ -106,12 +106,12 @@ export function Navbar() {
           <span className="text-lg font-bold text-white">SarZameenz</span>
         </Link>
 
-        <nav className="hidden items-center gap-6 md:flex">
+        <nav className="hidden items-center gap-1 md:flex">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.label}
               href={link.href}
-              className={`pb-1 text-sm transition ${
+              className={`px-2 pb-1 text-sm font-medium transition ${
                 isActive(pathname, link.match)
                   ? "border-b-2 border-secondary text-secondary"
                   : "text-white hover:text-secondary"
@@ -168,7 +168,7 @@ export function Navbar() {
             <>
               <Link
                 href="/login"
-                className="rounded-lg border border-primary-mid px-4 py-2 text-sm text-white transition hover:border-secondary"
+                className="rounded-lg border border-white/60 px-4 py-2 text-sm text-white transition hover:bg-primary-mid"
               >
                 Login
               </Link>
@@ -247,7 +247,7 @@ export function Navbar() {
               <>
                 <Link
                   href="/login"
-                  className="w-48 rounded-lg border border-primary-mid px-4 py-2 text-center text-sm text-white hover:border-secondary"
+                  className="w-48 rounded-lg border border-white/60 px-4 py-2 text-center text-sm text-white hover:bg-primary-mid"
                 >
                   Login
                 </Link>

@@ -69,7 +69,7 @@ export default async function BlogPage() {
       <CategoryFilterBar categories={categoryList} />
 
       {featured && (
-        <div className="mx-auto max-w-5xl px-6 pt-8">
+        <div className="mx-auto max-w-7xl px-4 md:px-6 pt-8">
           <div className="flex flex-col overflow-hidden rounded-xl border border-primary bg-white md:flex-row">
             <div className="relative aspect-video md:w-1/2">
               {featured.cover_url || featured.og_image_url ? (
@@ -115,7 +115,7 @@ export default async function BlogPage() {
         </div>
       )}
 
-      <div className="mx-auto max-w-5xl px-6 py-8">
+      <div className="mx-auto max-w-7xl px-4 md:px-6 py-8">
         <h2 className="mb-6 text-xl font-bold text-black">Latest Articles</h2>
 
         {articles.length === 0 ? (

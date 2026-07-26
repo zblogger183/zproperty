@@ -5,6 +5,7 @@ import { fetchSearchResults } from "@/lib/search/fetchSearchResults";
 import { Breadcrumb } from "@/components/portal/Breadcrumb";
 import { ListingCard } from "@/components/portal/ListingCard";
 import { FilterSidebar, type FilterTypeOption } from "./FilterSidebar";
+import { LinksSidebar } from "./LinksSidebar";
 import { SortSelect } from "./SortSelect";
 
 const TYPE_OPTIONS: FilterTypeOption[] = [
@@ -67,7 +68,7 @@ export async function SearchResultsPage({
   })();
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-6">
+    <div className="mx-auto max-w-7xl px-4 py-6 md:px-6">
       {/* <Breadcrumb> already emits its own BreadcrumbList JSON-LD from these
           items, so no separate explicit breadcrumbSchema() call is added
           here — see the same note on the listing detail page. */}
@@ -167,6 +168,8 @@ export async function SearchResultsPage({
             </div>
           )}
         </div>
+
+        <LinksSidebar cityName={city.name} citySlug={city.slug} purpose={purpose} />
       </div>
     </div>
   );
