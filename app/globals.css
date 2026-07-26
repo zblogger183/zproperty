@@ -58,19 +58,27 @@
   --color-border-raw: color-mix(in srgb, var(--color-text) 12%, var(--color-bg));
 }
 
-body {
-  background: #ffffff;
-  color: #000000;
-}
+/* Tailwind v4 puts every utility class (text-white, text-primary, ...) in
+   its `utilities` layer. Plain, unlayered CSS always wins over layered CSS
+   regardless of selector specificity — so these element-level defaults
+   must live in `@layer base` (below `utilities`), or they'd permanently
+   override every text-color utility applied to a <body>/<a> element,
+   including Next.js <Link> (which always renders as <a>). */
+@layer base {
+  body {
+    background: #ffffff;
+    color: #000000;
+  }
 
-:focus-visible {
-  outline: 2px solid #b4e717;
-}
+  :focus-visible {
+    outline: 2px solid #b4e717;
+  }
 
-a {
-  color: #1c4b42;
-}
+  a {
+    color: #1c4b42;
+  }
 
-a:hover {
-  color: #2a6b5f;
+  a:hover {
+    color: #2a6b5f;
+  }
 }
