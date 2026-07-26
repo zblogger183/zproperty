@@ -10,8 +10,8 @@ export default async function AreaListingsPlotsPage({
   return (
     <div className="mx-auto w-full max-w-6xl px-6 py-16">
       <h1 className="text-2xl font-semibold text-primary">Area Listings — Plots</h1>
-      <p className="mt-2 text-text">Plot listings in this area.</p>
-      <dl className="mt-6 flex flex-wrap gap-4 text-sm text-text">
+      <p className="mt-2 text-primary-mid">Plot listings in this area.</p>
+      <dl className="mt-6 flex flex-wrap gap-4 text-sm text-primary-mid">
         <div key="city">
           <dt className="font-medium capitalize">city</dt>
           <dd>{city}</dd>

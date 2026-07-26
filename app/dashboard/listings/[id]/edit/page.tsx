@@ -8,8 +8,8 @@ export default async function EditListingPage({
   return (
     <div className="mx-auto w-full max-w-6xl px-6 py-16">
       <h1 className="text-2xl font-semibold text-primary">Edit Listing</h1>
-      <p className="mt-2 text-text">Update this listing.</p>
-      <dl className="mt-6 flex flex-wrap gap-4 text-sm text-text">
+      <p className="mt-2 text-primary-mid">Update this listing.</p>
+      <dl className="mt-6 flex flex-wrap gap-4 text-sm text-primary-mid">
         <div key="id">
           <dt className="font-medium capitalize">id</dt>
           <dd>{id}</dd>

@@ -10,8 +10,8 @@ export default async function CityListingsCommercialPage({
   return (
     <div className="mx-auto w-full max-w-6xl px-6 py-16">
       <h1 className="text-2xl font-semibold text-primary">City Listings — Commercial</h1>
-      <p className="mt-2 text-text">Commercial listings in this city.</p>
-      <dl className="mt-6 flex flex-wrap gap-4 text-sm text-text">
+      <p className="mt-2 text-primary-mid">Commercial listings in this city.</p>
+      <dl className="mt-6 flex flex-wrap gap-4 text-sm text-primary-mid">
         <div key="city">
           <dt className="font-medium capitalize">city</dt>
           <dd>{city}</dd>
