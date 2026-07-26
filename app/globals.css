@@ -1,0 +1,76 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@theme inline {
+  --font-sans: var(--font-inter);
+
+  --color-primary: #1c4b42;
+  --color-primary-mid: #2a6b5f;
+  --color-secondary: #b4e717;
+  --color-secondary-dark: #8db310;
+  --color-bg: #ffffff;
+  --color-text: #000000;
+
+  --color-background: var(--color-bg);
+  --color-foreground: var(--color-text);
+  --color-card: var(--color-bg);
+  --color-card-foreground: var(--color-text);
+  --color-popover: var(--color-bg);
+  --color-popover-foreground: var(--color-text);
+  --color-primary-foreground: var(--color-bg);
+  --color-secondary-foreground: var(--color-text);
+  --color-muted: var(--color-muted-raw);
+  --color-muted-foreground: var(--color-muted-foreground-raw);
+  --color-accent: var(--color-secondary);
+  --color-accent-foreground: var(--color-text);
+  --color-destructive: var(--color-text);
+  --color-destructive-foreground: var(--color-bg);
+  --color-border: var(--color-border-raw);
+  --color-input: var(--color-border-raw);
+  --color-ring: var(--color-secondary);
+
+  --color-chart-1: var(--color-primary);
+  --color-chart-2: var(--color-primary-mid);
+  --color-chart-3: var(--color-secondary);
+  --color-chart-4: var(--color-secondary-dark);
+  --color-chart-5: var(--color-text);
+
+  --color-sidebar: var(--color-bg);
+  --color-sidebar-foreground: var(--color-text);
+  --color-sidebar-primary: var(--color-primary);
+  --color-sidebar-primary-foreground: var(--color-bg);
+  --color-sidebar-accent: var(--color-secondary);
+  --color-sidebar-accent-foreground: var(--color-text);
+  --color-sidebar-border: var(--color-border-raw);
+  --color-sidebar-ring: var(--color-secondary);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --radius: 0.625rem;
+  /* Derived tints only mix the two locked neutrals (--color-text / --color-bg) so no new hues are introduced. */
+  --color-muted-raw: color-mix(in srgb, var(--color-text) 6%, var(--color-bg));
+  --color-muted-foreground-raw: color-mix(in srgb, var(--color-text) 60%, var(--color-bg));
+  --color-border-raw: color-mix(in srgb, var(--color-text) 12%, var(--color-bg));
+}
+
+body {
+  background: #ffffff;
+  color: #000000;
+}
+
+:focus-visible {
+  outline: 2px solid #b4e717;
+}
+
+a {
+  color: #1c4b42;
+}
+
+a:hover {
+  color: #2a6b5f;
+}

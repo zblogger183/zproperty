@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>You're offline — SarZameenz.com</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    height: 100%;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #FFFFFF;
+    color: #000000;
+  }
+  .wrap {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 32px 24px;
+  }
+  .logo {
+    font-size: 26px;
+    font-weight: 700;
+    color: #1C4B42;
+    margin-bottom: 24px;
+  }
+  .logo span { color: #8DB310; }
+  .icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: #1C4B42;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+  }
+  .icon svg { width: 34px; height: 34px; }
+  h1 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #000000;
+    margin-bottom: 8px;
+  }
+  p {
+    font-size: 14px;
+    color: #2A6B5F;
+    max-width: 320px;
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+  button {
+    background: #B4E717;
+    color: #1C4B42;
+    border: none;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 12px 28px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  button:hover { background: #8DB310; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="logo">SarZameenz<span>.com</span></div>
+    <div class="icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#B4E717" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="1" y1="1" x2="23" y2="23"></line>
+        <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path>
+        <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path>
+        <path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path>
+        <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path>
+        <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+        <line x1="12" y1="20" x2="12.01" y2="20"></line>
+      </svg>
+    </div>
+    <h1>You're offline</h1>
+    <p>It looks like you've lost your internet connection. Check your connection and try again.</p>
+    <button onclick="location.reload()">Retry</button>
+  </div>
+</body>
+</html>

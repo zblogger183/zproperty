@@ -1,0 +1,24 @@
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { AuthCard } from "@/components/auth/AuthCard";
+import { ResetPasswordForm } from "./ResetPasswordForm";
+
+export default async function ResetPasswordPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // Unlike the other auth pages, this one requires an active (recovery)
+  // session rather than redirecting away from one — it's reached only via
+  // the /callback exchange after clicking the reset-password email link.
+  if (!user) {
+    redirect("/login");
+  }
+
+  return (
+    <AuthCard title="Choose a new password" subtitle="Enter and confirm your new password below.">
+      <ResetPasswordForm />
+    </AuthCard>
+  );
+}
