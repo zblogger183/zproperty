@@ -63,7 +63,7 @@ async function fetchRoleForUser(userId: string): Promise<string | null> {
   return (data?.role as string | undefined) ?? null;
 }
 
-async function generateUniqueAgentSlug(admin: SupabaseClient, fullName: string): Promise<string> {
+export async function generateUniqueAgentSlug(admin: SupabaseClient, fullName: string): Promise<string> {
   const base = slugify(fullName) || "agent";
 
   for (let attempt = 0; attempt < 5; attempt++) {
@@ -258,12 +258,24 @@ export async function registerAction(input: RegisterInput): Promise<ActionResult
 
   const phone = `+92${input.phone}`;
   const supabase = await createClient();
+  const origin = await getSiteOrigin();
 
+  // Metadata is duplicated onto the auth user (not just passed to the admin
+  // inserts below) so app/(auth)/callback/route.ts can reconstruct a
+  // reasonably complete profile if this request's own inserts below never
+  // ran — e.g. the user abandons the tab right after signUp() succeeds.
   const { data, error } = await supabase.auth.signUp({
     email: input.email,
     password: input.password,
     options: {
-      data: { name: input.fullName, phone, role: role.data },
+      emailRedirectTo: `${origin}/callback`,
+      data: {
+        name: input.fullName,
+        phone,
+        role: role.data,
+        agent: role.data === "agent" ? input.agent : undefined,
+        developer: role.data === "developer" ? input.developer : undefined,
+      },
     },
   });
 
@@ -272,19 +284,31 @@ export async function registerAction(input: RegisterInput): Promise<ActionResult
   }
 
   const admin = createAdminClient();
+  const userId = data.user.id;
 
-  const { error: insertError } = await admin.from("users").insert({
-    id: data.user.id,
-    email: input.email,
-    phone,
-    name: input.fullName,
-    role: role.data,
-  });
+  // Supabase's signUp() is idempotent for an existing-but-unconfirmed email —
+  // it resends the confirmation email and returns the SAME user id instead
+  // of erroring. That makes a retry (e.g. after a transient failure below)
+  // hit these same rows again, so every write here is an upsert keyed on
+  // that id rather than a plain insert that would throw on the second try.
+  //
+  // None of these failures block the redirect below: the auth.users row
+  // (the actual account) already exists regardless, and a missing profile
+  // row is self-healed by the callback route once the user confirms their
+  // email — see Bug 3 in that file for the recovery path.
+  const { error: usersError } = await admin.from("users").upsert(
+    {
+      id: userId,
+      email: input.email,
+      phone,
+      name: input.fullName,
+      role: role.data,
+    },
+    { onConflict: "id" },
+  );
 
-  if (insertError) {
-    return {
-      error: "Your account was created, but we couldn't finish setup. Contact support.",
-    };
+  if (usersError) {
+    console.error("[register] public.users upsert failed:", usersError);
   }
 
   if (role.data === "agent" && input.agent) {
@@ -295,14 +319,21 @@ export async function registerAction(input: RegisterInput): Promise<ActionResult
       .eq("slug", input.agent.city)
       .maybeSingle();
 
-    await admin.from("agent_profiles").insert({
-      user_id: data.user.id,
-      profile_slug: profileSlug,
-      cnic_number: input.agent.cnic,
-      experience_years: experienceYearsToNumber(input.agent.experienceYears),
-      cities_served: city ? [city.id] : [],
-      subscription_tier: "free",
-    });
+    const { error: agentError } = await admin.from("agent_profiles").upsert(
+      {
+        user_id: userId,
+        profile_slug: profileSlug,
+        cnic_number: input.agent.cnic,
+        experience_years: experienceYearsToNumber(input.agent.experienceYears),
+        cities_served: city ? [city.id] : [],
+        subscription_tier: "free",
+      },
+      { onConflict: "user_id" },
+    );
+
+    if (agentError) {
+      console.error("[register] agent_profiles upsert failed:", agentError);
+    }
   }
 
   if (role.data === "developer" && input.developer) {
@@ -312,12 +343,19 @@ export async function registerAction(input: RegisterInput): Promise<ActionResult
       .eq("slug", input.developer.city)
       .maybeSingle();
 
-    await admin.from("developer_profiles").insert({
-      user_id: data.user.id,
-      company_name: input.developer.companyName,
-      city_id: city?.id ?? null,
-      website: input.developer.website || null,
-    });
+    const { error: developerError } = await admin.from("developer_profiles").upsert(
+      {
+        user_id: userId,
+        company_name: input.developer.companyName,
+        city_id: city?.id ?? null,
+        website: input.developer.website || null,
+      },
+      { onConflict: "user_id" },
+    );
+
+    if (developerError) {
+      console.error("[register] developer_profiles upsert failed:", developerError);
+    }
   }
 
   await emailNotify.welcome({ to: input.email, name: input.fullName, role: role.data });
