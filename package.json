@@ -34,6 +34,10 @@
     "zod": "^4.4.3",
     "zustand": "^5.0.14"
   },
+  "optionalDependencies": {
+    "@img/sharp-linux-x64": "*",
+    "@img/sharp-linux-arm64": "*"
+  },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/leaflet": "^1.9.21",
