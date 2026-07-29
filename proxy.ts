@@ -9,14 +9,27 @@ type Section = "admin" | "dashboard" | "buyer";
 
 // Roles allowed into each section, and where to send anyone else who lands
 // there — a fixed fallback per section, not each role's own "natural" home.
-const SECTION_RULES: Record<Section, { allowedRoles: string[]; fallback: string }> = {
+// `allowedRoles: null` means no restriction at all — any authenticated user
+// may view that section (currently just /buyer: saved listings and alerts
+// are meaningful for any logged-in visitor, not just the "buyer" role).
+// This also guarantees the redirect chain always terminates: whichever
+// section a mismatched role gets bounced to, /buyer accepts everyone, so
+// there's no path that can bounce forever between sections.
+const SECTION_RULES: Record<Section, { allowedRoles: string[] | null; fallback: string }> = {
   admin: { allowedRoles: ["super_admin", "admin"], fallback: "/dashboard" },
-  dashboard: { allowedRoles: ["agent", "developer"], fallback: "/buyer" },
-  buyer: { allowedRoles: ["buyer"], fallback: "/dashboard" },
+  dashboard: { allowedRoles: ["agent", "developer", "super_admin", "admin"], fallback: "/buyer" },
+  buyer: { allowedRoles: null, fallback: "/dashboard" },
 };
 
 const ROLE_COOKIE_NAME = "sz_role";
-const ROLE_COOKIE_MAX_AGE_SECONDS = 60 * 15;
+// Short-lived on purpose: a stale cached role that still grants access is
+// harmless (Postgres RLS is the real enforcement layer regardless of what
+// this cookie says), but the code below also force-refreshes from the DB
+// before ever acting on a cached role that would deny access — see the
+// comment above that check. This TTL only bounds how long a *downgraded*
+// role keeps its old section visible in the UI, not how fast an *upgrade*
+// takes effect (that's immediate).
+const ROLE_COOKIE_MAX_AGE_SECONDS = 60 * 2;
 
 function getSection(pathname: string): Section | null {
   if (pathname.startsWith("/admin")) return "admin";
@@ -57,6 +70,15 @@ function writeCachedRole(response: NextResponse, userId: string, role: string) {
     path: "/",
     maxAge: ROLE_COOKIE_MAX_AGE_SECONDS,
   });
+}
+
+async function fetchRoleFromDb(
+  supabase: ReturnType<typeof createServerClient>,
+  userId: string,
+): Promise<string | null> {
+  const { data, error } = await supabase.from("users").select("role").eq("id", userId).maybeSingle();
+  if (error || !data?.role) return null;
+  return data.role as string;
 }
 
 // Redirects must carry forward any cookies already staged on `response`
@@ -173,20 +195,36 @@ export async function proxy(request: NextRequest) {
   let role = readCachedRole(request, user.id);
 
   if (!role) {
-    const { data, error } = await supabase.from("users").select("role").eq("id", user.id).maybeSingle();
+    role = await fetchRoleFromDb(supabase, user.id);
 
-    if (error || !data?.role) {
+    if (!role) {
       const loginUrl = request.nextUrl.clone();
       loginUrl.pathname = "/login";
       return redirectPreservingCookies(loginUrl, response);
     }
 
-    role = data.role as string;
     writeCachedRole(response, user.id, role);
   }
 
   const { allowedRoles, fallback } = SECTION_RULES[section];
-  if (!allowedRoles.includes(role)) {
+
+  if (allowedRoles && !allowedRoles.includes(role)) {
+    // The cache says this role is denied — but the cache can only ever be
+    // as fresh as the last time it was written, and a role upgrade (e.g. an
+    // admin promoting someone straight in the DB, bypassing the app) never
+    // invalidates an already-cached cookie. Re-checking the DB here, right
+    // before committing to a redirect, means a stale *denial* never lasts
+    // longer than one request — only a stale *allow* can persist up to the
+    // cookie's TTL, which is fine (RLS still governs real data access).
+    const freshRole = await fetchRoleFromDb(supabase, user.id);
+
+    if (freshRole && freshRole !== role) {
+      role = freshRole;
+      writeCachedRole(response, user.id, role);
+    }
+  }
+
+  if (allowedRoles && !allowedRoles.includes(role)) {
     const fallbackUrl = request.nextUrl.clone();
     fallbackUrl.pathname = fallback;
     return redirectPreservingCookies(fallbackUrl, response);
