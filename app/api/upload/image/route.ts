@@ -3,19 +3,20 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getImageType, processImage } from "@/lib/image/processor";
+import { getImageType } from "@/lib/image/validateImage";
+import { uploadImageToCloudinary } from "@/lib/image/cloudinary";
 
 const ALLOWED_ROLES = new Set(["agent", "developer", "admin", "super_admin"]);
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 export async function POST(request: NextRequest) {
   try {
-    // Real auth check — the given spec called for "must be logged in
-    // agent/developer/admin" but only left a comment where the check should
-    // go. An upload endpoint that processes/stores arbitrary files without
-    // actually verifying the caller is an easy abuse vector (storage/CPU
-    // cost), so this uses the cookie-bound server client to verify identity
-    // and role before touching the admin client for the actual writes.
+    // Real auth check — kept from the Sharp/Supabase-Storage version of this
+    // route. An upload endpoint that processes/stores arbitrary files
+    // without actually verifying the caller's role is an easy abuse vector
+    // (storage/bandwidth cost on the Cloudinary account), so this still uses
+    // the cookie-bound server client to verify identity and role before
+    // anything gets uploaded.
     const authClient = await createClient();
     const {
       data: { user },
@@ -51,55 +52,37 @@ export async function POST(request: NextRequest) {
 
     const buffer = Buffer.from(await file.arrayBuffer());
 
-    const imgType = getImageType(buffer);
-    if (!imgType) {
+    if (!getImageType(buffer)) {
       return NextResponse.json(
         { error: "Invalid file type. Only JPG, PNG, and WebP are allowed." },
         { status: 400 },
       );
     }
 
-    const supabase = createAdminClient();
     const fileId = randomUUID();
 
-    async function uploadToStorage(path: string, data: Buffer, contentType = "image/webp"): Promise<string> {
-      const { error } = await supabase.storage.from("media").upload(path, data, {
-        contentType,
-        cacheControl: "31536000",
-        upsert: false,
-      });
-      if (error) throw new Error(`Storage upload failed: ${error.message}`);
-
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from("media").getPublicUrl(path);
-      return publicUrl;
-    }
-
-    let processed;
+    let result;
     try {
-      processed = await processImage(buffer, fileId, uploadToStorage);
-    } catch (processError) {
-      // Magic bytes can pass while the body is still corrupt/truncated —
-      // sharp throws in that case, so this turns that into a clean 400
-      // instead of an unhandled 500. (A missing/broken sharp native binary
-      // is handled separately, inside processImage itself, and falls back
-      // to an unprocessed upload rather than reaching this catch at all.)
-      console.error("[upload/image] processImage failed:", processError);
+      result = await uploadImageToCloudinary(buffer, folder, fileId);
+    } catch (uploadError) {
+      console.error("[upload/image] Cloudinary upload failed:", uploadError);
       return NextResponse.json({ error: "Could not process image." }, { status: 400 });
     }
 
-    const { data: media, error: mediaError } = await supabase
+    const admin = createAdminClient();
+
+    const { data: media, error: mediaError } = await admin
       .from("media_library")
       .insert({
+        uploaded_by: user.id,
         filename: fileId,
         original_name: file.name,
-        url: processed.large_url,
-        thumb_url: processed.thumb_url,
-        webp_url: processed.large_url,
-        file_size_kb: processed.original_size_kb,
-        width: processed.width,
-        height: processed.height,
+        url: result.large_url,
+        thumb_url: result.thumb_url,
+        webp_url: result.large_url,
+        file_size_kb: result.original_size_kb,
+        width: result.width,
+        height: result.height,
         mime_type: "image/webp",
         alt_text: altText,
         folder,
@@ -113,39 +96,39 @@ export async function POST(request: NextRequest) {
     }
 
     if (listingId) {
-      const { count } = await supabase
+      const { count } = await admin
         .from("listing_images")
         .select("*", { count: "exact", head: true })
         .eq("listing_id", listingId);
 
-      await supabase.from("listing_images").insert({
+      await admin.from("listing_images").insert({
         listing_id: listingId,
-        thumb_url: processed.thumb_url,
-        medium_url: processed.medium_url,
-        large_url: processed.large_url,
-        og_url: processed.og_url,
+        thumb_url: result.thumb_url,
+        medium_url: result.medium_url,
+        large_url: result.large_url,
+        og_url: result.og_url,
         original_filename: file.name,
-        original_size_kb: processed.original_size_kb,
-        webp_size_kb: processed.webp_size_kb,
-        compression_ratio: processed.compression_pct,
-        width: processed.width,
-        height: processed.height,
+        original_size_kb: result.original_size_kb,
+        webp_size_kb: result.webp_size_kb,
+        compression_ratio: result.compression_pct,
+        width: result.width,
+        height: result.height,
         alt_text: altText,
         display_order: count ?? 0,
         is_primary: count === 0, // first image is primary
       });
 
       if (count === 0) {
-        await supabase
+        await admin
           .from("listings")
           .update({
-            primary_image_url: processed.large_url,
-            og_image_url: processed.og_url,
+            primary_image_url: result.large_url,
+            og_image_url: result.og_url,
             image_count: 1,
           })
           .eq("id", listingId);
       } else {
-        await supabase
+        await admin
           .from("listings")
           .update({ image_count: (count ?? 0) + 1 })
           .eq("id", listingId);
@@ -154,23 +137,22 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       id: media.id,
-      thumb_url: processed.thumb_url,
-      medium_url: processed.medium_url,
-      large_url: processed.large_url,
-      og_url: processed.og_url,
-      original_size_kb: processed.original_size_kb,
-      webp_size_kb: processed.webp_size_kb,
-      compression_pct: processed.compression_pct,
-      width: processed.width,
-      height: processed.height,
+      thumb_url: result.thumb_url,
+      medium_url: result.medium_url,
+      large_url: result.large_url,
+      og_url: result.og_url,
+      original_size_kb: result.original_size_kb,
+      webp_size_kb: result.webp_size_kb,
+      compression_pct: result.compression_pct,
+      width: result.width,
+      height: result.height,
       alt_text: altText,
     });
   } catch (error) {
     // Catches anything unexpected that isn't already handled above (a
     // Supabase client throwing instead of returning {error}, a malformed
-    // request body, etc.) — turns it into clean JSON instead of the raw
-    // platform error page a client's fetch().json() can't parse, which is
-    // what "Invalid server response" actually is.
+    // request body, etc.) — turns it into clean JSON instead of a raw
+    // platform error page a client's fetch().json() can't parse.
     console.error("[upload/image] unhandled error:", error);
     return NextResponse.json(
       { error: "Upload failed", detail: error instanceof Error ? error.message : "Unknown error" },

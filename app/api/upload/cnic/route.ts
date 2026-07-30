@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getImageType } from "@/lib/image/processor";
+import { getImageType } from "@/lib/image/validateImage";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
@@ -46,10 +46,9 @@ export async function POST(request: NextRequest) {
   const extension = imgType === "jpeg" ? "jpg" : "png";
   const path = `cnic/${user.id}/${side}-${Date.now()}.${extension}`;
 
-  // No Sharp processing — CNIC images are kept at original quality/
-  // resolution for manual review and any future OCR, unlike the
-  // web-optimized derivatives lib/image/processor.ts generates for listing
-  // photos.
+  // No processing — CNIC images are kept at original quality/resolution
+  // for manual review and any future OCR, unlike the web-optimized
+  // derivatives lib/image/cloudinary.ts generates for listing photos.
   const { error: uploadError } = await authClient.storage.from("private-documents").upload(path, buffer, {
     contentType: imgType === "jpeg" ? "image/jpeg" : "image/png",
     cacheControl: "3600",
