@@ -208,3 +208,35 @@ export async function deactivateListingAction(listingId: string, newStatus: "pau
 
   return { ok: true };
 }
+
+export async function unfeatureListingAction(listingId: string) {
+  const { admin } = await verifyAdmin();
+
+  await admin.from("listings").update({ is_featured: false, featured_until: null }).eq("id", listingId);
+
+  revalidatePath("/admin/listings/featured");
+  revalidatePath("/admin/listings");
+
+  return { ok: true };
+}
+
+export async function featureListingAction(listingId: string) {
+  const { admin } = await verifyAdmin();
+
+  const until = new Date();
+  until.setDate(until.getDate() + 30);
+
+  await admin
+    .from("listings")
+    .update({
+      is_featured: true,
+      featured_until: until.toISOString(),
+    })
+    .eq("id", listingId);
+
+  revalidatePath(`/admin/listings/${listingId}`);
+  revalidatePath("/admin/listings");
+  revalidatePath("/admin/listings/featured");
+
+  return { ok: true };
+}

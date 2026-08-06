@@ -39,6 +39,52 @@ export async function toggleRedirectAction(id: string, isActive: boolean) {
   return { ok: true };
 }
 
+export interface PageSeoInput {
+  path: string;
+  title: string;
+  description: string;
+  og_image: string;
+  robots: string;
+  canonical: string;
+}
+
+export async function upsertPageSeoAction(input: PageSeoInput) {
+  const { admin } = await verifyAdmin();
+
+  const { data, error } = await admin
+    .from("page_seo")
+    .upsert(
+      {
+        path: input.path,
+        title: input.title,
+        description: input.description,
+        og_image: input.og_image || null,
+        robots: input.robots || null,
+        canonical: input.canonical || null,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "path" },
+    )
+    .select("id, path, title, description, og_image, robots, canonical")
+    .single();
+
+  if (error || !data) throw new Error(error?.message ?? "Failed to save page SEO.");
+
+  revalidatePath("/admin/seo/pages");
+
+  return data;
+}
+
+export async function deletePageSeoAction(id: string) {
+  const { admin } = await verifyAdmin();
+
+  await admin.from("page_seo").delete().eq("id", id);
+
+  revalidatePath("/admin/seo/pages");
+
+  return { ok: true };
+}
+
 export async function saveRobotsTxtAction(content: string) {
   const { admin, user } = await verifyAdmin();
 
