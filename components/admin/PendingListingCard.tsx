@@ -24,10 +24,13 @@ export interface PendingListing {
   has_video: boolean;
   created_at: string;
   address: string | null;
+  plot_number: string | null;
   agent_id: string | null;
   city: { name: string; slug: string } | null;
   area: { name: string; slug: string } | null;
   society: { name: string } | null;
+  phase: { name: string } | null;
+  block: { name: string } | null;
   agent: {
     name: string;
     whatsapp: string | null;
@@ -60,7 +63,14 @@ export function PendingListingCard({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const location = [listing.society?.name, listing.area?.name, listing.city?.name]
+  const location = [
+    listing.society?.name,
+    listing.phase?.name,
+    listing.block?.name,
+    listing.plot_number ? `Plot/House ${listing.plot_number}` : null,
+    listing.area?.name,
+    listing.city?.name,
+  ]
     .filter(Boolean)
     .join(", ");
   const cleanedWhatsapp = listing.agent?.whatsapp?.replace(/\D/g, "");

@@ -183,6 +183,18 @@ export default async function PropertyDetailPage({
                   {[listing.area?.name, listing.city?.name].filter(Boolean).join(", ")}
                 </p>
               )}
+              {(listing.society || listing.phase || listing.block || listing.plot_number) && (
+                <p className="mt-1 text-sm text-primary-mid">
+                  {[
+                    listing.society?.name,
+                    listing.phase?.name,
+                    listing.block?.name,
+                    listing.plot_number ? `Plot/House ${listing.plot_number}` : null,
+                  ]
+                    .filter(Boolean)
+                    .join(" — ")}
+                </p>
+              )}
             </div>
 
             <div className="grid grid-cols-3 gap-3 md:grid-cols-4">

@@ -23,6 +23,11 @@ export const step2Schema = z.object({
   city_id: z.string().uuid("Please select a city"),
   area_id: z.string().uuid("Please select an area"),
   society_id: z.string().uuid().optional().nullable(),
+  // Only meaningful once a society is picked — DHA-style phase/block, or
+  // just a plot/house number for societies with no sub-structure.
+  phase_id: z.string().uuid().optional().nullable(),
+  block_id: z.string().uuid().optional().nullable(),
+  plot_number: z.string().max(50).optional().nullable(),
   address: z.string().optional(),
   lat: z.number().optional().nullable(),
   lng: z.number().optional().nullable(),

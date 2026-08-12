@@ -8,7 +8,8 @@ export const dynamic = "force-dynamic";
 
 const LISTING_COLUMNS =
   "id, agent_id, status, reject_reason, purpose, type, title, description, price, is_negotiable, " +
-  "city_id, area_id, society_id, address, lat, lng, area_sqft, area_marla, beds, baths, floors, " +
+  "city_id, area_id, society_id, phase_id, block_id, plot_number, address, lat, lng, area_sqft, " +
+  "area_marla, beds, baths, floors, " +
   "floor_number, parking_spaces, age_years, furnished_status, features, video_url";
 
 export default async function EditListingPage({ params }: { params: Promise<{ id: string }> }) {

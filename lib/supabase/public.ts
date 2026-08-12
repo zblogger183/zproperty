@@ -75,7 +75,9 @@ export async function getListingWithAgent(slug: string): Promise<ListingDetailDa
   const { data, error } = await supabase
     .from("listings")
     .select(
-      `*, city:cities(name, slug), area:areas(name, slug), agent:public_agent_contact(${AGENT_CONTACT_COLUMNS}),
+      `*, city:cities(name, slug), area:areas(name, slug), society:societies(name, slug),
+       phase:society_phases(name), block:society_blocks(name),
+       agent:public_agent_contact(${AGENT_CONTACT_COLUMNS}),
        listing_images:listing_images(thumb_url, medium_url, large_url, og_url, alt_text, display_order, is_primary)`,
     )
     .eq("slug", slug)

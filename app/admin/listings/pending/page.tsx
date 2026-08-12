@@ -26,10 +26,12 @@ export default async function PendingListingsPage({
       `id, title, slug, purpose, type, price,
        area_marla, beds, baths, description,
        primary_image_url, image_count, has_video,
-       created_at, features, address, agent_id,
+       created_at, features, address, plot_number, agent_id,
        city:cities(name,slug),
        area:areas(name,slug),
        society:societies(name),
+       phase:society_phases(name),
+       block:society_blocks(name),
        agent:public_agent_contact(${AGENT_CONTACT_COLUMNS})`,
     )
     .eq("status", "pending")

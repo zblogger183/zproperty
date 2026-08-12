@@ -27,6 +27,9 @@ export interface Listing {
   city_id: string | null;
   area_id: string | null;
   society_id: string | null;
+  phase_id: string | null;
+  block_id: string | null;
+  plot_number: string | null;
   address: string | null;
   lat: number | null;
   lng: number | null;
@@ -150,6 +153,9 @@ export interface ListingCardData {
 export interface ListingDetailData extends Listing {
   city: { name: string; slug: string } | null;
   area: { name: string; slug: string } | null;
+  society: { name: string; slug: string } | null;
+  phase: { name: string } | null;
+  block: { name: string } | null;
   agent: AgentContact | null;
   listing_images: ListingImage[];
 }
