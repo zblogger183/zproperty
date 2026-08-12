@@ -80,7 +80,8 @@ export default async function NewProjectsPage({
           <div className="mx-auto max-w-7xl px-4 md:px-6 py-8">
             {rest.length > 0 && (
               <h2 className="mb-4 text-xl font-bold text-black">
-                {featured.length > 0 ? `${rest.length} More Projects` : `${rest.length} Projects`}
+                {rest.length} {featured.length > 0 ? "More " : ""}
+                {rest.length === 1 ? "Project" : "Projects"}
               </h2>
             )}
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">

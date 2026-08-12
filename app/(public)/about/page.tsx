@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { StatsBar } from "@/components/portal/home/StatsBar";
+import { getHomeStats } from "@/lib/stats";
 
 export const dynamic = "force-static";
 
@@ -28,7 +29,9 @@ const PILLARS = [
   },
 ];
 
-export default function AboutUsPage() {
+export default async function AboutUsPage() {
+  const stats = await getHomeStats();
+
   return (
     <>
       <div className="bg-primary py-12 text-center">
@@ -65,7 +68,7 @@ export default function AboutUsPage() {
         </div>
       </div>
 
-      <StatsBar />
+      <StatsBar stats={stats} />
 
       <div className="py-12 text-center">
         <p className="text-lg font-semibold text-black">Want to partner with us?</p>

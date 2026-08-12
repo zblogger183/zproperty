@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AGENT_CONTACT_COLUMNS, backfillAgentContacts, createPublicClient } from "@/lib/supabase/public";
+import { getHomeStats } from "@/lib/stats";
 import { homepageMeta } from "@/lib/seo/metadata";
 import { SchemaScript, websiteSchema, organizationSchema } from "@/lib/seo/schemas";
 import { HeroSection, type HeroCity } from "@/components/portal/home/HeroSection";
@@ -74,10 +75,11 @@ async function getFeaturedProjects(supabase: SupabasePublicClient): Promise<Proj
 export default async function HomePage() {
   const supabase = createPublicClient();
 
-  const [cities, listings, projects] = await Promise.all([
+  const [cities, listings, projects, stats] = await Promise.all([
     getCities(supabase),
     getFeaturedListings(supabase),
     getFeaturedProjects(supabase),
+    getHomeStats(),
   ]);
 
   const heroCities: HeroCity[] = cities.map((city) => ({ id: city.id, name: city.name, slug: city.slug }));
@@ -91,7 +93,7 @@ export default async function HomePage() {
       <SchemaScript schema={websiteSchema()} />
       <SchemaScript schema={organizationSchema()} />
 
-      <HeroSection cities={heroCities} />
+      <HeroSection cities={heroCities} stats={stats} />
       <QuickLinksSection />
       <PopularSearches />
       <CitiesSection cities={cities} />
@@ -99,7 +101,7 @@ export default async function HomePage() {
       <ProjectsSection projects={projects} />
       <ToolsBar />
       <WhyUsSection />
-      <StatsBar />
+      <StatsBar stats={stats} />
     </>
   );
 }

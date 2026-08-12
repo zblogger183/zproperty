@@ -14,8 +14,13 @@ const TYPE_OPTIONS: FilterTypeOption[] = [
   { value: "upper_portion", label: "Upper Portion" },
   { value: "lower_portion", label: "Lower Portion" },
   { value: "room", label: "Room" },
+  { value: "residential_plot", label: "Residential Plot" },
+  { value: "commercial_plot", label: "Commercial Plot" },
+  { value: "agricultural_land", label: "Agricultural Land" },
   { value: "office", label: "Office" },
   { value: "shop", label: "Shop" },
+  { value: "warehouse", label: "Warehouse" },
+  { value: "building", label: "Building" },
   { value: "other", label: "Other" },
 ];
 
@@ -26,13 +31,22 @@ export async function SearchResultsPage({
   citySlug,
   areaSlug,
   searchParams,
+  baseTypes,
+  basePath: basePathProp,
+  typeLabelOverride,
 }: {
   purpose: "buy" | "rent";
   citySlug: string;
   areaSlug?: string;
   searchParams: Record<string, string | string[] | undefined>;
+  // See fetchSearchResults' baseTypes doc — /commercial/[city] passes both
+  // of these to scope the listing set and keep its own nav/pagination links
+  // under /commercial/... instead of falling back to /buy/....
+  baseTypes?: string[];
+  basePath?: string;
+  typeLabelOverride?: string;
 }) {
-  const results = await fetchSearchResults({ purpose, citySlug, areaSlug, searchParams });
+  const results = await fetchSearchResults({ purpose, citySlug, areaSlug, searchParams, baseTypes });
 
   if (!results) {
     notFound();
@@ -40,10 +54,18 @@ export async function SearchResultsPage({
 
   const { city, area, filters, listings, total, totalPages, areaList, typeCounts } = results;
 
+  const routeBase = basePathProp ?? `/${purpose}`;
   const purposeLabel = purpose === "buy" ? "Sale" : "Rent";
   const typeOption = TYPE_OPTIONS.find((option) => option.value === filters.type);
-  const typeLabel = typeOption ? `${typeOption.label}s` : "Properties";
+  const typeLabelBase = typeOption ? typeOption.label : (typeLabelOverride ?? "Property");
+  const typeLabelPlural = typeLabelBase.endsWith("y")
+    ? `${typeLabelBase.slice(0, -1)}ies`
+    : `${typeLabelBase}s`;
+  const typeLabel = total === 1 ? typeLabelBase : typeLabelPlural;
   const locationLabel = area?.name ?? city.name;
+  const visibleTypeOptions = baseTypes
+    ? TYPE_OPTIONS.filter((option) => baseTypes.includes(option.value))
+    : TYPE_OPTIONS;
 
   function buildPageHref(page: number): string {
     const next = new URLSearchParams();
@@ -54,7 +76,7 @@ export async function SearchResultsPage({
     }
     if (page > 1) next.set("page", String(page));
     const qs = next.toString();
-    const basePath = area ? `/${purpose}/${city.slug}/${area.slug}/` : `/${purpose}/${city.slug}/`;
+    const basePath = area ? `${routeBase}/${city.slug}/${area.slug}/` : `${routeBase}/${city.slug}/`;
     return qs ? `${basePath}?${qs}` : basePath;
   }
 
@@ -76,7 +98,7 @@ export async function SearchResultsPage({
         items={[
           { label: "Home", href: "/" },
           area
-            ? { label: city.name, href: `/${purpose}/${city.slug}/` }
+            ? { label: city.name, href: `${routeBase}/${city.slug}/` }
             : { label: city.name },
           ...(area ? [{ label: area.name }] : []),
         ]}
@@ -104,9 +126,10 @@ export async function SearchResultsPage({
             citySlug={city.slug}
             purpose={purpose}
             areaSlug={area?.slug}
-            typeOptions={TYPE_OPTIONS}
+            typeOptions={visibleTypeOptions}
             areaList={areaList}
             typeCounts={typeCounts}
+            basePath={basePathProp}
           />
         </Suspense>
 
@@ -116,7 +139,7 @@ export async function SearchResultsPage({
               <p className="text-lg font-semibold text-black">No properties found matching your filters.</p>
               <p className="mt-2 text-sm text-primary-mid">Try adjusting your search or browse all properties</p>
               <Link
-                href={area ? `/${purpose}/${city.slug}/${area.slug}/` : `/${purpose}/${city.slug}/`}
+                href={area ? `${routeBase}/${city.slug}/${area.slug}/` : `${routeBase}/${city.slug}/`}
                 className="mt-4 inline-block rounded-lg bg-secondary px-5 py-2.5 text-sm font-bold text-primary hover:bg-secondary-dark"
               >
                 Clear Filters

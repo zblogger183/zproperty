@@ -62,7 +62,13 @@ export async function createAlertAction(input: AlertInput) {
     min_price: input.min_price,
     max_price: input.max_price,
     frequency: input.frequency,
-    channel: "app",
+    // property_alerts_channel_check only allows 'email' | 'whatsapp' |
+    // 'both' — "app" (there is no in-app alert delivery channel) always
+    // violated it, so every alert creation failed outright regardless of
+    // the RLS/grant fix above. The create-alert form has no channel picker
+    // yet, so this defaults to the one channel every registered user has
+    // (email) rather than 'whatsapp', which not everyone has opted into.
+    channel: "email",
     is_active: true,
   });
   if (error) throw new Error(error.message);

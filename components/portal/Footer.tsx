@@ -157,7 +157,9 @@ export function Footer() {
 
       <div className="border-t border-primary-mid">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-6 py-4 md:flex-row">
-          <p className="text-xs text-primary-mid">© 2025 SarZameenz.com — All rights reserved</p>
+          <p className="text-xs text-primary-mid">
+            © {new Date().getFullYear()} SarZameenz.com — All rights reserved
+          </p>
           <p className="text-xs text-primary-mid">Pakistan&apos;s trusted real estate marketplace</p>
           <div className="flex gap-4 text-xs text-primary-mid">
             <Link href="/privacy-policy" className="hover:text-secondary">

@@ -1,22 +1,41 @@
-export const revalidate = 1800;
+import type { Metadata } from "next";
+import { buildSearchMetadata } from "@/lib/search/fetchSearchResults";
+import { SearchResultsPage } from "@/components/portal/search/SearchResultsPage";
 
-export default async function CityListingsCommercialPage({
-  params,
-}: {
-  params: Promise<{ city: string }>;
-}) {
+// Commercial spans several listing types (not a single buy/rent purpose
+// split like /buy and /rent) — see fetchSearchResults' baseTypes doc.
+// Purpose is fixed to "buy" here to match the existing "Commercial for
+// Sale" footer link; a for-rent commercial section would need its own
+// route the same way /rent mirrors /buy.
+const COMMERCIAL_TYPES = ["office", "shop", "commercial_plot", "warehouse", "building"];
+
+export const dynamic = "force-dynamic";
+
+type PageParams = { params: Promise<{ city: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> };
+
+export async function generateMetadata({ params, searchParams }: PageParams): Promise<Metadata> {
   const { city } = await params;
+  const sp = await searchParams;
+  return buildSearchMetadata({
+    purpose: "buy",
+    citySlug: city,
+    searchParams: sp,
+    baseTypes: COMMERCIAL_TYPES,
+    basePath: "/commercial",
+  });
+}
 
+export default async function CityListingsCommercialPage({ params, searchParams }: PageParams) {
+  const { city } = await params;
+  const sp = await searchParams;
   return (
-    <div className="mx-auto w-full max-w-6xl px-6 py-16">
-      <h1 className="text-2xl font-semibold text-primary">City Listings — Commercial</h1>
-      <p className="mt-2 text-primary-mid">Commercial listings in this city.</p>
-      <dl className="mt-6 flex flex-wrap gap-4 text-sm text-primary-mid">
-        <div key="city">
-          <dt className="font-medium capitalize">city</dt>
-          <dd>{city}</dd>
-        </div>
-      </dl>
-    </div>
+    <SearchResultsPage
+      purpose="buy"
+      citySlug={city}
+      searchParams={sp}
+      baseTypes={COMMERCIAL_TYPES}
+      basePath="/commercial"
+      typeLabelOverride="Commercial Property"
+    />
   );
 }

@@ -64,7 +64,10 @@ export function PendingListingCard({
     .filter(Boolean)
     .join(", ");
   const cleanedWhatsapp = listing.agent?.whatsapp?.replace(/\D/g, "");
-  const descriptionPreview = listing.description?.slice(0, 200) ?? "";
+  // description is Tiptap-authored HTML (rendered correctly on the public
+  // listing page) — stripped to plain text here since this is just a
+  // truncated admin preview, not the full formatted listing.
+  const descriptionPreview = (listing.description ?? "").replace(/<[^>]*>/g, "").slice(0, 200);
 
   async function handleApprove() {
     setIsSubmitting(true);

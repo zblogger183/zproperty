@@ -4,6 +4,7 @@ import { Bath, Bed } from "lucide-react";
 import type { ListingCardData } from "@/types";
 import { formatPkrPrice } from "@/lib/utils";
 import { WhatsAppButton } from "./WhatsAppButton";
+import { SaveButton } from "./SaveButton";
 
 const BLUR_SVG =
   "<svg xmlns='http://www.w3.org/2000/svg' width='16' height='9'><rect width='16' height='9' fill='#1C4B42'/></svg>";
@@ -71,6 +72,8 @@ export function ListingCard({
           <span className="absolute bottom-0 left-0 rounded-tr-lg bg-black px-3 py-1 text-sm font-bold text-secondary">
             {formatPkrPrice(listing.price, listing.purpose)}
           </span>
+
+          <SaveButton listingId={listing.id} className="absolute bottom-2 right-2" />
         </div>
 
         <div className="p-3">

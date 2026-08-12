@@ -104,7 +104,7 @@ export default async function AllUsersPage({
                       ROLE_BADGE_CLASSES[user.role] ?? ""
                     }`}
                   >
-                    {user.role}
+                    {user.role.replace(/_/g, " ")}
                   </span>
                 </td>
                 <td className="px-4 py-3">

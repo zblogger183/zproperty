@@ -120,7 +120,21 @@ export function searchMeta(params: {
   canonicalUrl?: string;
 }): Metadata {
   const purposeStr = params.purpose === "buy" ? "Sale" : "Rent";
-  const typeStr = params.type ? params.type.replace(/_/g, " ") + "s" : "Properties";
+  // Was `params.type.replace(/_/g, " ") + "s"` — lowercase and grammatically
+  // wrong for a count of 1 (e.g. "1 residential plots for Sale"). Title-cases
+  // the type and only pluralizes when the count actually calls for it.
+  const typeSingular = params.type
+    ? params.type
+        .split("_")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ")
+    : "Property";
+  const typeStr =
+    params.count === 1
+      ? typeSingular
+      : typeSingular.endsWith("y")
+        ? `${typeSingular.slice(0, -1)}ies`
+        : `${typeSingular}s`;
   const location = params.area_name ? `${params.area_name}, ${params.city_name}` : params.city_name;
 
   const title = `${params.count.toLocaleString()} ${typeStr} for ${purposeStr} in ${location} | ${SITE_NAME}`;

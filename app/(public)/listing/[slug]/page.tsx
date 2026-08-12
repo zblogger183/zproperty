@@ -2,6 +2,7 @@ import { cache } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getListingWithAgent, getSimilarListings, createPublicClient } from "@/lib/supabase/public";
+import { createClient } from "@/lib/supabase/server";
 import { formatPrice } from "@/lib/utils/formatPrice";
 import { listingMeta } from "@/lib/seo/metadata";
 import { SchemaScript, listingSchema } from "@/lib/seo/schemas";
@@ -11,6 +12,7 @@ import { AgentCard } from "@/components/portal/listing/AgentCard";
 import { SpecCard } from "@/components/portal/listing/SpecCard";
 import { ViewTracker } from "@/components/portal/listing/ViewTracker";
 import { ListingCard } from "@/components/portal/ListingCard";
+import { SaveButton } from "@/components/portal/SaveButton";
 import MiniMapDynamic from "@/components/portal/listing/MiniMapLoader";
 
 export const revalidate = 300;
@@ -87,6 +89,21 @@ export default async function PropertyDetailPage({
     ? await getSimilarListings(supabase, listing.city_id, listing.type, listing.price, listing.id)
     : [];
 
+  const authClient = await createClient();
+  const {
+    data: { user },
+  } = await authClient.auth.getUser();
+  let isSaved = false;
+  if (user) {
+    const { data: savedRow } = await authClient
+      .from("saved_listings")
+      .select("listing_id")
+      .eq("user_id", user.id)
+      .eq("listing_id", listing.id)
+      .maybeSingle();
+    isSaved = !!savedRow;
+  }
+
   const breadcrumbItems = [
     { label: "Home", href: "/" },
     ...(listing.city ? [{ label: listing.city.name, href: `/buy/${listing.city.slug}/` }] : []),
@@ -153,6 +170,12 @@ export default async function PropertyDetailPage({
                 >
                   {listing.purpose === "buy" ? "For Sale" : "For Rent"}
                 </span>
+                <SaveButton
+                  listingId={listing.id}
+                  initialSaved={isSaved}
+                  variant="labeled"
+                  className="ml-auto"
+                />
               </div>
               <h1 className="mt-2 text-xl font-bold text-black">{listing.title}</h1>
               {(listing.area || listing.city) && (

@@ -18,7 +18,13 @@ export interface HeroCity {
   slug: string;
 }
 
-export function HeroSection({ cities }: { cities: HeroCity[] }) {
+export interface HeroStats {
+  listings: number;
+  agents: number;
+  cities: number;
+}
+
+export function HeroSection({ cities, stats }: { cities: HeroCity[]; stats: HeroStats }) {
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("buy");
   const [city, setCity] = useState(cities[0]?.slug ?? "");
@@ -45,7 +51,9 @@ export function HeroSection({ cities }: { cities: HeroCity[] }) {
         <h1 className="text-4xl font-bold text-white md:text-5xl">Find Your Property in Pakistan</h1>
         <p className="mt-3 text-lg text-white/70">Verified listings. Trusted agents.</p>
         <p className="mt-4 text-sm font-semibold text-secondary">
-          12,500+ Listings · 2,800+ Agents · 3 Cities
+          {stats.listings.toLocaleString()} {stats.listings === 1 ? "Listing" : "Listings"} ·{" "}
+          {stats.agents.toLocaleString()} {stats.agents === 1 ? "Agent" : "Agents"} ·{" "}
+          {stats.cities.toLocaleString()} {stats.cities === 1 ? "City" : "Cities"}
         </p>
 
         <div className="mx-auto mt-8 max-w-3xl rounded-xl border border-primary bg-white p-4">

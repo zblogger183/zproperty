@@ -85,6 +85,12 @@ export async function fetchSearchResults(params: {
   citySlug: string;
   areaSlug?: string;
   searchParams: RawSearchParams;
+  // Hard scope applied in addition to (not instead of) the user's own
+  // `filters.type` narrowing — e.g. /commercial/[city] passes the 5
+  // commercial types here so it only ever shows office/shop/plot/warehouse/
+  // building listings, while a visitor can still narrow to just "Shop"
+  // within that set via the normal type checkboxes.
+  baseTypes?: string[];
 }): Promise<SearchResults | null> {
   const supabase = createPublicClient();
 
@@ -119,6 +125,7 @@ export async function fetchSearchResults(params: {
     .eq("purpose", params.purpose);
 
   if (area) listingsQuery = listingsQuery.eq("area_id", area.id);
+  if (params.baseTypes?.length) listingsQuery = listingsQuery.in("type", params.baseTypes);
   if (filters.type) listingsQuery = listingsQuery.eq("type", filters.type);
   if (filters.min_price != null) listingsQuery = listingsQuery.gte("price", filters.min_price);
   if (filters.max_price != null) listingsQuery = listingsQuery.lte("price", filters.max_price);
@@ -163,6 +170,7 @@ export async function fetchSearchResults(params: {
     .eq("purpose", params.purpose)
     .limit(5000);
   if (area) typeCountQuery = typeCountQuery.eq("area_id", area.id);
+  if (params.baseTypes?.length) typeCountQuery = typeCountQuery.in("type", params.baseTypes);
 
   const [{ data: listingsRaw, count }, { data: areaListRaw }, { data: typeRows }] = await Promise.all([
     listingsQuery,
@@ -207,6 +215,8 @@ export async function buildSearchMetadata(params: {
   citySlug: string;
   areaSlug?: string;
   searchParams: RawSearchParams;
+  baseTypes?: string[];
+  basePath?: string;
 }): Promise<Metadata> {
   const results = await fetchSearchResults(params);
 
@@ -215,9 +225,10 @@ export async function buildSearchMetadata(params: {
   }
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://sarzameenz.com";
+  const routeBase = params.basePath ?? `/${params.purpose}`;
   const basePath = params.areaSlug
-    ? `/${params.purpose}/${params.citySlug}/${params.areaSlug}/`
-    : `/${params.purpose}/${params.citySlug}/`;
+    ? `${routeBase}/${params.citySlug}/${params.areaSlug}/`
+    : `${routeBase}/${params.citySlug}/`;
 
   return searchMeta({
     purpose: params.purpose,

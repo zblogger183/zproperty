@@ -22,6 +22,7 @@ export function FilterSidebar({
   typeOptions,
   areaList,
   typeCounts,
+  basePath,
 }: {
   citySlug: string;
   purpose: "buy" | "rent";
@@ -29,6 +30,12 @@ export function FilterSidebar({
   typeOptions: FilterTypeOption[];
   areaList: FilterAreaOption[];
   typeCounts: Record<string, number>;
+  // Lets non-purpose-routed sections (e.g. /commercial/[city], which spans
+  // types rather than a single buy/rent purpose split) reuse this sidebar
+  // without its area-select and "clear filters" navigation falling back to
+  // the wrong /${purpose}/... route. Buy/rent pages omit this and keep the
+  // exact behavior they had before.
+  basePath?: string;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -71,9 +78,11 @@ export function FilterSidebar({
     updateParams({ min_price: minPrice || undefined, max_price: maxPrice || undefined });
   }
 
+  const resolvedBasePath = basePath ?? `/${purpose}`;
+
   function handleAreaChange(slug: string) {
     if (!slug) return;
-    router.push(`/${purpose}/${citySlug}/${slug}/`);
+    router.push(`${resolvedBasePath}/${citySlug}/${slug}/`);
   }
 
   const content = (
@@ -193,7 +202,7 @@ export function FilterSidebar({
 
       <button
         type="button"
-        onClick={() => router.push(`/${purpose}/${citySlug}/`)}
+        onClick={() => router.push(`${resolvedBasePath}/${citySlug}/`)}
         className="cursor-pointer text-xs text-primary underline"
       >
         Clear all filters

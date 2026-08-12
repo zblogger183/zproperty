@@ -1,26 +1,41 @@
-export const revalidate = 1800;
+import type { Metadata } from "next";
+import { buildSearchMetadata } from "@/lib/search/fetchSearchResults";
+import { SearchResultsPage } from "@/components/portal/search/SearchResultsPage";
 
-export default async function AreaListingsCommercialPage({
-  params,
-}: {
+const COMMERCIAL_TYPES = ["office", "shop", "commercial_plot", "warehouse", "building"];
+
+export const dynamic = "force-dynamic";
+
+type PageParams = {
   params: Promise<{ city: string; area: string }>;
-}) {
-  const { city, area } = await params;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
 
+export async function generateMetadata({ params, searchParams }: PageParams): Promise<Metadata> {
+  const { city, area } = await params;
+  const sp = await searchParams;
+  return buildSearchMetadata({
+    purpose: "buy",
+    citySlug: city,
+    areaSlug: area,
+    searchParams: sp,
+    baseTypes: COMMERCIAL_TYPES,
+    basePath: "/commercial",
+  });
+}
+
+export default async function AreaListingsCommercialPage({ params, searchParams }: PageParams) {
+  const { city, area } = await params;
+  const sp = await searchParams;
   return (
-    <div className="mx-auto w-full max-w-6xl px-6 py-16">
-      <h1 className="text-2xl font-semibold text-primary">Area Listings — Commercial</h1>
-      <p className="mt-2 text-primary-mid">Commercial listings in this area.</p>
-      <dl className="mt-6 flex flex-wrap gap-4 text-sm text-primary-mid">
-        <div key="city">
-          <dt className="font-medium capitalize">city</dt>
-          <dd>{city}</dd>
-        </div>
-        <div key="area">
-          <dt className="font-medium capitalize">area</dt>
-          <dd>{area}</dd>
-        </div>
-      </dl>
-    </div>
+    <SearchResultsPage
+      purpose="buy"
+      citySlug={city}
+      areaSlug={area}
+      searchParams={sp}
+      baseTypes={COMMERCIAL_TYPES}
+      basePath="/commercial"
+      typeLabelOverride="Commercial Property"
+    />
   );
 }

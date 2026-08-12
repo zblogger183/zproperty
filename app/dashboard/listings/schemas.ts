@@ -82,6 +82,11 @@ export const step3Schema = z.object({
 });
 
 export const step4Schema = z.object({
+  // .default([]) matters here: until ImageUploader's onUploaded fires at
+  // least once, `images` is `undefined`, not `[]` — without the default,
+  // Zod's array type-check rejects `undefined` before .min(1) ever runs,
+  // surfacing "Invalid input: expected array, received undefined" (a raw
+  // internal message) instead of the friendly one below.
   images: z
     .array(
       z.object({
@@ -94,7 +99,8 @@ export const step4Schema = z.object({
         is_primary: z.boolean(),
       }),
     )
-    .min(1, "Please upload at least 1 photo"),
+    .min(1, "Please upload at least 1 photo")
+    .default([]),
 });
 
 export const step5Schema = z.object({

@@ -1,13 +1,18 @@
-// Hardcoded for now, per spec — make editable via the settings table later
-// (see admin/content/homepage for where that would eventually be wired up).
-const STATS = [
-  { value: "12,500+", label: "Listings" },
-  { value: "2,800+", label: "Agents" },
-  { value: "3", label: "Cities" },
-  { value: "50,000+", label: "Happy Users" },
-];
+export interface HomeStats {
+  listings: number;
+  agents: number;
+  cities: number;
+  users: number;
+}
 
-export function StatsBar() {
+export function StatsBar({ stats }: { stats: HomeStats }) {
+  const STATS = [
+    { value: stats.listings.toLocaleString(), label: "Listings" },
+    { value: stats.agents.toLocaleString(), label: "Agents" },
+    { value: stats.cities.toLocaleString(), label: stats.cities === 1 ? "City" : "Cities" },
+    { value: stats.users.toLocaleString(), label: "Registered Users" },
+  ];
+
   return (
     <section className="bg-primary px-4 py-10">
       <div className="mx-auto flex max-w-5xl flex-wrap justify-center gap-16">
