@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { resolvePageSeo } from "@/lib/seo/pageSeoOverride";
 
 export const dynamic = "force-static";
+export const revalidate = 3600;
 
-export const metadata: Metadata = {
-  title: "Careers at SarZameenz — Join Pakistan's Real Estate Platform",
-  description: "Open roles and what it's like to work at SarZameenz, Pakistan's real estate growth ecosystem.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return resolvePageSeo("/careers", {
+    title: "Careers at SarZameenz — Join Pakistan's Real Estate Platform",
+    description: "Open roles and what it's like to work at SarZameenz, Pakistan's real estate growth ecosystem.",
+  });
+}
 
 const VALUES = [
   {

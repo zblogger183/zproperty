@@ -17,6 +17,7 @@ interface AreaRow {
 interface SocietyRow {
   slug: string;
   city: { slug: string } | null;
+  area: { slug: string } | null;
 }
 
 interface UpdatedSlugRow {
@@ -43,7 +44,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ] = await Promise.all([
     admin.from("cities").select("slug").eq("is_active", true),
     admin.from("areas").select("slug, city:cities(slug)").eq("is_active", true),
-    admin.from("societies").select("slug, city:cities(slug)").eq("is_active", true),
+    admin.from("societies").select("slug, city:cities(slug), area:areas(slug)").eq("is_active", true),
     admin
       .from("listings")
       .select("slug, updated_at")
@@ -102,6 +103,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     }));
 
+  // Society-level search results ("DHA Phase 6, Lahore" is exactly the kind
+  // of specific, high-intent query these exist to rank for) — only added
+  // once the society also sits under a resolved area, same guard as above.
+  const societySearchPages: MetadataRoute.Sitemap = ((societies ?? []) as unknown as SocietyRow[])
+    .filter((society) => society.city && society.area)
+    .flatMap((society) => [
+      {
+        url: `${SITE_URL}/buy/${society.city?.slug}/${society.area?.slug}/${society.slug}/`,
+        changeFrequency: "hourly" as const,
+        priority: 0.7,
+      },
+      {
+        url: `${SITE_URL}/rent/${society.city?.slug}/${society.area?.slug}/${society.slug}/`,
+        changeFrequency: "hourly" as const,
+        priority: 0.7,
+      },
+    ]);
+
   const listingPages: MetadataRoute.Sitemap = ((listings ?? []) as unknown as UpdatedSlugRow[]).map((listing) => ({
     url: `${SITE_URL}/listing/${listing.slug}`,
     lastModified: listing.updated_at,
@@ -135,6 +154,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...cityPages,
     ...areaPages,
     ...societyPages,
+    ...societySearchPages,
     ...listingPages,
     ...projectPages,
     ...blogPages,

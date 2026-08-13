@@ -21,6 +21,7 @@ export async function generateMetadata({ params, searchParams }: PageParams): Pr
     searchParams: sp,
     baseTypes: COMMERCIAL_TYPES,
     basePath: "/commercial",
+    typeLabelOverride: "Commercial Property",
   });
 }
 

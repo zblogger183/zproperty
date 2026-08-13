@@ -57,10 +57,13 @@ export interface ListingMetaInput {
   beds?: number | null;
   baths?: number | null;
   area_marla?: number | null;
+  floors?: number | null;
   description?: string | null;
   og_image_url?: string | null;
   area_name: string;
   city_name: string;
+  society_name?: string | null;
+  phase_name?: string | null;
   agent_name?: string | null;
   // CMS overrides (if set, use these instead of auto)
   meta_title?: string | null;
@@ -71,17 +74,26 @@ export interface ListingMetaInput {
 
 export function listingMeta(l: ListingMetaInput): Metadata {
   const purposeStr = l.purpose === "buy" ? "Sale" : "Rent";
+  // "5 Marla Double Story House for Sale in DHA Phase 6, DHA, Lahore" — the
+  // long-tail terms buyers actually type (size, floors, exact phase) go
+  // straight into the auto-generated title, not just the description, since
+  // this is what ranks for "5 marla house" / "double story house in DHA
+  // phase 6" style searches whenever an agent hasn't set a custom meta_title.
+  const areaStr = l.area_marla ? `${l.area_marla} Marla ` : "";
+  const floorsStr = l.floors === 1 ? "Single Story " : l.floors === 2 ? "Double Story " : l.floors && l.floors >= 3 ? "Triple Story " : "";
   const bedsStr = l.beds ? `${l.beds} Bed ` : "";
   const typeStr = l.type.replace(/_/g, " ");
+  const phaseLocation = [l.phase_name, l.society_name || l.area_name].filter(Boolean).join(", ");
 
-  const autoTitle = `${bedsStr}${typeStr} for ${purposeStr} in ${l.area_name}, ${l.city_name} | ${SITE_NAME}`;
+  const autoTitle = `${areaStr}${floorsStr}${bedsStr}${typeStr} for ${purposeStr} in ${phaseLocation}, ${l.city_name} | ${SITE_NAME}`;
   const autoDesc = [
+    areaStr.trim(),
+    floorsStr.trim(),
     bedsStr.trim(),
     l.baths ? `${l.baths} bath` : null,
     typeStr,
     `for ${purposeStr.toLowerCase()}`,
-    `in ${l.area_name}, ${l.city_name}.`,
-    l.area_marla ? `${l.area_marla} Marla.` : null,
+    `in ${phaseLocation}, ${l.city_name}.`,
     formatPrice(l.price, l.purpose) + ".",
     l.agent_name ? `Contact ${l.agent_name} on ${SITE_NAME}.` : null,
   ]
@@ -111,13 +123,29 @@ export function listingMeta(l: ListingMetaInput): Metadata {
 }
 
 // ── SEARCH / LISTING-COLLECTION PAGES ────────────────────
+const FLOORS_LABEL: Record<number, string> = { 1: "Single Story", 2: "Double Story", 3: "Triple Story" };
+
 export function searchMeta(params: {
   purpose: "buy" | "rent";
   type?: string | null;
+  // Used only when `type` isn't set — a section like /plots or /commercial
+  // spans several `type` values with none singularly "active", so without
+  // this the title falls back to a generic "Property" even though the
+  // on-page H1 says "Plot"/"Commercial Property".
+  type_label_override?: string | null;
   area_name?: string | null;
   city_name: string;
+  society_name?: string | null;
+  phase_name?: string | null;
+  min_area_marla?: number | null;
+  max_area_marla?: number | null;
+  floors?: number | null;
   count: number;
   canonicalUrl?: string;
+  // Pre-launch, most filter combinations return 0 results — indexing those
+  // as real pages would read as thin/doorway content to Google. `follow` is
+  // still set so link equity flows through; only the page itself is excluded.
+  noIndex?: boolean;
 }): Metadata {
   const purposeStr = params.purpose === "buy" ? "Sale" : "Rent";
   // Was `params.type.replace(/_/g, " ") + "s"` — lowercase and grammatically
@@ -128,21 +156,44 @@ export function searchMeta(params: {
         .split("_")
         .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
         .join(" ")
-    : "Property";
+    : (params.type_label_override ?? "Property");
   const typeStr =
     params.count === 1
       ? typeSingular
       : typeSingular.endsWith("y")
         ? `${typeSingular.slice(0, -1)}ies`
         : `${typeSingular}s`;
-  const location = params.area_name ? `${params.area_name}, ${params.city_name}` : params.city_name;
 
-  const title = `${params.count.toLocaleString()} ${typeStr} for ${purposeStr} in ${location} | ${SITE_NAME}`;
-  const desc = `Browse ${params.count.toLocaleString()} verified ${typeStr.toLowerCase()} for ${purposeStr.toLowerCase()} in ${location}. Filter by price, size, bedrooms. Contact CNIC-verified agents directly on ${SITE_NAME}.`;
+  // "DHA Phase 6, Lahore" reads naturally; falls back to the society name
+  // when there's no area (shouldn't normally happen — societies live under
+  // an area) and finally to the bare city.
+  const areaPhase = [params.area_name, params.phase_name].filter(Boolean).join(" ");
+  const location = [areaPhase || params.society_name, params.city_name].filter(Boolean).join(", ");
+
+  // Surfaces the exact long-tail terms buyers actually type — "5 Marla",
+  // "Double Story" — in both the indexed title and meta description whenever
+  // those filters are active, rather than only ever showing a generic
+  // "Houses for Sale in Lahore" regardless of what was searched for.
+  const sizeStr =
+    params.min_area_marla != null && params.max_area_marla != null
+      ? params.min_area_marla === params.max_area_marla
+        ? `${params.min_area_marla} Marla `
+        : `${params.min_area_marla}-${params.max_area_marla} Marla `
+      : params.min_area_marla != null
+        ? `${params.min_area_marla}+ Marla `
+        : params.max_area_marla != null
+          ? `Up to ${params.max_area_marla} Marla `
+          : "";
+  const floorsStr = params.floors != null ? `${FLOORS_LABEL[params.floors] ?? `${params.floors}-Story`} ` : "";
+  const descriptor = `${sizeStr}${floorsStr}`;
+
+  const title = `${params.count.toLocaleString()} ${descriptor}${typeStr} for ${purposeStr} in ${location} | ${SITE_NAME}`;
+  const desc = `Browse ${params.count.toLocaleString()} verified ${descriptor}${typeStr.toLowerCase()} for ${purposeStr.toLowerCase()} in ${location}. Filter by price, size, bedrooms. Contact CNIC-verified agents directly on ${SITE_NAME}.`;
 
   return baseMeta({
     title,
     description: desc,
+    robots: params.noIndex ? { index: false, follow: true } : undefined,
     openGraph: { title, description: desc, type: "website", siteName: SITE_NAME },
     twitter: { card: "summary_large_image", title, description: desc },
     ...(params.canonicalUrl ? { alternates: { canonical: params.canonicalUrl } } : {}),

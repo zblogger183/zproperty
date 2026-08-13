@@ -12,13 +12,13 @@ type PageParams = {
 export async function generateMetadata({ params, searchParams }: PageParams): Promise<Metadata> {
   const { city, area, society } = await params;
   const sp = await searchParams;
-  return buildSearchMetadata({ purpose: "buy", citySlug: city, areaSlug: area, societySlug: society, searchParams: sp });
+  return buildSearchMetadata({ purpose: "rent", citySlug: city, areaSlug: area, societySlug: society, searchParams: sp });
 }
 
-export default async function SocietyListingsBuyPage({ params, searchParams }: PageParams) {
+export default async function SocietyListingsRentPage({ params, searchParams }: PageParams) {
   const { city, area, society } = await params;
   const sp = await searchParams;
   return (
-    <SearchResultsPage purpose="buy" citySlug={city} areaSlug={area} societySlug={society} searchParams={sp} />
+    <SearchResultsPage purpose="rent" citySlug={city} areaSlug={area} societySlug={society} searchParams={sp} />
   );
 }

@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
+import { resolvePageSeo } from "@/lib/seo/pageSeoOverride";
 
 export const dynamic = "force-static";
+export const revalidate = 3600;
 
-export const metadata: Metadata = {
-  title: "Privacy Policy | SarZameenz.com",
-  description: "How SarZameenz.com collects, uses, and protects your personal information.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return resolvePageSeo("/privacy-policy", {
+    title: "Privacy Policy | SarZameenz.com",
+    description: "How SarZameenz.com collects, uses, and protects your personal information.",
+  });
+}
 
 export default function PrivacyPolicyPage() {
   return (

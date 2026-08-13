@@ -2,14 +2,18 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { StatsBar } from "@/components/portal/home/StatsBar";
 import { getHomeStats } from "@/lib/stats";
+import { resolvePageSeo } from "@/lib/seo/pageSeoOverride";
 
 export const dynamic = "force-static";
+export const revalidate = 3600;
 
-export const metadata: Metadata = {
-  title: "About SarZameenz.com — Pakistan Real Estate Platform",
-  description:
-    "SarZameenz.com is Pakistan's next-generation real estate platform, connecting buyers, sellers, and agents across Lahore, Karachi, and Islamabad.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return resolvePageSeo("/about", {
+    title: "About SarZameenz.com — Pakistan Real Estate Platform",
+    description:
+      "SarZameenz.com is Pakistan's next-generation real estate platform, connecting buyers, sellers, and agents across Lahore, Karachi, and Islamabad.",
+  });
+}
 
 const PILLARS = [
   {

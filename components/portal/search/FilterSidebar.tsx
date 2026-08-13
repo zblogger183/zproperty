@@ -14,21 +14,35 @@ export interface FilterAreaOption {
 }
 
 const BED_BATH_OPTIONS = ["Any", "1", "2", "3", "4", "5+"];
+const FLOOR_OPTIONS: { label: string; value: string }[] = [
+  { label: "Any", value: "" },
+  { label: "Single Story", value: "1" },
+  { label: "Double Story", value: "2" },
+  { label: "Triple+ Story", value: "3" },
+];
+// Standard plot/house sizes actually used in Pakistan real estate — not an
+// arbitrary slider, since buyers search in these fixed increments (a "7
+// Marla" search is common; a "6.3 Marla" one basically never happens).
+const MARLA_OPTIONS = ["3", "5", "7", "8", "10", "12", "14", "20"];
 
 export function FilterSidebar({
   citySlug,
   purpose,
   areaSlug,
+  societySlug,
   typeOptions,
   areaList,
+  societyList,
   typeCounts,
   basePath,
 }: {
   citySlug: string;
   purpose: "buy" | "rent";
   areaSlug?: string;
+  societySlug?: string;
   typeOptions: FilterTypeOption[];
   areaList: FilterAreaOption[];
+  societyList?: FilterAreaOption[];
   typeCounts: Record<string, number>;
   // Lets non-purpose-routed sections (e.g. /commercial/[city], which spans
   // types rather than a single buy/rent purpose split) reuse this sidebar
@@ -45,12 +59,22 @@ export function FilterSidebar({
   const currentType = searchParams.get("type") ?? "";
   const currentBeds = searchParams.get("beds") ?? "";
   const currentBaths = searchParams.get("baths") ?? "";
+  const currentFloors = searchParams.get("floors") ?? "";
+  const currentMinArea = searchParams.get("min_area_marla") ?? "";
+  const currentMaxArea = searchParams.get("max_area_marla") ?? "";
   const [minPrice, setMinPrice] = useState(searchParams.get("min_price") ?? "");
   const [maxPrice, setMaxPrice] = useState(searchParams.get("max_price") ?? "");
 
-  const activeCount = ["type", "min_price", "max_price", "beds", "baths"].filter((key) =>
-    searchParams.get(key),
-  ).length;
+  const activeCount = [
+    "type",
+    "min_price",
+    "max_price",
+    "beds",
+    "baths",
+    "floors",
+    "min_area_marla",
+    "max_area_marla",
+  ].filter((key) => searchParams.get(key)).length;
 
   function updateParams(updates: Record<string, string | undefined>) {
     const next = new URLSearchParams(searchParams.toString());
@@ -74,8 +98,27 @@ export function FilterSidebar({
     updateParams({ baths: option === "Any" ? undefined : option.replace("+", "") });
   }
 
+  function handleFloorsSelect(value: string) {
+    updateParams({ floors: currentFloors === value ? undefined : value || undefined });
+  }
+
   function handleApplyPrice() {
     updateParams({ min_price: minPrice || undefined, max_price: maxPrice || undefined });
+  }
+
+  function handleMarlaSelect(size: string) {
+    // Exact size is expressed as a tight range (matches the "5 Marla"
+    // popular-search links) rather than an equality filter, since a real
+    // 5 Marla plot can list as 4.9 or 5.1 depending on how it was surveyed.
+    const isActive = currentMinArea === String(Number(size) - 0.5) && currentMaxArea === String(Number(size) + 0.5);
+    if (isActive) {
+      updateParams({ min_area_marla: undefined, max_area_marla: undefined });
+      return;
+    }
+    updateParams({
+      min_area_marla: String(Number(size) - 0.5),
+      max_area_marla: String(Number(size) + 0.5),
+    });
   }
 
   const resolvedBasePath = basePath ?? `/${purpose}`;
@@ -83,6 +126,11 @@ export function FilterSidebar({
   function handleAreaChange(slug: string) {
     if (!slug) return;
     router.push(`${resolvedBasePath}/${citySlug}/${slug}/`);
+  }
+
+  function handleSocietyChange(slug: string) {
+    if (!slug || !areaSlug) return;
+    router.push(`${resolvedBasePath}/${citySlug}/${areaSlug}/${slug}/`);
   }
 
   const content = (
@@ -135,6 +183,28 @@ export function FilterSidebar({
       </div>
 
       <div>
+        <p className="mb-2 text-sm font-semibold text-black">Area (Marla)</p>
+        <div className="flex flex-wrap gap-1.5">
+          {MARLA_OPTIONS.map((size) => {
+            const selected =
+              currentMinArea === String(Number(size) - 0.5) && currentMaxArea === String(Number(size) + 0.5);
+            return (
+              <button
+                key={size}
+                type="button"
+                onClick={() => handleMarlaSelect(size)}
+                className={`rounded-lg px-2.5 py-1.5 text-xs ${
+                  selected ? "bg-primary text-white" : "border border-primary bg-white text-black"
+                }`}
+              >
+                {size}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div>
         <p className="mb-2 text-sm font-semibold text-black">Bedrooms</p>
         <div className="flex flex-wrap gap-1.5">
           {BED_BATH_OPTIONS.map((option) => {
@@ -178,9 +248,30 @@ export function FilterSidebar({
         </div>
       </div>
 
+      <div>
+        <p className="mb-2 text-sm font-semibold text-black">Floors</p>
+        <div className="flex flex-wrap gap-1.5">
+          {FLOOR_OPTIONS.map((option) => {
+            const selected = currentFloors === option.value;
+            return (
+              <button
+                key={option.label}
+                type="button"
+                onClick={() => handleFloorsSelect(option.value)}
+                className={`rounded-lg px-2.5 py-1.5 text-xs ${
+                  selected ? "bg-primary text-white" : "border border-primary bg-white text-black"
+                }`}
+              >
+                {option.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       {!areaSlug && areaList.length > 0 && (
         <div>
-          <p className="mb-2 text-sm font-semibold text-black">Area / Society</p>
+          <p className="mb-2 text-sm font-semibold text-black">Area</p>
           <label className="sr-only" htmlFor="area-filter">
             Select area
           </label>
@@ -194,6 +285,28 @@ export function FilterSidebar({
             {areaList.map((areaOption) => (
               <option key={areaOption.slug} value={areaOption.slug}>
                 {areaOption.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      {areaSlug && !societySlug && societyList && societyList.length > 0 && (
+        <div>
+          <p className="mb-2 text-sm font-semibold text-black">Society</p>
+          <label className="sr-only" htmlFor="society-filter">
+            Select society
+          </label>
+          <select
+            id="society-filter"
+            defaultValue=""
+            onChange={(event) => handleSocietyChange(event.target.value)}
+            className="w-full rounded-lg border border-primary bg-white px-3 py-2 text-sm text-black"
+          >
+            <option value="">Select society</option>
+            {societyList.map((societyOption) => (
+              <option key={societyOption.slug} value={societyOption.slug}>
+                {societyOption.name}
               </option>
             ))}
           </select>

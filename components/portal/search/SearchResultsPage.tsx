@@ -30,6 +30,7 @@ export async function SearchResultsPage({
   purpose,
   citySlug,
   areaSlug,
+  societySlug,
   searchParams,
   baseTypes,
   basePath: basePathProp,
@@ -38,6 +39,7 @@ export async function SearchResultsPage({
   purpose: "buy" | "rent";
   citySlug: string;
   areaSlug?: string;
+  societySlug?: string;
   searchParams: Record<string, string | string[] | undefined>;
   // See fetchSearchResults' baseTypes doc — /commercial/[city] passes both
   // of these to scope the listing set and keep its own nav/pagination links
@@ -46,13 +48,14 @@ export async function SearchResultsPage({
   basePath?: string;
   typeLabelOverride?: string;
 }) {
-  const results = await fetchSearchResults({ purpose, citySlug, areaSlug, searchParams, baseTypes });
+  const results = await fetchSearchResults({ purpose, citySlug, areaSlug, societySlug, searchParams, baseTypes });
 
   if (!results) {
     notFound();
   }
 
-  const { city, area, filters, listings, total, totalPages, areaList, typeCounts } = results;
+  const { city, area, society, phase, filters, listings, total, totalPages, areaList, societyList, phaseList, typeCounts } =
+    results;
 
   const routeBase = basePathProp ?? `/${purpose}`;
   const purposeLabel = purpose === "buy" ? "Sale" : "Rent";
@@ -62,10 +65,15 @@ export async function SearchResultsPage({
     ? `${typeLabelBase.slice(0, -1)}ies`
     : `${typeLabelBase}s`;
   const typeLabel = total === 1 ? typeLabelBase : typeLabelPlural;
-  const locationLabel = area?.name ?? city.name;
+  // "DHA Phase 6, Lahore" (area + phase carry the specificity; society name
+  // usually just repeats the area/city and adds noise to the H1) — matches
+  // the same composition searchMeta() uses for the indexed <title>.
+  const locationLabel = [area?.name, phase?.name].filter(Boolean).join(" ") || society?.name || city.name;
   const visibleTypeOptions = baseTypes
     ? TYPE_OPTIONS.filter((option) => baseTypes.includes(option.value))
     : TYPE_OPTIONS;
+
+  const societyBasePath = society ? `${routeBase}/${city.slug}/${area?.slug}/${society.slug}/` : null;
 
   function buildPageHref(page: number): string {
     const next = new URLSearchParams();
@@ -76,7 +84,7 @@ export async function SearchResultsPage({
     }
     if (page > 1) next.set("page", String(page));
     const qs = next.toString();
-    const basePath = area ? `${routeBase}/${city.slug}/${area.slug}/` : `${routeBase}/${city.slug}/`;
+    const basePath = societyBasePath ?? (area ? `${routeBase}/${city.slug}/${area.slug}/` : `${routeBase}/${city.slug}/`);
     return qs ? `${basePath}?${qs}` : basePath;
   }
 
@@ -89,6 +97,8 @@ export async function SearchResultsPage({
     return pages;
   })();
 
+  const clearFiltersHref = societyBasePath ?? (area ? `${routeBase}/${city.slug}/${area.slug}/` : `${routeBase}/${city.slug}/`);
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 md:px-6">
       {/* <Breadcrumb> already emits its own BreadcrumbList JSON-LD from these
@@ -97,10 +107,13 @@ export async function SearchResultsPage({
       <Breadcrumb
         items={[
           { label: "Home", href: "/" },
-          area
+          area || society
             ? { label: city.name, href: `${routeBase}/${city.slug}/` }
             : { label: city.name },
-          ...(area ? [{ label: area.name }] : []),
+          ...(area
+            ? [society ? { label: area.name, href: `${routeBase}/${city.slug}/${area.slug}/` } : { label: area.name }]
+            : []),
+          ...(society ? [{ label: society.name }] : []),
         ]}
       />
 
@@ -112,6 +125,8 @@ export async function SearchResultsPage({
           <p className="mt-1 text-sm text-primary-mid">
             {city.name}
             {area ? ` > ${area.name}` : ""}
+            {society ? ` > ${society.name}` : ""}
+            {phase ? ` > ${phase.name}` : ""}
           </p>
         </div>
 
@@ -120,14 +135,47 @@ export async function SearchResultsPage({
         </Suspense>
       </div>
 
+      {/* Real <Link> elements (not the JS-driven select the sidebar uses for
+          city→area→society navigation) so search engines can actually
+          discover "DHA Phase 6" as its own crawlable URL, not just something
+          reachable by selecting a dropdown option. */}
+      {society && phaseList.length > 0 && (
+        <div className="mb-4 flex flex-wrap items-center gap-2">
+          <span className="text-sm font-semibold text-black">Browse by Phase:</span>
+          <Link
+            href={societyBasePath!}
+            className={`rounded-full border px-3 py-1 text-xs ${
+              !phase ? "border-primary bg-primary text-white" : "border-primary bg-white text-primary"
+            }`}
+          >
+            All
+          </Link>
+          {phaseList.map((phaseOption) => (
+            <Link
+              key={phaseOption.id}
+              href={`${societyBasePath}?phase=${phaseOption.slug}`}
+              className={`rounded-full border px-3 py-1 text-xs ${
+                phase?.id === phaseOption.id
+                  ? "border-primary bg-primary text-white"
+                  : "border-primary bg-white text-primary"
+              }`}
+            >
+              {phaseOption.name}
+            </Link>
+          ))}
+        </div>
+      )}
+
       <div className="flex flex-col gap-6 md:flex-row">
         <Suspense fallback={<div className="hidden w-64 shrink-0 md:block" />}>
           <FilterSidebar
             citySlug={city.slug}
             purpose={purpose}
             areaSlug={area?.slug}
+            societySlug={society?.slug}
             typeOptions={visibleTypeOptions}
             areaList={areaList}
+            societyList={societyList}
             typeCounts={typeCounts}
             basePath={basePathProp}
           />
@@ -139,7 +187,7 @@ export async function SearchResultsPage({
               <p className="text-lg font-semibold text-black">No properties found matching your filters.</p>
               <p className="mt-2 text-sm text-primary-mid">Try adjusting your search or browse all properties</p>
               <Link
-                href={area ? `${routeBase}/${city.slug}/${area.slug}/` : `${routeBase}/${city.slug}/`}
+                href={clearFiltersHref}
                 className="mt-4 inline-block rounded-lg bg-secondary px-5 py-2.5 text-sm font-bold text-primary hover:bg-secondary-dark"
               >
                 Clear Filters

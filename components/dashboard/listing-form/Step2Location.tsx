@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { createClient } from "@/lib/supabase/client";
+import { slugify } from "@/lib/utils";
 import type { Step2Data } from "@/app/dashboard/listings/schemas";
 import { inputClass, labelClass, errorClass } from "./styles";
 
@@ -222,7 +223,7 @@ export function Step2Location({
 
     const { data: created, error } = await supabase
       .from("society_phases")
-      .insert({ society_id: data.society_id, name, created_by: user.id })
+      .insert({ society_id: data.society_id, name, slug: slugify(name), created_by: user.id })
       .select("id, name")
       .single();
 

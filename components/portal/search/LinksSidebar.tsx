@@ -45,21 +45,26 @@ export function LinksSidebar({
   purpose: "buy" | "rent";
 }) {
   const base = `/${purpose}/${citySlug}`;
+  // Each size label gets its own real area_marla range (±0.5 marla, same
+  // convention as FilterSidebar's marla buttons) — these used to all point
+  // at the same unfiltered ?type=house regardless of the size in the label.
   const popularSearches =
     purpose === "buy"
       ? [
-          { label: `5 Marla House in ${cityName}`, href: `${base}?type=house` },
-          { label: `10 Marla House in ${cityName}`, href: `${base}?type=house` },
-          { label: `1 Kanal House in ${cityName}`, href: `${base}?type=house` },
+          { label: `5 Marla House in ${cityName}`, href: `${base}?type=house&min_area_marla=4.5&max_area_marla=5.5` },
+          { label: `10 Marla House in ${cityName}`, href: `${base}?type=house&min_area_marla=9.5&max_area_marla=10.5` },
+          { label: `1 Kanal House in ${cityName}`, href: `${base}?type=house&min_area_marla=19.5&max_area_marla=20.5` },
+          { label: `Double Story House in ${cityName}`, href: `${base}?type=house&floors=2` },
           { label: `2 Bed Flat in ${cityName}`, href: `${base}?type=flat&beds=2` },
           { label: `3 Bed Flat in ${cityName}`, href: `${base}?type=flat&beds=3` },
           { label: `Plot for Sale in ${cityName}`, href: `${base}?type=residential_plot` },
           { label: "Commercial Property", href: `/commercial/${citySlug}` },
         ]
       : [
-          { label: `5 Marla House for Rent in ${cityName}`, href: `${base}?type=house` },
-          { label: `10 Marla House for Rent in ${cityName}`, href: `${base}?type=house` },
-          { label: `1 Kanal House for Rent in ${cityName}`, href: `${base}?type=house` },
+          { label: `5 Marla House for Rent in ${cityName}`, href: `${base}?type=house&min_area_marla=4.5&max_area_marla=5.5` },
+          { label: `10 Marla House for Rent in ${cityName}`, href: `${base}?type=house&min_area_marla=9.5&max_area_marla=10.5` },
+          { label: `1 Kanal House for Rent in ${cityName}`, href: `${base}?type=house&min_area_marla=19.5&max_area_marla=20.5` },
+          { label: `Double Story House for Rent in ${cityName}`, href: `${base}?type=house&floors=2` },
           { label: `2 Bed Flat for Rent in ${cityName}`, href: `${base}?type=flat&beds=2` },
           { label: `3 Bed Flat for Rent in ${cityName}`, href: `${base}?type=flat&beds=3` },
           { label: `Office for Rent in ${cityName}`, href: `${base}?type=office` },

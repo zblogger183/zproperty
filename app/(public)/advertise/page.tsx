@@ -1,13 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { resolvePageSeo } from "@/lib/seo/pageSeoOverride";
 
 export const dynamic = "force-static";
+export const revalidate = 3600;
 
-export const metadata: Metadata = {
-  title: "Advertise on SarZameenz.com — Real Estate Marketing Pakistan",
-  description:
-    "Reach Pakistan's property buyers with featured listings, banner advertising, and digital marketing services on SarZameenz.com.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return resolvePageSeo("/advertise", {
+    title: "Advertise on SarZameenz.com — Real Estate Marketing Pakistan",
+    description:
+      "Reach Pakistan's property buyers with featured listings, banner advertising, and digital marketing services on SarZameenz.com.",
+  });
+}
 
 const OPTIONS = [
   {

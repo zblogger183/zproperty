@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
+import { resolvePageSeo } from "@/lib/seo/pageSeoOverride";
 
 export const dynamic = "force-static";
+export const revalidate = 3600;
 
-export const metadata: Metadata = {
-  title: "Terms of Service | SarZameenz.com",
-  description: "The terms and conditions governing use of SarZameenz.com.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return resolvePageSeo("/terms", {
+    title: "Terms of Service | SarZameenz.com",
+    description: "The terms and conditions governing use of SarZameenz.com.",
+  });
+}
 
 export default function TermsOfServicePage() {
   return (

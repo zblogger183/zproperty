@@ -1,13 +1,17 @@
 import type { Metadata } from "next";
 import { Mail, MessageCircle, MapPin, Clock } from "lucide-react";
 import { ContactForm } from "@/components/portal/ContactForm";
+import { resolvePageSeo } from "@/lib/seo/pageSeoOverride";
 
 export const dynamic = "force-static";
+export const revalidate = 3600;
 
-export const metadata: Metadata = {
-  title: "Contact SarZameenz.com — Get in Touch",
-  description: "Get in touch with the SarZameenz.com team for support, partnerships, or general enquiries.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return resolvePageSeo("/contact", {
+    title: "Contact SarZameenz.com — Get in Touch",
+    description: "Get in touch with the SarZameenz.com team for support, partnerships, or general enquiries.",
+  });
+}
 
 const CONTACT_METHODS = [
   { Icon: Mail, title: "Email", detail: "support@sarzameenz.com" },
