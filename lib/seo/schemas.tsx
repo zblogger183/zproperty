@@ -91,7 +91,8 @@ export function listingSchema(params: {
     "@context": "https://schema.org",
     "@type": "RealEstateListing",
     name: listing.title,
-    description: listing.description ?? undefined,
+    // Tiptap-authored HTML — schema.org's description expects plain text.
+    description: listing.description ? listing.description.replace(/<[^>]*>/g, "") : undefined,
     url: `${SITE_URL}/listing/${listing.slug}`,
     datePosted: listing.published_at ?? undefined,
     validThrough: listing.expires_at ?? undefined,

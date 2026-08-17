@@ -13,6 +13,7 @@ import { ImageGallery } from "@/components/portal/listing/ImageGallery";
 import { AgentCard } from "@/components/portal/listing/AgentCard";
 import { SimpleContactCard } from "@/components/portal/listing/SimpleContactCard";
 import { LinksSidebar } from "@/components/portal/search/LinksSidebar";
+import { sanitizeRichText } from "@/lib/utils/sanitizeHtml";
 import { SpecCard } from "@/components/portal/listing/SpecCard";
 import { ViewTracker } from "@/components/portal/listing/ViewTracker";
 import { ListingCard } from "@/components/portal/ListingCard";
@@ -217,9 +218,10 @@ export default async function PropertyDetailPage({
             {listing.description && (
               <div>
                 <h2 className="text-lg font-bold text-black">Description</h2>
-                <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-black">
-                  {listing.description}
-                </p>
+                <div
+                  className="mt-2 text-sm leading-relaxed text-black [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mb-2 [&_p:last-child]:mb-0 [&_ul]:list-disc [&_ul]:pl-5"
+                  dangerouslySetInnerHTML={{ __html: sanitizeRichText(listing.description) }}
+                />
               </div>
             )}
 

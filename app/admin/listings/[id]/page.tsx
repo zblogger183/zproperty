@@ -10,6 +10,7 @@ import { TYPE_LABELS } from "@/components/dashboard/listing-form/styles";
 import { ListingStatusActions } from "@/components/admin/ListingStatusActions";
 import { FeatureListingButton } from "@/components/admin/FeatureListingButton";
 import type { Step1Data } from "@/app/dashboard/listings/schemas";
+import { sanitizeRichText } from "@/lib/utils/sanitizeHtml";
 
 export const dynamic = "force-dynamic";
 
@@ -225,7 +226,10 @@ export default async function AdminListingDetailPage({ params }: { params: Promi
           <div className="mb-4 rounded-xl border border-primary bg-white p-5">
             <h2 className="mb-3 text-base font-bold text-black">Description</h2>
             {listing.description ? (
-              <p className="whitespace-pre-line text-sm leading-relaxed text-black">{listing.description}</p>
+              <div
+                className="text-sm leading-relaxed text-black [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mb-2 [&_p:last-child]:mb-0 [&_ul]:list-disc [&_ul]:pl-5"
+                dangerouslySetInnerHTML={{ __html: sanitizeRichText(listing.description) }}
+              />
             ) : (
               <p className="text-sm italic text-primary-mid">No description</p>
             )}
