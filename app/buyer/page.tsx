@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Buyer Dashboard | SarZameenz" };
+export const metadata: Metadata = { title: "Buyer Dashboard | ZProperty" };
 
 export default async function BuyerDashboardPage() {
   const supabase = await createClient();

@@ -4,7 +4,7 @@ import { RobotsEditor } from "@/components/admin/RobotsEditor";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Robots.txt | SarZameenz Admin" };
+export const metadata: Metadata = { title: "Robots.txt | ZProperty Admin" };
 
 const DEFAULT_ROBOTS_TXT = `User-agent: *
 Allow: /
@@ -12,7 +12,7 @@ Disallow: /admin
 Disallow: /api
 Disallow: /dashboard
 
-Sitemap: https://sarzameenz.com/sitemap.xml
+Sitemap: https://zproperty.pk/sitemap.xml
 `;
 
 export default async function RobotsTxtPage() {

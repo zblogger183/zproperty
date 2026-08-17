@@ -7,8 +7,8 @@ export const revalidate = 3600;
 
 export async function generateMetadata(): Promise<Metadata> {
   return resolvePageSeo("/careers", {
-    title: "Careers at SarZameenz — Join Pakistan's Real Estate Platform",
-    description: "Open roles and what it's like to work at SarZameenz, Pakistan's real estate growth ecosystem.",
+    title: "Careers at ZProperty — Join Pakistan's Real Estate Platform",
+    description: "Open roles and what it's like to work at ZProperty, Pakistan's real estate growth ecosystem.",
   });
 }
 
@@ -31,7 +31,7 @@ export default function CareersPage() {
   return (
     <>
       <div className="bg-primary py-12 text-center">
-        <h1 className="text-3xl font-bold text-white">Careers at SarZameenz</h1>
+        <h1 className="text-3xl font-bold text-white">Careers at ZProperty</h1>
         <p className="mt-2 text-base text-white/70">Help build Pakistan&apos;s real estate growth ecosystem</p>
       </div>
 

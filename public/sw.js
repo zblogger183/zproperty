@@ -1,4 +1,4 @@
-const CACHE_NAME = "sarzameenz-v1";
+const CACHE_NAME = "zproperty-v1";
 const OFFLINE_URL = "/offline.html";
 
 const STATIC_EXTENSIONS = [

@@ -4,7 +4,7 @@ import { BlogEditorClient } from "@/components/admin/blog/BlogEditorClient";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "New Blog Post | SarZameenz Admin" };
+export const metadata: Metadata = { title: "New Blog Post | ZProperty Admin" };
 
 export default async function NewBlogPostPage() {
   const admin = createAdminClient();

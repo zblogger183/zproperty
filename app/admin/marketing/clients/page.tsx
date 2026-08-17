@@ -4,7 +4,7 @@ import { DmClientsManager, type DmClientRow } from "@/components/admin/DmClients
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Marketing Clients | SarZameenz Admin" };
+export const metadata: Metadata = { title: "Marketing Clients | ZProperty Admin" };
 
 export default async function MarketingClientsPage() {
   const admin = createAdminClient();
@@ -18,7 +18,7 @@ export default async function MarketingClientsPage() {
     <div className="px-6 py-6">
       <h1 className="text-2xl font-bold text-black">Marketing Clients</h1>
       <p className="mt-1 text-sm text-primary-mid">
-        Clients running digital marketing campaigns through SarZameenz (separate from platform listing agents).
+        Clients running digital marketing campaigns through ZProperty (separate from platform listing agents).
       </p>
 
       <DmClientsManager initialClients={(data ?? []) as DmClientRow[]} />

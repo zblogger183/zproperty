@@ -16,7 +16,7 @@ import { RecentTransactionsTable, type RecentTransaction } from "@/components/ad
 // Next's fetch cache, so it wouldn't actually force fresh data here.
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Admin Dashboard | SarZameenz" };
+export const metadata: Metadata = { title: "Admin Dashboard | ZProperty" };
 
 export default async function AdminDashboardPage() {
   const admin = createAdminClient();

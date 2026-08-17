@@ -49,11 +49,11 @@ export async function generateMetadata({
     .maybeSingle();
 
   if (!data) {
-    return { title: "Discussion not found | SarZameenz.com" };
+    return { title: "Discussion not found | ZProperty.pk" };
   }
 
   return {
-    title: `${data.title} | SarZameenz Forum`,
+    title: `${data.title} | ZProperty Forum`,
     description: data.body.slice(0, 160),
   };
 }

@@ -9,7 +9,7 @@ import { AgentAdminActions } from "@/components/admin/AgentAdminActions";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Agent Detail | SarZameenz Admin" };
+export const metadata: Metadata = { title: "Agent Detail | ZProperty Admin" };
 
 export default async function AgentDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

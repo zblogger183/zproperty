@@ -54,7 +54,7 @@ export function Step6Review({
   const firstImage = step4.images?.[0];
   const plainDescription = (step5.description ?? "").replace(/<[^>]*>/g, "");
 
-  const autoTitle = step5.title ? `${step5.title} | SarZameenz.com` : "SarZameenz.com";
+  const autoTitle = step5.title ? `${step5.title} | ZProperty.pk` : "ZProperty.pk";
   const autoDesc = plainDescription.slice(0, 160);
 
   return (

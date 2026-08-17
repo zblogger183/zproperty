@@ -5,7 +5,7 @@ import type { CNICVerificationAgent } from "@/components/admin/CNICVerificationC
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "CNIC Verification Queue | SarZameenz Admin" };
+export const metadata: Metadata = { title: "CNIC Verification Queue | ZProperty Admin" };
 
 interface PendingProfile {
   user_id: string;

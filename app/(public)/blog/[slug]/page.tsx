@@ -14,7 +14,7 @@ import { BlogCard, type BlogCardPost } from "@/components/portal/blog/BlogCard";
 
 export const revalidate = 3600;
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://sarzameenz.com";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://zproperty.pk";
 
 const POST_SELECT = `
     id, title, slug, excerpt, content, cover_url, og_image_url,
@@ -84,7 +84,7 @@ export async function generateMetadata({
   const post = await getPost(slug);
 
   if (!post) {
-    return { title: "Article not found | SarZameenz.com" };
+    return { title: "Article not found | ZProperty.pk" };
   }
 
   return blogPostMeta({
@@ -130,7 +130,7 @@ export default async function BlogPostPage({
     .limit(3);
 
   const relatedPosts = (related ?? []) as unknown as BlogCardPost[];
-  const authorName = post.author?.name ?? "SarZameenz Team";
+  const authorName = post.author?.name ?? "ZProperty Team";
   const coverImage = post.cover_url ?? post.og_image_url;
   const pageUrl = `${SITE_URL}/blog/${post.slug}`;
 
@@ -215,7 +215,7 @@ export default async function BlogPostPage({
           <div>
             <p className="text-xs text-primary-mid">Written by</p>
             <p className="text-base font-bold text-black">{authorName}</p>
-            <p className="text-sm text-primary-mid">SarZameenz Real Estate Team</p>
+            <p className="text-sm text-primary-mid">ZProperty Real Estate Team</p>
           </div>
         </div>
 

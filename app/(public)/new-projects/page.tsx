@@ -7,7 +7,7 @@ import { ProjectsFilterBar } from "@/components/portal/projects/ProjectsFilterBa
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "New Property Projects in Pakistan — Off-Plan & Ready | SarZameenz",
+  title: "New Property Projects in Pakistan — Off-Plan & Ready | ZProperty",
   description:
     "Browse new residential and commercial projects in Lahore, Karachi and Islamabad. Pre-launch prices, payment plans, and developer contact.",
 };

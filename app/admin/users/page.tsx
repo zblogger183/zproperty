@@ -6,7 +6,7 @@ import { UserStatusToggle } from "@/components/admin/UserStatusToggle";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "All Users | SarZameenz Admin" };
+export const metadata: Metadata = { title: "All Users | ZProperty Admin" };
 
 const ROLE_TABS = ["all", "agent", "buyer", "developer", "admin"] as const;
 type RoleFilter = (typeof ROLE_TABS)[number];

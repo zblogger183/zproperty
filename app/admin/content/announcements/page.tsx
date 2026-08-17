@@ -5,7 +5,7 @@ import type { AnnouncementInput } from "./actions";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Announcements | SarZameenz Admin" };
+export const metadata: Metadata = { title: "Announcements | ZProperty Admin" };
 
 export default async function AnnouncementsPage() {
   const admin = createAdminClient();

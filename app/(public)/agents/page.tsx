@@ -7,7 +7,7 @@ import { AgentsFilterBar } from "@/components/portal/agents/AgentsFilterBar";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Real Estate Agents in Pakistan | SarZameenz",
+  title: "Real Estate Agents in Pakistan | ZProperty",
   description:
     "Find verified real estate agents in Lahore, Karachi and Islamabad. All agents are CNIC-verified. Contact directly via WhatsApp.",
 };

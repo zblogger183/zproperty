@@ -66,13 +66,13 @@ INSERT INTO areas (city_id, name, slug, display_order) VALUES
 
 -- DEFAULT SETTINGS
 INSERT INTO settings (key, value, category) VALUES
-  ('site_name',       '"SarZameenz.com"',             'general'),
+  ('site_name',       '"ZProperty.pk"',             'general'),
   ('site_tagline',    '"Pakistan Real Estate Growth Ecosystem"', 'general'),
-  ('contact_email',   '"info@sarzameenz.com"',         'general'),
+  ('contact_email',   '"info@zproperty.pk"',         'general'),
   ('contact_phone',   '""',                            'general'),
   ('whatsapp_number', '""',                            'general'),
   ('maintenance_mode',  'false',                       'general'),
-  ('robots_txt',      '"User-agent: *\nAllow: /\nDisallow: /admin/\nDisallow: /dashboard/\nDisallow: /api/\nSitemap: https://sarzameenz.com/sitemap.xml"', 'seo'),
+  ('robots_txt',      '"User-agent: *\nAllow: /\nDisallow: /admin/\nDisallow: /dashboard/\nDisallow: /api/\nSitemap: https://zproperty.pk/sitemap.xml"', 'seo'),
   ('listing_expiry_days', '90',                        'listings'),
   ('max_free_listings',   '5',                         'listings'),
   ('jazzcash_sandbox',    'true',                      'payments'),

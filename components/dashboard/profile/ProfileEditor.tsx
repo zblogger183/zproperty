@@ -118,7 +118,7 @@ export function ProfileEditor({
           rel="noreferrer"
           className="text-sm text-primary underline"
         >
-          sarzameenz.com/agents/{profile.profile_slug}
+          zproperty.pk/agents/{profile.profile_slug}
         </a>
       </div>
 

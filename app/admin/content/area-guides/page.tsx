@@ -4,7 +4,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Area Guides | SarZameenz Admin" };
+export const metadata: Metadata = { title: "Area Guides | ZProperty Admin" };
 
 interface SocietyRow {
   id: string;

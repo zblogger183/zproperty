@@ -130,7 +130,7 @@ export async function generateMetadata({
   const project = await getProject(slug);
 
   if (!project) {
-    return { title: "Project not found | SarZameenz.com" };
+    return { title: "Project not found | ZProperty.pk" };
   }
 
   return projectMeta({

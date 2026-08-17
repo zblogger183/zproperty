@@ -233,7 +233,7 @@ export function BlogEditorClient({
         />
 
         <div className="mt-2 flex items-center gap-1 text-sm text-primary-mid">
-          <span>sarzameenz.com/blog/</span>
+          <span>zproperty.pk/blog/</span>
           <input
             value={slug}
             onChange={(event) => {
@@ -494,7 +494,7 @@ export function BlogEditorClient({
               </div>
 
               <div className="rounded-lg border border-primary p-3">
-                <p className="truncate text-xs text-primary-mid">sarzameenz.com/blog/{slug || "post-slug"}</p>
+                <p className="truncate text-xs text-primary-mid">zproperty.pk/blog/{slug || "post-slug"}</p>
                 <p className="mt-1 truncate text-sm font-medium text-primary underline">
                   {metaTitle || title || "Post title"}
                 </p>

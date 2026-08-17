@@ -13,7 +13,7 @@ import type { Step1Data } from "@/app/dashboard/listings/schemas";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Listing Detail | SarZameenz Admin" };
+export const metadata: Metadata = { title: "Listing Detail | ZProperty Admin" };
 
 const STATUS_BADGE_CLASSES: Record<string, string> = {
   active: "bg-secondary text-primary font-bold",

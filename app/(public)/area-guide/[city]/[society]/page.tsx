@@ -94,7 +94,7 @@ export async function generateMetadata({
   const { city, society } = await getCityAndSociety(citySlug, societySlug);
 
   if (!city || !society) {
-    return { title: "Area guide not found | SarZameenz.com" };
+    return { title: "Area guide not found | ZProperty.pk" };
   }
 
   const supabase = createPublicClient();

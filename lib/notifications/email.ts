@@ -4,8 +4,8 @@ import { Resend } from "resend";
 // placeholder is passed when unset — send() below no-ops before this
 // client is ever actually used in that case.
 const resend = new Resend(process.env.RESEND_API_KEY || "re_placeholder");
-const FROM = "SarZameenz <noreply@sarzameenz.com>";
-const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://sarzameenz.com";
+const FROM = "ZProperty <noreply@zproperty.pk>";
+const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? "https://zproperty.pk";
 
 function cleanPhone(raw: string): string {
   return raw.replace(/\D/g, "").replace(/^92/, "").replace(/^0/, "");
@@ -62,7 +62,7 @@ function emailWrapper(content: string): string {
 <body>
   <div class="wrap">
     <div class="header">
-      <div class="header-logo">SarZameenz.com</div>
+      <div class="header-logo">ZProperty.pk</div>
       <div class="header-tag">Pakistan's Real Estate Growth Ecosystem</div>
     </div>
     <div class="body">
@@ -70,7 +70,7 @@ function emailWrapper(content: string): string {
     </div>
     <hr class="divider" />
     <div class="footer">
-      <p>© ${new Date().getFullYear()} SarZameenz.com —
+      <p>© ${new Date().getFullYear()} ZProperty.pk —
         <a href="${SITE}">Visit website</a> ·
         <a href="${SITE}/contact">Contact us</a>
       </p>
@@ -110,13 +110,13 @@ export async function emailListingApproved(params: {
 }) {
   await send({
     to: params.to,
-    subject: "✓ Your listing is now live on SarZameenz!",
+    subject: "✓ Your listing is now live on ZProperty!",
     html: emailWrapper(`
       <h2>Your listing is live!</h2>
       <p>Hi ${params.agentName},</p>
       <p>Great news! Your listing has been reviewed and approved
          by our team. It is now visible to thousands of buyers
-         on SarZameenz.com.</p>
+         on ZProperty.pk.</p>
       <div class="success-box">
         <strong>${params.listingTitle}</strong><br>
         <span class="muted">is now live and receiving enquiries</span>
@@ -285,7 +285,7 @@ export async function emailPaymentConfirmed(params: {
       <hr class="divider" />
       <p class="muted">Keep this email as your receipt.
          If you have any issues, contact us at
-         support@sarzameenz.com</p>
+         support@zproperty.pk</p>
     `),
   });
 }
@@ -349,19 +349,19 @@ export async function emailWelcome(params: { to: string; name: string; role: "ag
   };
   await send({
     to: params.to,
-    subject: `Welcome to SarZameenz.com!`,
+    subject: `Welcome to ZProperty.pk!`,
     html: emailWrapper(`
       <h2>Welcome, ${params.name}!</h2>
-      <p>Your SarZameenz.com account is ready.</p>
+      <p>Your ZProperty.pk account is ready.</p>
       ${roleContent[params.role]}
       <hr class="divider" />
       <p class="muted">Questions? Email us at
-         support@sarzameenz.com or WhatsApp us.</p>
+         support@zproperty.pk or WhatsApp us.</p>
     `),
   });
 }
 
-const SUPPORT_EMAIL = "support@sarzameenz.com";
+const SUPPORT_EMAIL = "support@zproperty.pk";
 
 export async function emailContactForm(params: {
   name: string;

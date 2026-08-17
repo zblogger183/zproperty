@@ -5,7 +5,7 @@ import { BlogEditorClient, type BlogPost } from "@/components/admin/blog/BlogEdi
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Edit Blog Post | SarZameenz Admin" };
+export const metadata: Metadata = { title: "Edit Blog Post | ZProperty Admin" };
 
 export default async function EditBlogPostPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

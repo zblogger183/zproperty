@@ -5,7 +5,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Subscriptions | SarZameenz Admin" };
+export const metadata: Metadata = { title: "Subscriptions | ZProperty Admin" };
 
 const STATUS_BADGE_CLASSES: Record<string, string> = {
   active: "bg-secondary text-primary",

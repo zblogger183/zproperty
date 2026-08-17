@@ -6,7 +6,7 @@ import { ToolsSidebar } from "@/components/portal/tools/ToolsSidebar";
 export const dynamic = "force-static";
 
 export const metadata: Metadata = {
-  title: "EMI Calculator Pakistan — Mortgage & Home Loan | SarZameenz",
+  title: "EMI Calculator Pakistan — Mortgage & Home Loan | ZProperty",
   description:
     "Calculate your monthly home loan installment (EMI) for Pakistan. Enter property price, down payment, interest rate and loan tenure to get instant results.",
 };

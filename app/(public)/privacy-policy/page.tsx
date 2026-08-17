@@ -6,8 +6,8 @@ export const revalidate = 3600;
 
 export async function generateMetadata(): Promise<Metadata> {
   return resolvePageSeo("/privacy-policy", {
-    title: "Privacy Policy | SarZameenz.com",
-    description: "How SarZameenz.com collects, uses, and protects your personal information.",
+    title: "Privacy Policy | ZProperty.pk",
+    description: "How ZProperty.pk collects, uses, and protects your personal information.",
   });
 }
 
@@ -26,7 +26,7 @@ export default function PrivacyPolicyPage() {
 
       <h2 className="mb-3 mt-8 text-xl font-bold text-black">How We Use Information</h2>
       <p className="text-base leading-relaxed text-black">
-        We use your information to operate and improve SarZameenz.com, verify agent identities, connect buyers
+        We use your information to operate and improve ZProperty.pk, verify agent identities, connect buyers
         with agents, process payments, send transactional notifications (email, WhatsApp, and in-app), and
         respond to support requests. We do not sell your personal information to third parties.
       </p>
@@ -41,7 +41,7 @@ export default function PrivacyPolicyPage() {
       <h2 className="mb-3 mt-8 text-xl font-bold text-black">CNIC Image Security</h2>
       <p className="text-base leading-relaxed text-black">
         CNIC images submitted for agent verification are stored in a private, access-controlled storage bucket
-        and are never publicly accessible. Only authorized SarZameenz.com administrators reviewing verification
+        and are never publicly accessible. Only authorized ZProperty.pk administrators reviewing verification
         requests can view them, via short-lived, signed URLs. CNIC images are never shared with third parties and
         are not displayed anywhere on public pages.
       </p>
@@ -63,7 +63,7 @@ export default function PrivacyPolicyPage() {
       <h2 className="mb-3 mt-8 text-xl font-bold text-black">Contact</h2>
       <p className="text-base leading-relaxed text-black">
         If you have questions about this Privacy Policy or how your data is handled, contact us at
-        support@sarzameenz.com.
+        support@zproperty.pk.
       </p>
     </div>
   );

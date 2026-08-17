@@ -17,7 +17,7 @@ export interface BlogCardPost {
 }
 
 export function BlogCard({ post }: { post: BlogCardPost }) {
-  const authorName = post.author?.name ?? "SarZameenz Team";
+  const authorName = post.author?.name ?? "ZProperty Team";
   const image = post.cover_url ?? post.og_image_url;
 
   return (

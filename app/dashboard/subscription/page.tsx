@@ -11,7 +11,7 @@ import {
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Subscription | SarZameenz" };
+export const metadata: Metadata = { title: "Subscription | ZProperty" };
 
 export default async function SubscriptionPage() {
   const supabase = await createClient();

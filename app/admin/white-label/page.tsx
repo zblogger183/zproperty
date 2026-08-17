@@ -4,7 +4,7 @@ import { WhiteLabelManager, type WhiteLabelRow, type AgencyOption } from "@/comp
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "White Label | SarZameenz Admin" };
+export const metadata: Metadata = { title: "White Label | ZProperty Admin" };
 
 export default async function WhiteLabelPage() {
   const admin = createAdminClient();

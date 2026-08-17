@@ -1,6 +1,6 @@
 {
-  "name": "SarZameenz.com — Real Estate Pakistan",
-  "short_name": "SarZameenz",
+  "name": "ZProperty.pk — Real Estate Pakistan",
+  "short_name": "ZProperty",
   "description": "Pakistan's real estate growth ecosystem — buy, sell, and rent verified properties in Lahore, Karachi, Islamabad and beyond.",
   "start_url": "/",
   "scope": "/",
@@ -33,7 +33,7 @@
     {
       "name": "Post a Listing",
       "short_name": "Post",
-      "description": "List your property on SarZameenz",
+      "description": "List your property on ZProperty",
       "url": "/dashboard/listings/new",
       "icons": [{ "src": "/icons/icon-96.png", "sizes": "96x96", "type": "image/png" }]
     }

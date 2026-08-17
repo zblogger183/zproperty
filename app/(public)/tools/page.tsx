@@ -4,7 +4,7 @@ import { Calculator, HardHat, Receipt, Ruler, Scale, TrendingUp } from "lucide-r
 import { baseMeta } from "@/lib/seo/metadata";
 
 export const metadata: Metadata = baseMeta({
-  title: "Free Property Tools — EMI, ROI, Stamp Duty & More | SarZameenz.com",
+  title: "Free Property Tools — EMI, ROI, Stamp Duty & More | ZProperty.pk",
   description:
     "Free calculators for buying, renting, and building property in Pakistan: EMI, construction cost, area conversion (marla/kanal/sqft), ROI, rent vs buy, and stamp duty.",
 });

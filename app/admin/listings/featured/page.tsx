@@ -8,7 +8,7 @@ import { UnfeatureButton } from "@/components/admin/UnfeatureButton";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Featured Listings | SarZameenz Admin" };
+export const metadata: Metadata = { title: "Featured Listings | ZProperty Admin" };
 
 interface FeaturedListingRow {
   id: string;

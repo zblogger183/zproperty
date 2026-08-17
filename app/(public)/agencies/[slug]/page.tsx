@@ -52,10 +52,10 @@ export async function generateMetadata({
   const { slug } = await params;
   const agency = await getAgency(slug);
 
-  if (!agency) return { title: "Agency not found | SarZameenz.com" };
+  if (!agency) return { title: "Agency not found | ZProperty.pk" };
 
   return {
-    title: agency.meta_title ?? `${agency.name} | SarZameenz.com`,
+    title: agency.meta_title ?? `${agency.name} | ZProperty.pk`,
     description: agency.meta_desc ?? agency.description ?? undefined,
   };
 }

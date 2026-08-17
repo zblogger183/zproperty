@@ -6,7 +6,7 @@ import { SavedListingCard, type SavedListingData } from "@/components/buyer/Save
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Saved Listings | SarZameenz" };
+export const metadata: Metadata = { title: "Saved Listings | ZProperty" };
 
 interface SavedRow {
   listing: SavedListingData | null;

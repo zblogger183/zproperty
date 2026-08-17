@@ -9,7 +9,7 @@ import { FORUM_CATEGORIES } from "@/lib/constants/forumCategories";
 export const revalidate = 900;
 
 export const metadata: Metadata = {
-  title: "Real Estate Forum Pakistan | SarZameenz",
+  title: "Real Estate Forum Pakistan | ZProperty",
   description: "Ask questions, share experiences, and get advice on buying, renting, and investing in property in Pakistan.",
 };
 

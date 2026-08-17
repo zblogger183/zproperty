@@ -5,7 +5,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Blog Posts | SarZameenz Admin" };
+export const metadata: Metadata = { title: "Blog Posts | ZProperty Admin" };
 
 const STATUS_TABS = ["all", "draft", "published", "scheduled", "archived"] as const;
 type StatusFilter = (typeof STATUS_TABS)[number];

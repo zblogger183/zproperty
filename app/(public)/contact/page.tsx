@@ -8,13 +8,13 @@ export const revalidate = 3600;
 
 export async function generateMetadata(): Promise<Metadata> {
   return resolvePageSeo("/contact", {
-    title: "Contact SarZameenz.com — Get in Touch",
-    description: "Get in touch with the SarZameenz.com team for support, partnerships, or general enquiries.",
+    title: "Contact ZProperty.pk — Get in Touch",
+    description: "Get in touch with the ZProperty.pk team for support, partnerships, or general enquiries.",
   });
 }
 
 const CONTACT_METHODS = [
-  { Icon: Mail, title: "Email", detail: "support@sarzameenz.com" },
+  { Icon: Mail, title: "Email", detail: "support@zproperty.pk" },
   { Icon: MessageCircle, title: "WhatsApp", detail: "+92 300 1234567" },
   { Icon: MapPin, title: "Head Office", detail: "Lahore, Pakistan" },
   { Icon: Clock, title: "Hours", detail: "Mon–Sat, 9am–6pm" },

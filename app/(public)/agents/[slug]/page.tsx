@@ -75,7 +75,7 @@ export async function generateMetadata({
   const profile = await getProfile(slug);
 
   if (!profile) {
-    return { title: "Agent not found | SarZameenz.com" };
+    return { title: "Agent not found | ZProperty.pk" };
   }
 
   return agentMeta({

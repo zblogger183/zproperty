@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://sarzameenz.com";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://zproperty.pk";
 
 export const revalidate = 3600;
 

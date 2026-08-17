@@ -7,7 +7,7 @@ import { BoostPurchaseForm, type BoostableListing, type BoostPackageOption } fro
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Boost Listings | SarZameenz" };
+export const metadata: Metadata = { title: "Boost Listings | ZProperty" };
 
 interface BoostHistoryRow {
   id: string;

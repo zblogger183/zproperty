@@ -11,7 +11,7 @@ import { createClient } from "@/lib/supabase/server";
 // for a paid provider (Google/Mapbox) — nothing else in the form needs to
 // change, since the response shape (lat/lng) stays the same.
 const NOMINATIM_URL = "https://nominatim.openstreetmap.org/search";
-const USER_AGENT = "SarZameenz.com/1.0 (info@sarzameenz.com)";
+const USER_AGENT = "ZProperty.pk/1.0 (info@zproperty.pk)";
 
 interface NominatimResult {
   lat: string;

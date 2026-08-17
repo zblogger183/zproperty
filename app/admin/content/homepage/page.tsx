@@ -4,7 +4,7 @@ import { HomepageSectionsEditor } from "@/components/admin/HomepageSectionsEdito
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Homepage Sections | SarZameenz Admin" };
+export const metadata: Metadata = { title: "Homepage Sections | ZProperty Admin" };
 
 const HOMEPAGE_DEFAULTS: Record<string, string | boolean> = {
   hero_headline: "Find Your Property in Pakistan",

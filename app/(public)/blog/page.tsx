@@ -25,10 +25,10 @@ export async function generateMetadata(): Promise<Metadata> {
     slug: "blog",
     excerpt:
       "Latest property news, buying guides, market updates and investment tips for Pakistan real estate.",
-    meta_title: "Pakistan Real Estate Blog — Market Updates & Guides | SarZameenz",
+    meta_title: "Pakistan Real Estate Blog — Market Updates & Guides | ZProperty",
     meta_desc:
       "Read the latest property news, buying guides, market trends and investment tips for real estate in Lahore, Karachi and Islamabad.",
-    canonical_url: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://sarzameenz.com"}/blog`,
+    canonical_url: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://zproperty.pk"}/blog`,
   });
 }
 
@@ -57,12 +57,12 @@ export default async function BlogPage() {
   const articles = (posts ?? []) as unknown as BlogCardPost[];
   const categoryList = (categories ?? []) as CategoryFilterBarCategory[];
 
-  const featuredAuthor = featured?.author?.name ?? "SarZameenz Team";
+  const featuredAuthor = featured?.author?.name ?? "ZProperty Team";
 
   return (
     <>
       <div className="bg-primary px-6 py-10 text-center">
-        <h1 className="text-3xl font-bold text-white">SarZameenz Blog</h1>
+        <h1 className="text-3xl font-bold text-white">ZProperty Blog</h1>
         <p className="mt-2 text-base text-white/70">Property news, guides and market insights</p>
       </div>
 

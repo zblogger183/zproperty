@@ -5,7 +5,7 @@ import type { NavLinkInput } from "./actions";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Navigation Links | SarZameenz Admin" };
+export const metadata: Metadata = { title: "Navigation Links | ZProperty Admin" };
 
 export default async function NavigationLinksPage() {
   const admin = createAdminClient();

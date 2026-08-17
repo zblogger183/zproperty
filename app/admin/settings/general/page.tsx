@@ -4,7 +4,7 @@ import { SettingsForm, type SettingsFieldDef } from "@/components/admin/Settings
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "General Settings | SarZameenz Admin" };
+export const metadata: Metadata = { title: "General Settings | ZProperty Admin" };
 
 const FIELDS: SettingsFieldDef[] = [
   { key: "site_name", label: "Site Name", type: "text" },

@@ -9,7 +9,7 @@ Disallow: /admin
 Disallow: /api
 Disallow: /dashboard
 
-Sitemap: https://sarzameenz.com/sitemap.xml
+Sitemap: https://zproperty.pk/sitemap.xml
 `;
 
 export function RobotsEditor({ initialValue }: { initialValue: string }) {

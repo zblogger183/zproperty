@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { ListingForm } from "@/components/dashboard/listing-form/ListingForm";
 
 export const metadata: Metadata = {
-  title: "Add New Listing | SarZameenz",
+  title: "Add New Listing | ZProperty",
 };
 
 export default async function AddListingPage() {

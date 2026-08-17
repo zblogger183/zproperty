@@ -9,9 +9,9 @@ export const revalidate = 3600;
 
 export async function generateMetadata(): Promise<Metadata> {
   return resolvePageSeo("/about", {
-    title: "About SarZameenz.com — Pakistan Real Estate Platform",
+    title: "About ZProperty.pk — Pakistan Real Estate Platform",
     description:
-      "SarZameenz.com is Pakistan's next-generation real estate platform, connecting buyers, sellers, and agents across Lahore, Karachi, and Islamabad.",
+      "ZProperty.pk is Pakistan's next-generation real estate platform, connecting buyers, sellers, and agents across Lahore, Karachi, and Islamabad.",
   });
 }
 
@@ -39,20 +39,20 @@ export default async function AboutUsPage() {
   return (
     <>
       <div className="bg-primary py-12 text-center">
-        <h1 className="text-3xl font-bold text-white">About SarZameenz.com</h1>
+        <h1 className="text-3xl font-bold text-white">About ZProperty.pk</h1>
         <p className="mt-2 text-base text-white/70">Pakistan&apos;s Real Estate Growth Ecosystem</p>
       </div>
 
       <div className="mx-auto max-w-3xl px-6 py-12">
         <h2 className="mb-4 text-2xl font-bold text-black">Our Mission</h2>
         <p className="text-base leading-relaxed text-black">
-          SarZameenz.com is Pakistan&apos;s next-generation real estate platform, built to connect buyers, sellers,
+          ZProperty.pk is Pakistan&apos;s next-generation real estate platform, built to connect buyers, sellers,
           and agents across Lahore, Karachi, and Islamabad. We saw a market full of outdated listings, unverified
           agents, and buyers left guessing whether a property even existed — so we built a platform that fixes
           that from the ground up.
         </p>
         <p className="mt-4 text-base leading-relaxed text-black">
-          Every agent on SarZameenz.com is CNIC-verified, every listing is moderated before it goes live, and
+          Every agent on ZProperty.pk is CNIC-verified, every listing is moderated before it goes live, and
           every enquiry reaches a real person within minutes — not days. We combine a property portal with
           digital marketing services and purpose-built software, so agents and developers can grow their business
           without juggling five different tools.

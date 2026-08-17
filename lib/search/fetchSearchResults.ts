@@ -314,10 +314,10 @@ export async function buildSearchMetadata(params: {
   const results = await fetchSearchResults(params);
 
   if (!results) {
-    return { title: "Not found | SarZameenz.com" };
+    return { title: "Not found | ZProperty.pk" };
   }
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://sarzameenz.com";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://zproperty.pk";
   const routeBase = params.basePath ?? `/${params.purpose}`;
   const basePath = params.areaSlug
     ? params.societySlug

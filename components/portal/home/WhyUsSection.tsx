@@ -9,7 +9,7 @@ export function WhyUsSection() {
   return (
     <section className="bg-white px-4 py-16">
       <div className="mx-auto max-w-7xl">
-        <h2 className="text-center text-3xl font-bold text-black">Why SarZameenz?</h2>
+        <h2 className="text-center text-3xl font-bold text-black">Why ZProperty?</h2>
 
         <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
           {POINTS.map((point) => (

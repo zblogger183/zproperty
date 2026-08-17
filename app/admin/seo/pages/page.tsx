@@ -4,7 +4,7 @@ import { PageSeoManager, type PageSeoRow } from "@/components/admin/PageSeoManag
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Page SEO | SarZameenz Admin" };
+export const metadata: Metadata = { title: "Page SEO | ZProperty Admin" };
 
 export default async function PageSEOPage() {
   const admin = createAdminClient();

@@ -4,7 +4,7 @@ import { BankTransferQueue, type BankTransferTransaction } from "@/components/ad
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Bank Transfer Queue | SarZameenz Admin" };
+export const metadata: Metadata = { title: "Bank Transfer Queue | ZProperty Admin" };
 
 export default async function BankTransferVerificationPage() {
   const admin = createAdminClient();

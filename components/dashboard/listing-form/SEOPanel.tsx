@@ -61,7 +61,7 @@ export function SEOPanel({
             <p className="mt-1 text-xs text-primary-mid">{titleLength} / 60</p>
 
             <div className="mt-2 rounded-lg border border-primary bg-white p-3">
-              <p className="text-xs text-primary-mid">sarzameenz.com/listing/{slugPreview}</p>
+              <p className="text-xs text-primary-mid">zproperty.pk/listing/{slugPreview}</p>
               <p className="text-sm font-medium text-primary">{previewTitle}</p>
               <p className="text-xs text-black">{previewDesc}</p>
             </div>

@@ -6,7 +6,7 @@ import { AreaGuideEditor } from "@/components/admin/AreaGuideEditor";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Edit Area Guide | SarZameenz Admin" };
+export const metadata: Metadata = { title: "Edit Area Guide | ZProperty Admin" };
 
 export default async function EditAreaGuidePage({ params }: { params: Promise<{ societyId: string }> }) {
   const { societyId } = await params;

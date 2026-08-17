@@ -4,7 +4,7 @@ import { SettingsForm, type SettingsFieldDef } from "@/components/admin/Settings
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Payment Settings | SarZameenz Admin" };
+export const metadata: Metadata = { title: "Payment Settings | ZProperty Admin" };
 
 const FIELDS: SettingsFieldDef[] = [
   { key: "jazzcash_sandbox", label: "JazzCash Sandbox Mode", type: "boolean" },

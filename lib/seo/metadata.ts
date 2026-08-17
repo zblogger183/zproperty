@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { formatPrice } from "@/lib/utils/formatPrice";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://sarzameenz.com";
-const SITE_NAME = "SarZameenz.com";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://zproperty.pk";
+const SITE_NAME = "ZProperty.pk";
 const SITE_DESC =
   "Pakistan's trusted real estate marketplace. Browse verified properties for sale and rent in Lahore, Karachi and Islamabad.";
 

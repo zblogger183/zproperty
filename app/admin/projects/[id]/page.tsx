@@ -9,7 +9,7 @@ import { FeatureProjectButton } from "@/components/admin/FeatureProjectButton";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Project Detail | SarZameenz Admin" };
+export const metadata: Metadata = { title: "Project Detail | ZProperty Admin" };
 
 const STATUS_BADGE_CLASSES: Record<string, string> = {
   active: "bg-secondary text-primary font-bold",

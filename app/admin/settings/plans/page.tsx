@@ -4,7 +4,7 @@ import { PlansEditor, type PlanRow } from "@/components/admin/PlansEditor";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Subscription Plans | SarZameenz Admin" };
+export const metadata: Metadata = { title: "Subscription Plans | ZProperty Admin" };
 
 export default async function PlansSettingsPage() {
   const admin = createAdminClient();

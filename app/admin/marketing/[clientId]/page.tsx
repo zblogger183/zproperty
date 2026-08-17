@@ -7,7 +7,7 @@ import { AddMonthlyReportForm } from "@/components/admin/AddMonthlyReportForm";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Marketing Client Detail | SarZameenz Admin" };
+export const metadata: Metadata = { title: "Marketing Client Detail | ZProperty Admin" };
 
 interface MonthlyReportRow {
   id: string;

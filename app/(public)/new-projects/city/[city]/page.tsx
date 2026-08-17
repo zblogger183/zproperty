@@ -25,11 +25,11 @@ export async function generateMetadata({
   const city = await getCity(citySlug);
 
   if (!city) {
-    return { title: "City not found | SarZameenz.com" };
+    return { title: "City not found | ZProperty.pk" };
   }
 
   return {
-    title: `New Projects in ${city.name} — Off-Plan & Ready | SarZameenz`,
+    title: `New Projects in ${city.name} — Off-Plan & Ready | ZProperty`,
     description: `Browse new residential and commercial projects in ${city.name}. Pre-launch prices, payment plans, and developer contact.`,
   };
 }

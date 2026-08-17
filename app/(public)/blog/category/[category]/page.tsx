@@ -9,7 +9,7 @@ import { CategoryFilterBar, type CategoryFilterBarCategory } from "@/components/
 
 export const revalidate = 3600;
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://sarzameenz.com";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://zproperty.pk";
 
 // generateMetadata and the page body both need the category row — cache()
 // dedupes that to a single Supabase round trip per request.
@@ -32,17 +32,17 @@ export async function generateMetadata({
   const category = await getCategory(slug);
 
   if (!category) {
-    return { title: "Category not found | SarZameenz.com" };
+    return { title: "Category not found | ZProperty.pk" };
   }
 
-  const title = `${category.name} — Pakistan Real Estate Blog | SarZameenz`;
+  const title = `${category.name} — Pakistan Real Estate Blog | ZProperty`;
   const description = `Browse ${category.name} articles — property news, guides and market insights for Pakistan real estate.`;
 
   return baseMeta({
     title,
     description,
     alternates: { canonical: `${SITE_URL}/blog/category/${category.slug}` },
-    openGraph: { title, description, type: "website", siteName: "SarZameenz.com" },
+    openGraph: { title, description, type: "website", siteName: "ZProperty.pk" },
     twitter: { card: "summary_large_image", title, description },
   });
 }

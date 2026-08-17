@@ -101,9 +101,9 @@ export function Navbar() {
       <div className="mx-auto flex h-full max-w-7xl items-center justify-between gap-4 px-4">
         <Link href="/" className="flex shrink-0 items-center gap-2.5">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-secondary text-xl font-bold text-primary">
-            S
+            Z
           </span>
-          <span className="text-lg font-bold text-white">SarZameenz</span>
+          <span className="text-lg font-bold text-white">ZProperty</span>
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex">
@@ -197,9 +197,9 @@ export function Navbar() {
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2.5" onClick={() => setMobileOpen(false)}>
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-secondary text-xl font-bold text-primary">
-                S
+                Z
               </span>
-              <span className="text-lg font-bold text-white">SarZameenz</span>
+              <span className="text-lg font-bold text-white">ZProperty</span>
             </Link>
             <button
               type="button"

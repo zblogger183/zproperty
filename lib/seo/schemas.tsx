@@ -1,5 +1,5 @@
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://sarzameenz.com";
-const SITE_NAME = "SarZameenz.com";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://zproperty.pk";
+const SITE_NAME = "ZProperty.pk";
 const LOGO_URL = `${SITE_URL}/logo.png`;
 
 export function SchemaScript({ schema }: { schema: object | null }) {
@@ -43,7 +43,7 @@ export function organizationSchema() {
       contactType: "customer support",
       availableLanguage: ["English", "Urdu"],
     },
-    sameAs: ["https://facebook.com/sarzameenz", "https://instagram.com/sarzameenz"],
+    sameAs: ["https://facebook.com/zproperty", "https://instagram.com/zproperty"],
   };
 }
 

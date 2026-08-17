@@ -4,16 +4,16 @@ import { SettingsForm, type SettingsFieldDef } from "@/components/admin/Settings
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Email Settings | SarZameenz Admin" };
+export const metadata: Metadata = { title: "Email Settings | ZProperty Admin" };
 
 const FIELDS: SettingsFieldDef[] = [
-  { key: "email_from_name", label: "From Name", type: "text", placeholder: "SarZameenz" },
-  { key: "email_from_address", label: "From Address", type: "text", placeholder: "noreply@sarzameenz.com" },
-  { key: "email_reply_to", label: "Reply-To Address", type: "text", placeholder: "support@sarzameenz.com" },
+  { key: "email_from_name", label: "From Name", type: "text", placeholder: "ZProperty" },
+  { key: "email_from_address", label: "From Address", type: "text", placeholder: "noreply@zproperty.pk" },
+  { key: "email_reply_to", label: "Reply-To Address", type: "text", placeholder: "support@zproperty.pk" },
 ];
 
 const DEFAULTS: Record<string, string | boolean> = {
-  email_from_name: "SarZameenz",
+  email_from_name: "ZProperty",
   email_from_address: "",
   email_reply_to: "",
 };

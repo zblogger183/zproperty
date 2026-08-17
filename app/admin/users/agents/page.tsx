@@ -5,7 +5,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Agents | SarZameenz Admin" };
+export const metadata: Metadata = { title: "Agents | ZProperty Admin" };
 
 const FILTER_TABS = ["all", "free", "pro", "elite", "verified", "unverified"] as const;
 type FilterTab = (typeof FILTER_TABS)[number];

@@ -1,6 +1,6 @@
 # Notifications
 
-Sarzameenz has three notification channels. All are best-effort — a failure
+ZProperty has three notification channels. All are best-effort — a failure
 in any of them is logged, never thrown, and never blocks the user action it's
 attached to.
 

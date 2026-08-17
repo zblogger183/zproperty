@@ -5,7 +5,7 @@ import { StatCard } from "@/components/admin/StatCard";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Platform Analytics | SarZameenz Admin" };
+export const metadata: Metadata = { title: "Platform Analytics | ZProperty Admin" };
 
 const STATUS_ORDER = ["active", "pending", "paused", "rejected", "expired", "sold"] as const;
 

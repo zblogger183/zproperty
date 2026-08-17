@@ -5,7 +5,7 @@ import { MediaGrid, type MediaItem } from "@/components/admin/MediaGrid";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Media Library | SarZameenz Admin" };
+export const metadata: Metadata = { title: "Media Library | ZProperty Admin" };
 
 const FOLDER_TABS = ["all", "listings", "blog", "projects", "general"] as const;
 type FolderFilter = (typeof FOLDER_TABS)[number];

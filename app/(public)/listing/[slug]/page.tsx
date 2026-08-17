@@ -48,7 +48,7 @@ export async function generateMetadata({
   const listing = await getListing(slug);
 
   if (!listing) {
-    return { title: "Listing not found | SarZameenz.com" };
+    return { title: "Listing not found | ZProperty.pk" };
   }
 
   return listingMeta({
@@ -283,7 +283,7 @@ export default async function PropertyDetailPage({
 function FallbackContactCard({ listingTitle }: { listingTitle: string }) {
   return (
     <div className="rounded-xl border-2 border-primary bg-white p-5 text-center">
-      <p className="text-base font-bold text-black">Contact SarZameenz</p>
+      <p className="text-base font-bold text-black">Contact ZProperty</p>
       <p className="mt-1 text-xs text-primary-mid">
         This listing doesn&apos;t have an assigned agent contact yet.
       </p>
@@ -293,7 +293,7 @@ function FallbackContactCard({ listingTitle }: { listingTitle: string }) {
         rel="noopener noreferrer"
         className="mt-3 block w-full rounded-lg bg-secondary py-3 text-sm font-bold text-primary"
       >
-        💬 WhatsApp SarZameenz
+        💬 WhatsApp ZProperty
       </a>
     </div>
   );

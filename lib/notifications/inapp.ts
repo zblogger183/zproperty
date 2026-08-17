@@ -52,7 +52,7 @@ export const notify = {
       user_id: agentId,
       type: "listing_approved",
       title: "Listing Approved!",
-      body: "Your listing is now live on SarZameenz.",
+      body: "Your listing is now live on ZProperty.",
       data: { slug: listingSlug },
     }),
 

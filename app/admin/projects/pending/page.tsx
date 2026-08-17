@@ -4,7 +4,7 @@ import { PendingProjectsClient, type PendingProject } from "@/components/admin/P
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Pending Projects | SarZameenz Admin" };
+export const metadata: Metadata = { title: "Pending Projects | ZProperty Admin" };
 
 export default async function PendingProjectsPage() {
   const admin = createAdminClient();

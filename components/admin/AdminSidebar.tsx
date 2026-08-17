@@ -119,9 +119,9 @@ export function AdminSidebar({ user }: { user: AdminUser }) {
     <>
       <div className="flex items-center gap-2 border-b border-primary-mid px-4 py-5">
         <span className="flex h-7 w-7 items-center justify-center rounded-md bg-secondary text-base font-bold text-primary">
-          S
+          Z
         </span>
-        <span className="text-sm font-bold text-white">SarZameenz</span>
+        <span className="text-sm font-bold text-white">ZProperty</span>
         <span className="ml-auto rounded bg-primary-mid px-1.5 py-0.5 text-[10px] text-white">Admin</span>
       </div>
 

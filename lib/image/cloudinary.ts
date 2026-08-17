@@ -27,7 +27,7 @@ export async function uploadImageToCloudinary(
 ): Promise<CloudinaryResult> {
   const result = await new Promise<UploadApiResponse>((resolve, reject) => {
     const options = {
-      public_id: `sarzameenz/${folder}/${fileId}`,
+      public_id: `zproperty/${folder}/${fileId}`,
       resource_type: "image" as const,
       overwrite: false,
       exif: false,

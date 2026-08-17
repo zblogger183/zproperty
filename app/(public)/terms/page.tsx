@@ -6,8 +6,8 @@ export const revalidate = 3600;
 
 export async function generateMetadata(): Promise<Metadata> {
   return resolvePageSeo("/terms", {
-    title: "Terms of Service | SarZameenz.com",
-    description: "The terms and conditions governing use of SarZameenz.com.",
+    title: "Terms of Service | ZProperty.pk",
+    description: "The terms and conditions governing use of ZProperty.pk.",
   });
 }
 
@@ -19,7 +19,7 @@ export default function TermsOfServicePage() {
 
       <h2 className="mb-3 mt-8 text-xl font-bold text-black">Acceptance of Terms</h2>
       <p className="text-base leading-relaxed text-black">
-        By accessing or using SarZameenz.com, you agree to be bound by these Terms of Service. If you do not
+        By accessing or using ZProperty.pk, you agree to be bound by these Terms of Service. If you do not
         agree with any part of these terms, please do not use the platform.
       </p>
 
@@ -53,7 +53,7 @@ export default function TermsOfServicePage() {
 
       <h2 className="mb-3 mt-8 text-xl font-bold text-black">Limitation of Liability</h2>
       <p className="text-base leading-relaxed text-black">
-        SarZameenz.com is a platform that connects buyers, sellers, agents, and developers. We do not own, sell,
+        ZProperty.pk is a platform that connects buyers, sellers, agents, and developers. We do not own, sell,
         or manage any property listed on the platform and are not a party to any transaction between users. We
         make reasonable efforts to verify agents and moderate listings but do not guarantee the accuracy of any
         listing or the conduct of any user.

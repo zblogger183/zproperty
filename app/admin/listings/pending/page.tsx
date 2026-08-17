@@ -10,7 +10,7 @@ import type { PendingListing } from "@/components/admin/PendingListingCard";
 // "Important Notes" section, resolved in favor of "always fresh").
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Pending Listings | SarZameenz Admin" };
+export const metadata: Metadata = { title: "Pending Listings | ZProperty Admin" };
 
 export default async function PendingListingsPage({
   searchParams,

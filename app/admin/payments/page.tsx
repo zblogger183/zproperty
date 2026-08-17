@@ -7,7 +7,7 @@ import { StatCard } from "@/components/admin/StatCard";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Payments Overview | SarZameenz Admin" };
+export const metadata: Metadata = { title: "Payments Overview | ZProperty Admin" };
 
 const METHOD_TABS = ["all", "stripe", "jazzcash", "easypaisa", "bank_transfer"] as const;
 type MethodFilter = (typeof METHOD_TABS)[number];

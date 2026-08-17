@@ -83,9 +83,9 @@ export function Footer() {
         <div className="col-span-2 md:col-span-1">
           <Link href="/" className="flex items-center gap-2.5">
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-secondary text-xl font-bold text-primary">
-              S
+              Z
             </span>
-            <span className="text-lg font-bold text-white">SarZameenz</span>
+            <span className="text-lg font-bold text-white">ZProperty</span>
           </Link>
           <p className="mt-2 text-sm text-primary-mid">Pakistan&apos;s Real Estate Growth Ecosystem</p>
           <p className="mt-2 text-xs leading-relaxed text-primary-mid">
@@ -106,7 +106,7 @@ export function Footer() {
             ))}
           </div>
           <div className="mt-4 text-xs text-primary-mid">
-            <p>📧 info@sarzameenz.com</p>
+            <p>📧 info@zproperty.pk</p>
             <p>📞 WhatsApp: +92-300-1234567</p>
           </div>
         </div>
@@ -158,7 +158,7 @@ export function Footer() {
       <div className="border-t border-primary-mid">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-6 py-4 md:flex-row">
           <p className="text-xs text-primary-mid">
-            © {new Date().getFullYear()} SarZameenz.com — All rights reserved
+            © {new Date().getFullYear()} ZProperty.pk — All rights reserved
           </p>
           <p className="text-xs text-primary-mid">Pakistan&apos;s trusted real estate marketplace</p>
           <div className="flex gap-4 text-xs text-primary-mid">

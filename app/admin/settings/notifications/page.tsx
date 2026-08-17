@@ -4,7 +4,7 @@ import { SettingsForm, type SettingsFieldDef } from "@/components/admin/Settings
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Notification Settings | SarZameenz Admin" };
+export const metadata: Metadata = { title: "Notification Settings | ZProperty Admin" };
 
 const FIELDS: SettingsFieldDef[] = [
   { key: "notify_new_lead_email", label: "Email agents on new lead", type: "boolean" },
@@ -15,7 +15,7 @@ const FIELDS: SettingsFieldDef[] = [
     key: "admin_alert_email",
     label: "Admin Alert Email",
     type: "text",
-    placeholder: "alerts@sarzameenz.com",
+    placeholder: "alerts@zproperty.pk",
     helpText: "Where platform-level alerts (e.g. failed payments) are sent.",
   },
 ];

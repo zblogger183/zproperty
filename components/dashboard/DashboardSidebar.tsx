@@ -50,9 +50,9 @@ export function DashboardSidebar({ user }: { user: DashboardUser }) {
     <>
       <Link href="/" className="flex items-center gap-2 px-4 py-4">
         <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-secondary text-lg font-bold text-primary">
-          S
+          Z
         </span>
-        <span className="text-base font-bold text-white">SarZameenz</span>
+        <span className="text-base font-bold text-white">ZProperty</span>
       </Link>
 
       <nav className="flex flex-1 flex-col gap-1 px-3">
@@ -98,9 +98,9 @@ export function DashboardSidebar({ user }: { user: DashboardUser }) {
       <header className="flex h-14 items-center justify-between bg-primary px-4 md:hidden">
         <Link href="/" className="flex items-center gap-2">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-secondary text-lg font-bold text-primary">
-            S
+            Z
           </span>
-          <span className="text-base font-bold text-white">SarZameenz</span>
+          <span className="text-base font-bold text-white">ZProperty</span>
         </Link>
         <div className="flex items-center gap-3">
           <NotificationBell userId={user.id} iconClassName="text-white" />

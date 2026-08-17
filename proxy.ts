@@ -3,7 +3,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-const PLATFORM_HOSTS = new Set(["sarzameenz.com", "www.sarzameenz.com", "localhost:3000"]);
+const PLATFORM_HOSTS = new Set(["zproperty.pk", "www.zproperty.pk", "localhost:3000"]);
 
 type Section = "admin" | "dashboard" | "buyer";
 

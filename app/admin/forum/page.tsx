@@ -4,7 +4,7 @@ import { ForumModerationRow, type ForumTopicRow } from "@/components/admin/Forum
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Forum Moderation | SarZameenz Admin" };
+export const metadata: Metadata = { title: "Forum Moderation | ZProperty Admin" };
 
 export default async function ForumModerationPage() {
   const admin = createAdminClient();

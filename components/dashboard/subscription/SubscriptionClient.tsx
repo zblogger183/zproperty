@@ -72,7 +72,7 @@ const STATUS_BADGE_CLASSES: Record<RecentPayment["status"], string> = {
 // page for the same "documented gap, not implemented" pattern.
 const BANK_DETAILS = {
   bankName: "Meezan Bank",
-  accountTitle: "SarZameenz Digital Services",
+  accountTitle: "ZProperty Digital Services",
   accountNumber: "01234567890123",
   iban: "PK00MEZN0001234567890123",
 };

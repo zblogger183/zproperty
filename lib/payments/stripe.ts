@@ -36,7 +36,7 @@ export async function createStripeCheckoutSession(params: {
           currency: "pkr",
           unit_amount: Math.round(params.amount * 100),
           product_data: {
-            name: `SarZameenz ${params.planName} Plan`,
+            name: `ZProperty ${params.planName} Plan`,
             description: `${params.billingCycle === "annual" ? "Annual" : "Monthly"} subscription`,
           },
         },

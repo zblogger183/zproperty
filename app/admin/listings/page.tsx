@@ -7,7 +7,7 @@ import { CityFilterSelect } from "@/components/admin/CityFilterSelect";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "All Listings | SarZameenz Admin" };
+export const metadata: Metadata = { title: "All Listings | ZProperty Admin" };
 
 const PAGE_SIZE = 20;
 const STATUS_TABS = ["all", "active", "pending", "rejected", "paused", "expired", "sold"] as const;

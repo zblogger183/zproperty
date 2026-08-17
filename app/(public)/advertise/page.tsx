@@ -7,9 +7,9 @@ export const revalidate = 3600;
 
 export async function generateMetadata(): Promise<Metadata> {
   return resolvePageSeo("/advertise", {
-    title: "Advertise on SarZameenz.com — Real Estate Marketing Pakistan",
+    title: "Advertise on ZProperty.pk — Real Estate Marketing Pakistan",
     description:
-      "Reach Pakistan's property buyers with featured listings, banner advertising, and digital marketing services on SarZameenz.com.",
+      "Reach Pakistan's property buyers with featured listings, banner advertising, and digital marketing services on ZProperty.pk.",
   });
 }
 

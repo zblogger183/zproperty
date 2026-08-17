@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
   const { postUrl, fields } = generateJazzCashParams({
     amount,
     orderId: transaction.id,
-    description: `SarZameenz ${plan.name} Plan`,
+    description: `ZProperty ${plan.name} Plan`,
     returnUrl: `${siteUrl}/api/payments/jazzcash/callback`,
     mobileNumber: body.mobileNumber,
   });

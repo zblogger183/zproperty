@@ -4,7 +4,7 @@ import { RedirectsManager, type RedirectRow } from "@/components/admin/Redirects
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Redirects | SarZameenz Admin" };
+export const metadata: Metadata = { title: "Redirects | ZProperty Admin" };
 
 export default async function RedirectsPage() {
   const admin = createAdminClient();

@@ -5,7 +5,7 @@ import { AlertsManager, type AlertRow, type CityOption } from "@/components/buye
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Property Alerts | SarZameenz" };
+export const metadata: Metadata = { title: "Property Alerts | ZProperty" };
 
 export default async function PropertyAlertsPage() {
   const supabase = await createClient();

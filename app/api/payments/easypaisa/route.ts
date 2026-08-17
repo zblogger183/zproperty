@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
   const order = await createEasyPaisaOrder({
     amount,
     orderId: transaction.id,
-    description: `SarZameenz ${plan.name} Plan`,
+    description: `ZProperty ${plan.name} Plan`,
     returnUrl: `${siteUrl}/api/payments/easypaisa/callback`,
   });
 
