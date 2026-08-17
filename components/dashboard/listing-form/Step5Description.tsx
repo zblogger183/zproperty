@@ -58,6 +58,35 @@ export function Step5Description({
     };
   }, [context.step2.area_id]);
 
+  // Pre-fill the contact fields from the agent's own profile once, only for
+  // a brand-new listing (both fields still `undefined`, not `null` — the
+  // edit form initializes them from the listing row itself, where `null`
+  // means "deliberately left blank," and re-filling that would clobber it).
+  useEffect(() => {
+    if (data.contact_phone !== undefined || data.contact_whatsapp !== undefined) return;
+
+    const supabase = createClient();
+    let active = true;
+
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user || !active) return;
+      const [{ data: userRow }, { data: profileRow }] = await Promise.all([
+        supabase.from("users").select("phone").eq("id", user.id).single(),
+        supabase.from("agent_profiles").select("whatsapp").eq("user_id", user.id).single(),
+      ]);
+      if (!active) return;
+      onChange({
+        contact_phone: (userRow?.phone as string | null) ?? "",
+        contact_whatsapp: (profileRow?.whatsapp as string | null) ?? "",
+      });
+    });
+
+    return () => {
+      active = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- runs once on mount, guarded by the undefined check above
+  }, []);
+
   const editor = useEditor({
     extensions: [StarterKit],
     content: data.description ?? "",
@@ -173,6 +202,36 @@ export function Step5Description({
             className="mt-2 h-24 w-40 rounded-lg border border-primary object-cover"
           />
         )}
+      </div>
+
+      <div>
+        <label className={labelClass}>Contact for this listing</label>
+        <p className="mb-2 text-xs text-primary-mid">
+          Buyers will call/WhatsApp these numbers for this specific listing — defaults to your profile,
+          but you can enter a different number (e.g. the plot owner&apos;s) if this listing isn&apos;t yours.
+        </p>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div>
+            <label className="mb-1 block text-xs text-primary-mid">Call number</label>
+            <input
+              value={data.contact_phone ?? ""}
+              onChange={(event) => onChange({ contact_phone: event.target.value })}
+              placeholder="03001234567"
+              className={inputClass}
+            />
+            {errors.contact_phone && <p className={errorClass}>⚠ {errors.contact_phone}</p>}
+          </div>
+          <div>
+            <label className="mb-1 block text-xs text-primary-mid">WhatsApp number</label>
+            <input
+              value={data.contact_whatsapp ?? ""}
+              onChange={(event) => onChange({ contact_whatsapp: event.target.value })}
+              placeholder="03001234567"
+              className={inputClass}
+            />
+            {errors.contact_whatsapp && <p className={errorClass}>⚠ {errors.contact_whatsapp}</p>}
+          </div>
+        </div>
       </div>
     </div>
   );

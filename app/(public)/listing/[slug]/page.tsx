@@ -2,6 +2,7 @@ import { cache } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getListingWithAgent, getSimilarListings, createPublicClient } from "@/lib/supabase/public";
+import type { ListingDetailData } from "@/types";
 import { createClient } from "@/lib/supabase/server";
 import { formatPrice } from "@/lib/utils/formatPrice";
 import { listingMeta } from "@/lib/seo/metadata";
@@ -9,6 +10,7 @@ import { SchemaScript, listingSchema } from "@/lib/seo/schemas";
 import { Breadcrumb } from "@/components/portal/Breadcrumb";
 import { ImageGallery } from "@/components/portal/listing/ImageGallery";
 import { AgentCard } from "@/components/portal/listing/AgentCard";
+import { SimpleContactCard } from "@/components/portal/listing/SimpleContactCard";
 import { SpecCard } from "@/components/portal/listing/SpecCard";
 import { ViewTracker } from "@/components/portal/listing/ViewTracker";
 import { ListingCard } from "@/components/portal/ListingCard";
@@ -16,11 +18,6 @@ import { SaveButton } from "@/components/portal/SaveButton";
 import MiniMapDynamic from "@/components/portal/listing/MiniMapLoader";
 
 export const revalidate = 300;
-
-// TODO: replace with a real support number (or pull from `settings`) once
-// one exists — this is the explicitly-requested hardcoded placeholder for
-// listings with no assigned agent contact.
-const SITE_WHATSAPP = "923001234567";
 
 // generateMetadata and the page body both need the same listing — cache()
 // dedupes that to a single Supabase round trip per request instead of two,
@@ -147,11 +144,7 @@ export default async function PropertyDetailPage({
             />
 
             <div className="lg:hidden">
-              {listing.agent ? (
-                <AgentCard agent={listing.agent} listingId={listing.id} listingTitle={listing.title} />
-              ) : (
-                <FallbackContactCard listingTitle={listing.title} />
-              )}
+              <ListingContactCard listing={listing} />
             </div>
 
             <div>
@@ -255,11 +248,7 @@ export default async function PropertyDetailPage({
           </div>
 
           <div className="hidden lg:block">
-            {listing.agent ? (
-              <AgentCard agent={listing.agent} listingId={listing.id} listingTitle={listing.title} />
-            ) : (
-              <FallbackContactCard listingTitle={listing.title} />
-            )}
+            <ListingContactCard listing={listing} />
           </div>
         </div>
 
@@ -280,21 +269,39 @@ export default async function PropertyDetailPage({
   );
 }
 
-function FallbackContactCard({ listingTitle }: { listingTitle: string }) {
+// A listing-level contact (entered for a plot owner, or an agent's own
+// override for this specific listing) always takes precedence over the
+// assigned agent's profile contact when present.
+function ListingContactCard({ listing }: { listing: ListingDetailData }) {
+  const phone = listing.contact_phone || listing.agent?.phone || null;
+  const whatsapp = listing.contact_whatsapp || listing.agent?.whatsapp || null;
+
+  if (listing.agent) {
+    return (
+      <AgentCard
+        agent={listing.agent}
+        listingId={listing.id}
+        listingTitle={listing.title}
+        overridePhone={listing.contact_phone}
+        overrideWhatsapp={listing.contact_whatsapp}
+      />
+    );
+  }
+
+  if (phone || whatsapp) {
+    return (
+      <SimpleContactCard
+        listingId={listing.id}
+        listingTitle={listing.title}
+        phone={phone}
+        whatsapp={whatsapp}
+      />
+    );
+  }
+
   return (
     <div className="rounded-xl border-2 border-primary bg-white p-5 text-center">
-      <p className="text-base font-bold text-black">Contact ZProperty</p>
-      <p className="mt-1 text-xs text-primary-mid">
-        This listing doesn&apos;t have an assigned agent contact yet.
-      </p>
-      <a
-        href={`https://wa.me/${SITE_WHATSAPP}?text=${encodeURIComponent(`Hi, I'm interested in ${listingTitle}`)}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="mt-3 block w-full rounded-lg bg-secondary py-3 text-sm font-bold text-primary"
-      >
-        💬 WhatsApp ZProperty
-      </a>
+      <p className="text-sm text-primary-mid">Contact info isn&apos;t available for this listing yet.</p>
     </div>
   );
 }

@@ -10,7 +10,8 @@ const LISTING_COLUMNS =
   "id, agent_id, status, reject_reason, purpose, type, title, description, price, is_negotiable, " +
   "city_id, area_id, society_id, phase_id, block_id, plot_number, address, lat, lng, area_sqft, " +
   "area_marla, beds, baths, floors, " +
-  "floor_number, parking_spaces, age_years, furnished_status, features, video_url";
+  "floor_number, parking_spaces, age_years, furnished_status, features, video_url, " +
+  "contact_phone, contact_whatsapp";
 
 export default async function EditListingPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

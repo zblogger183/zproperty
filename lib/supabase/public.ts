@@ -20,7 +20,7 @@ type PublicClient = ReturnType<typeof createPublicClient>;
 // Shared between the primary embedded-select and the fallback query below,
 // so both request the exact same columns regardless of which one resolves.
 export const AGENT_CONTACT_COLUMNS =
-  "id, name, whatsapp, profile_slug, headline, experience_years, specialties, cnic_verified, subscription_tier, agency_id";
+  "id, name, whatsapp, phone, profile_slug, headline, experience_years, specialties, cnic_verified, subscription_tier, agency_id";
 
 /**
  * public_agent_contact (supabase/migrations/005) is a view built on a JOIN

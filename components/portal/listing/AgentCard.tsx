@@ -16,10 +16,16 @@ export function AgentCard({
   agent,
   listingId,
   listingTitle,
+  overridePhone,
+  overrideWhatsapp,
 }: {
   agent: AgentContact;
   listingId: string;
   listingTitle: string;
+  // A listing-level contact override (e.g. the actual plot owner's number)
+  // takes precedence over the agent's own profile contact when set.
+  overridePhone?: string | null;
+  overrideWhatsapp?: string | null;
 }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -29,7 +35,21 @@ export function AgentCard({
   const [email, setEmail] = useState("");
 
   const initial = agent.name.trim().charAt(0).toUpperCase() || "A";
-  const cleanedWhatsapp = agent.whatsapp ? cleanPhone(agent.whatsapp) : null;
+  const effectivePhone = overridePhone || agent.phone;
+  const effectiveWhatsapp = overrideWhatsapp || agent.whatsapp;
+  // Each button falls back to the other number if only one was provided —
+  // better to offer a working Call button off a WhatsApp-only number than
+  // to hide it entirely, and vice versa.
+  const cleanedCallNumber = effectivePhone
+    ? cleanPhone(effectivePhone)
+    : effectiveWhatsapp
+      ? cleanPhone(effectiveWhatsapp)
+      : null;
+  const cleanedWhatsapp = effectiveWhatsapp
+    ? cleanPhone(effectiveWhatsapp)
+    : effectivePhone
+      ? cleanPhone(effectivePhone)
+      : null;
 
   function postLead(type: "whatsapp" | "call" | "email", extra?: Record<string, string>) {
     fetch(`/api/listings/${listingId}/lead`, {
@@ -135,9 +155,9 @@ export function AgentCard({
         </a>
       )}
 
-      {cleanedWhatsapp && (
+      {cleanedCallNumber && (
         <a
-          href={`tel:+92${cleanedWhatsapp}`}
+          href={`tel:+92${cleanedCallNumber}`}
           onClick={() => postLead("call")}
           className="mt-2 block w-full rounded-lg bg-primary py-3 text-center text-sm font-semibold text-white"
         >

@@ -83,6 +83,8 @@ export function EditListingForm({
     title: listing.title,
     description: listing.description,
     video_url: listing.video_url,
+    contact_phone: listing.contact_phone,
+    contact_whatsapp: listing.contact_whatsapp,
   }));
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formError, setFormError] = useState<string | null>(null);

@@ -76,6 +76,8 @@ export interface Listing {
   robots: string;
   canonical_url: string | null;
   schema_json: Record<string, unknown> | null;
+  contact_phone: string | null;
+  contact_whatsapp: string | null;
 }
 
 // Mirrors the `listing_images` table (supabase/migrations/001_schema.sql).
@@ -114,6 +116,7 @@ export interface AgentContact {
   id: string;
   name: string;
   whatsapp: string | null;
+  phone: string | null;
   profile_slug: string;
   headline: string | null;
   experience_years: number | null;

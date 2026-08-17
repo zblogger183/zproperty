@@ -115,6 +115,8 @@ export async function POST(request: NextRequest) {
     description: body.description,
     features: body.features ?? {},
     video_url: body.video_url || null,
+    contact_phone: body.contact_phone || null,
+    contact_whatsapp: body.contact_whatsapp || null,
     has_video: !!body.video_url,
     status: "pending", // always pending until admin approves
     meta_title: body.meta_title || null,

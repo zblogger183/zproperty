@@ -112,6 +112,11 @@ export const step5Schema = z.object({
   title: z.string().min(10, "Title must be at least 10 characters").max(200, "Title too long"),
   description: z.string().min(50, "Description must be at least 50 characters"),
   video_url: z.string().url().optional().nullable().or(z.literal("")),
+  // Per-listing contact override — lets this specific listing show a call
+  // number and/or WhatsApp number different from (or in place of) the
+  // agent's own profile contact, e.g. the actual plot owner's number.
+  contact_phone: z.string().max(20).optional().nullable().or(z.literal("")),
+  contact_whatsapp: z.string().max(20).optional().nullable().or(z.literal("")),
 });
 
 export const step6Schema = z.object({
