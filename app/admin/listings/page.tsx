@@ -3,7 +3,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatPrice } from "@/lib/utils/formatPrice";
+import { formatPropertyId } from "@/lib/utils/formatPropertyId";
 import { CityFilterSelect } from "@/components/admin/CityFilterSelect";
+import { ListingSearchInput } from "@/components/admin/ListingSearchInput";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +26,7 @@ const STATUS_BADGE_CLASSES: Record<string, string> = {
 
 interface AdminListingRow {
   id: string;
+  listing_number: number;
   title: string;
   slug: string;
   status: string;
@@ -38,7 +41,7 @@ interface AdminListingRow {
 export default async function AllListingsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; city?: string; purpose?: string; page?: string }>;
+  searchParams: Promise<{ status?: string; city?: string; purpose?: string; page?: string; q?: string }>;
 }) {
   const params = await searchParams;
   const status: StatusFilter = STATUS_TABS.includes(params.status as StatusFilter)
@@ -47,13 +50,14 @@ export default async function AllListingsPage({
   const cityId = params.city;
   const purpose = params.purpose === "buy" || params.purpose === "rent" ? params.purpose : undefined;
   const page = Math.max(1, Number(params.page) || 1);
+  const q = params.q?.trim();
 
   const admin = createAdminClient();
 
   let query = admin
     .from("listings")
     .select(
-      `id, title, slug, status, purpose, type, price,
+      `id, listing_number, title, slug, status, purpose, type, price,
        beds, baths, area_marla, image_count, created_at,
        primary_image_url,
        city:cities(name), area:areas(name),
@@ -69,6 +73,17 @@ export default async function AllListingsPage({
   }
   if (purpose) {
     query = query.eq("purpose", purpose);
+  }
+  if (q) {
+    // A pasted Property ID ("ZP-100001" or bare "100001") matches exactly;
+    // anything else falls back to a partial title match, covering both the
+    // "find this exact listing" and "find a listing about X" use cases.
+    const idMatch = q.match(/^(?:zp-)?(\d+)$/i);
+    if (idMatch) {
+      query = query.eq("listing_number", Number(idMatch[1]));
+    } else {
+      query = query.ilike("title", `%${q}%`);
+    }
   }
 
   const from = (page - 1) * PAGE_SIZE;
@@ -88,6 +103,7 @@ export default async function AllListingsPage({
     if (status !== "all") next.set("status", status);
     if (cityId) next.set("city", cityId);
     if (purpose) next.set("purpose", purpose);
+    if (q) next.set("q", q);
     if (page > 1) next.set("page", String(page));
 
     for (const [key, value] of Object.entries(overrides)) {
@@ -103,11 +119,14 @@ export default async function AllListingsPage({
 
   return (
     <div className="px-6 py-6">
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-3">
         <h1 className="text-2xl font-bold text-black">All Listings</h1>
         <span className="rounded-full border border-primary px-3 py-1 text-sm font-semibold text-primary">
           {total} total
         </span>
+        <div className="ml-auto">
+          <ListingSearchInput currentQuery={q} />
+        </div>
       </div>
 
       <div className="mb-6 mt-6 flex flex-wrap items-center gap-3 rounded-xl border border-primary bg-white p-4">
@@ -133,6 +152,7 @@ export default async function AllListingsPage({
           <thead className="bg-primary text-xs text-white">
             <tr>
               <th className="px-4 py-3 text-left font-semibold">Image</th>
+              <th className="px-4 py-3 text-left font-semibold">Property ID</th>
               <th className="px-4 py-3 text-left font-semibold">Title</th>
               <th className="px-4 py-3 text-left font-semibold">Agent</th>
               <th className="px-4 py-3 text-left font-semibold">City</th>
@@ -153,6 +173,9 @@ export default async function AllListingsPage({
                   ) : (
                     <div className="h-9 w-12 rounded bg-primary-mid" />
                   )}
+                </td>
+                <td className="px-4 py-3 text-xs font-semibold text-primary">
+                  {formatPropertyId(listing.listing_number)}
                 </td>
                 <td className="max-w-[180px] truncate px-4 py-3 text-sm font-medium text-black">
                   <Link href={`/admin/listings/${listing.id}`} className="hover:underline">

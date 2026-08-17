@@ -6,6 +6,7 @@ import { getListingWithAgent, getSimilarListings, createPublicClient } from "@/l
 import type { ListingDetailData } from "@/types";
 import { createClient } from "@/lib/supabase/server";
 import { formatPrice } from "@/lib/utils/formatPrice";
+import { formatPropertyId } from "@/lib/utils/formatPropertyId";
 import { listingMeta } from "@/lib/seo/metadata";
 import { SchemaScript, listingSchema } from "@/lib/seo/schemas";
 import { Breadcrumb } from "@/components/portal/Breadcrumb";
@@ -194,6 +195,9 @@ export default async function PropertyDetailPage({
                     .join(" — ")}
                 </p>
               )}
+              <p className="mt-1 text-xs text-primary-mid">
+                Property ID: {formatPropertyId(listing.listing_number)}
+              </p>
             </div>
 
             <div className="grid grid-cols-3 gap-3 md:grid-cols-4">

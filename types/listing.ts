@@ -22,6 +22,7 @@ export type FurnishedStatus = "unfurnished" | "semi_furnished" | "furnished";
 // Mirrors the `listings` table in supabase/migrations/001_schema.sql.
 export interface Listing {
   id: string;
+  listing_number: number;
   agent_id: string | null;
   agency_id: string | null;
   city_id: string | null;

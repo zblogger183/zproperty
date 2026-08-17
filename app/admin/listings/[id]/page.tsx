@@ -11,6 +11,7 @@ import { ListingStatusActions } from "@/components/admin/ListingStatusActions";
 import { FeatureListingButton } from "@/components/admin/FeatureListingButton";
 import type { Step1Data } from "@/app/dashboard/listings/schemas";
 import { sanitizeRichText } from "@/lib/utils/sanitizeHtml";
+import { formatPropertyId } from "@/lib/utils/formatPropertyId";
 
 export const dynamic = "force-dynamic";
 
@@ -44,6 +45,7 @@ const LEAD_STATUS_BADGE_CLASSES: Record<string, string> = {
 
 interface ListingDetail {
   id: string;
+  listing_number: number;
   slug: string;
   title: string;
   purpose: "buy" | "rent";
@@ -101,7 +103,7 @@ export default async function AdminListingDetailPage({ params }: { params: Promi
       .from("listings")
       .select(
         `
-        id, slug, title, purpose, type, status,
+        id, listing_number, slug, title, purpose, type, status,
         price, beds, baths, area_marla, area_sqft,
         description, address, lat, lng,
         views_count, leads_count, calls_count,
@@ -155,6 +157,7 @@ export default async function AdminListingDetailPage({ params }: { params: Promi
       <div className="mt-3 flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-bold text-black">{listing.title}</h1>
+          <p className="mt-1 text-xs font-semibold text-primary">{formatPropertyId(listing.listing_number)}</p>
           {location && <p className="mt-1 text-sm text-primary-mid">{location}</p>}
           <span
             className={`mt-2 inline-block rounded-full px-2.5 py-1 text-xs capitalize ${
