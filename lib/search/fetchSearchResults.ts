@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { backfillAgentContacts, createPublicClient } from "@/lib/supabase/public";
 import { searchMeta } from "@/lib/seo/metadata";
+import { parsePropertyId } from "@/lib/utils/formatPropertyId";
 import type { ListingCardData } from "@/types";
 
 const PAGE_SIZE = 20;
@@ -201,7 +202,15 @@ export async function fetchSearchResults(params: {
   if (filters.beds != null) listingsQuery = listingsQuery.gte("beds", filters.beds);
   if (filters.baths != null) listingsQuery = listingsQuery.gte("baths", filters.baths);
   if (filters.q) {
-    listingsQuery = listingsQuery.textSearch("search_vector", filters.q, { type: "websearch", config: "english" });
+    // A pasted Property ID reaching a results page (bookmarked link, back
+    // button, etc. — the homepage search bar itself redirects straight to
+    // the listing) should surface that exact listing, not get tokenized
+    // into a full-text search that won't match a number against titles.
+    const propertyId = parsePropertyId(filters.q);
+    listingsQuery =
+      propertyId != null
+        ? listingsQuery.eq("listing_number", propertyId)
+        : listingsQuery.textSearch("search_vector", filters.q, { type: "websearch", config: "english" });
   }
 
   switch (filters.sort) {

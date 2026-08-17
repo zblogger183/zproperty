@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatPrice } from "@/lib/utils/formatPrice";
-import { formatPropertyId } from "@/lib/utils/formatPropertyId";
+import { formatPropertyId, parsePropertyId } from "@/lib/utils/formatPropertyId";
 import { CityFilterSelect } from "@/components/admin/CityFilterSelect";
 import { ListingSearchInput } from "@/components/admin/ListingSearchInput";
 
@@ -78,9 +78,9 @@ export default async function AllListingsPage({
     // A pasted Property ID ("ZP-100001" or bare "100001") matches exactly;
     // anything else falls back to a partial title match, covering both the
     // "find this exact listing" and "find a listing about X" use cases.
-    const idMatch = q.match(/^(?:zp-)?(\d+)$/i);
-    if (idMatch) {
-      query = query.eq("listing_number", Number(idMatch[1]));
+    const propertyId = parsePropertyId(q);
+    if (propertyId != null) {
+      query = query.eq("listing_number", propertyId);
     } else {
       query = query.ilike("title", `%${q}%`);
     }
