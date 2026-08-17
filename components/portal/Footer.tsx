@@ -64,7 +64,7 @@ const SOCIAL_LINKS = [
   { label: "X", href: "https://x.com", Icon: XIcon },
 ];
 
-const FOOTER_LINK_CLASS = "block py-0.5 text-sm text-primary-mid transition hover:text-secondary";
+const FOOTER_LINK_CLASS = "block py-0.5 text-sm text-secondary transition hover:text-white";
 
 export function Footer() {
   return (
@@ -87,8 +87,8 @@ export function Footer() {
             </span>
             <span className="text-lg font-bold text-white">ZProperty</span>
           </Link>
-          <p className="mt-2 text-sm text-primary-mid">Pakistan&apos;s Real Estate Growth Ecosystem</p>
-          <p className="mt-2 text-xs leading-relaxed text-primary-mid">
+          <p className="mt-2 text-sm text-white/60">Pakistan&apos;s Real Estate Growth Ecosystem</p>
+          <p className="mt-2 text-xs leading-relaxed text-white/60">
             Find verified properties for sale and rent in Lahore, Karachi and Islamabad.
           </p>
           <div className="mt-4 flex gap-3">
@@ -105,7 +105,7 @@ export function Footer() {
               </a>
             ))}
           </div>
-          <div className="mt-4 text-xs text-primary-mid">
+          <div className="mt-4 text-xs text-white/60">
             <p>📧 info@zproperty.pk</p>
             <p>📞 WhatsApp: +92-300-1234567</p>
           </div>
@@ -157,18 +157,18 @@ export function Footer() {
 
       <div className="border-t border-primary-mid">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-6 py-4 md:flex-row">
-          <p className="text-xs text-primary-mid">
+          <p className="text-xs text-white/60">
             © {new Date().getFullYear()} ZProperty.pk — All rights reserved
           </p>
-          <p className="text-xs text-primary-mid">Pakistan&apos;s trusted real estate marketplace</p>
-          <div className="flex gap-4 text-xs text-primary-mid">
-            <Link href="/privacy-policy" className="hover:text-secondary">
+          <p className="text-xs text-white/60">Pakistan&apos;s trusted real estate marketplace</p>
+          <div className="flex gap-4 text-xs text-secondary">
+            <Link href="/privacy-policy" className="hover:text-white">
               Privacy Policy
             </Link>
-            <Link href="/terms" className="hover:text-secondary">
+            <Link href="/terms" className="hover:text-white">
               Terms
             </Link>
-            <Link href="/contact" className="hover:text-secondary">
+            <Link href="/contact" className="hover:text-white">
               Contact
             </Link>
           </div>
