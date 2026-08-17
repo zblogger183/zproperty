@@ -240,7 +240,9 @@ export async function SearchResultsPage({
           )}
         </div>
 
-        <LinksSidebar cityName={city.name} citySlug={city.slug} purpose={purpose} />
+        <div className="hidden w-52 shrink-0 lg:block">
+          <LinksSidebar cityName={city.name} citySlug={city.slug} purpose={purpose} />
+        </div>
       </div>
     </div>
   );

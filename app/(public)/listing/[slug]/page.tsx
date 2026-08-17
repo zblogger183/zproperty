@@ -1,4 +1,5 @@
 import { cache } from "react";
+import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getListingWithAgent, getSimilarListings, createPublicClient } from "@/lib/supabase/public";
@@ -11,6 +12,7 @@ import { Breadcrumb } from "@/components/portal/Breadcrumb";
 import { ImageGallery } from "@/components/portal/listing/ImageGallery";
 import { AgentCard } from "@/components/portal/listing/AgentCard";
 import { SimpleContactCard } from "@/components/portal/listing/SimpleContactCard";
+import { LinksSidebar } from "@/components/portal/search/LinksSidebar";
 import { SpecCard } from "@/components/portal/listing/SpecCard";
 import { ViewTracker } from "@/components/portal/listing/ViewTracker";
 import { ListingCard } from "@/components/portal/ListingCard";
@@ -249,6 +251,11 @@ export default async function PropertyDetailPage({
 
           <div className="hidden lg:block">
             <ListingContactCard listing={listing} />
+            {listing.city && (
+              <div className="mt-4">
+                <LinksSidebar cityName={listing.city.name} citySlug={listing.city.slug} purpose={listing.purpose} />
+              </div>
+            )}
           </div>
         </div>
 
@@ -262,6 +269,8 @@ export default async function PropertyDetailPage({
             </div>
           </div>
         )}
+
+        {listing.city && <ExploreMoreSection city={listing.city} area={listing.area} purpose={listing.purpose} />}
 
         <ViewTracker listingId={listing.id} />
       </div>
@@ -302,6 +311,52 @@ function ListingContactCard({ listing }: { listing: ListingDetailData }) {
   return (
     <div className="rounded-xl border-2 border-primary bg-white p-5 text-center">
       <p className="text-sm text-primary-mid">Contact info isn&apos;t available for this listing yet.</p>
+    </div>
+  );
+}
+
+// Always-available internal links (not dependent on real inventory existing
+// yet) so a listing page is never a dead end even when there's nothing to
+// show in "Similar Properties" — real estate portals keep visitors browsing
+// from every page, and this is also meaningful internal linking for SEO.
+function ExploreMoreSection({
+  city,
+  area,
+  purpose,
+}: {
+  city: { name: string; slug: string };
+  area: { name: string; slug: string } | null;
+  purpose: "buy" | "rent";
+}) {
+  const base = `/${purpose}/${city.slug}`;
+  const purposeLabel = purpose === "buy" ? "Sale" : "Rent";
+
+  const links = [
+    area
+      ? { label: `More in ${area.name}, ${city.name}`, href: `${base}/${area.slug}` }
+      : { label: `All Listings in ${city.name}`, href: base },
+    { label: `Houses for ${purposeLabel} in ${city.name}`, href: `${base}?type=house` },
+    { label: `Flats for ${purposeLabel} in ${city.name}`, href: `${base}?type=flat` },
+    { label: `Plots in ${city.name}`, href: `/plots/${city.slug}` },
+    { label: `Commercial in ${city.name}`, href: `/commercial/${city.slug}` },
+    { label: `New Projects in ${city.name}`, href: `/new-projects/city/${city.slug}` },
+    { label: "Browse Agents", href: "/agents" },
+  ];
+
+  return (
+    <div className="mt-12">
+      <h2 className="text-2xl font-bold text-black">Explore More</h2>
+      <div className="mt-4 flex flex-wrap gap-2">
+        {links.map((link) => (
+          <Link
+            key={link.label}
+            href={link.href}
+            className="rounded-full border border-primary bg-white px-3 py-1.5 text-xs text-primary transition hover:border-secondary hover:text-primary-mid"
+          >
+            {link.label}
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }

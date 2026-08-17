@@ -74,7 +74,7 @@ export function LinksSidebar({
   const areas = AREA_LINKS[citySlug] ?? [];
 
   return (
-    <div className="hidden w-52 shrink-0 lg:block">
+    <div>
       <div className="rounded-xl border border-primary bg-white p-4">
         <p className="mb-3 text-sm font-bold text-black">Popular Searches</p>
         {popularSearches.map((item) => (
