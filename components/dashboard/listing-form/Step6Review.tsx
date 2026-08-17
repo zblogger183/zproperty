@@ -11,9 +11,11 @@ import { SEOPanel } from "./SEOPanel";
 
 export function Step6Review({
   formData,
+  errors,
   onChangeSeo,
 }: {
   formData: AllFormData;
+  errors: Record<string, string>;
   onChangeSeo: (data: Partial<Step6Data>) => void;
 }) {
   const { step1, step2, step3, step4, step5, step6 } = formData;
@@ -99,6 +101,7 @@ export function Step6Review({
 
       <SEOPanel
         data={step6}
+        errors={errors}
         slugPreview={slugify(step5.title ?? "")}
         autoTitle={autoTitle}
         autoDesc={autoDesc}

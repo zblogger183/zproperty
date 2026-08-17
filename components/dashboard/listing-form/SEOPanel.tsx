@@ -3,16 +3,18 @@
 import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import type { Step6Data } from "@/app/dashboard/listings/schemas";
-import { inputClass, labelClass } from "./styles";
+import { errorClass, inputClass, labelClass } from "./styles";
 
 export function SEOPanel({
   data,
+  errors,
   slugPreview,
   autoTitle,
   autoDesc,
   onChange,
 }: {
   data: Partial<Step6Data>;
+  errors: Record<string, string>;
   slugPreview: string;
   autoTitle: string;
   autoDesc: string;
@@ -56,9 +58,11 @@ export function SEOPanel({
             <input
               value={data.meta_title ?? ""}
               onChange={(event) => onChange({ meta_title: event.target.value })}
+              maxLength={60}
               className={inputClass}
             />
             <p className="mt-1 text-xs text-primary-mid">{titleLength} / 60</p>
+            {errors.meta_title && <p className={errorClass}>⚠ {errors.meta_title}</p>}
 
             <div className="mt-2 rounded-lg border border-primary bg-white p-3">
               <p className="text-xs text-primary-mid">zproperty.pk/listing/{slugPreview}</p>
@@ -82,9 +86,11 @@ export function SEOPanel({
               value={data.meta_desc ?? ""}
               onChange={(event) => onChange({ meta_desc: event.target.value })}
               rows={3}
+              maxLength={160}
               className={inputClass}
             />
             <p className="mt-1 text-xs text-primary-mid">{descLength} / 160</p>
+            {errors.meta_desc && <p className={errorClass}>⚠ {errors.meta_desc}</p>}
           </div>
 
           <div>

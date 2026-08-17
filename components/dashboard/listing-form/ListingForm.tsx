@@ -158,7 +158,11 @@ export function ListingForm() {
           />
         )}
         {currentStep === 5 && (
-          <Step6Review formData={formData} onChangeSeo={(data) => updateFormData("step6", data)} />
+          <Step6Review
+            formData={formData}
+            errors={errors}
+            onChangeSeo={(data) => updateFormData("step6", data)}
+          />
         )}
 
         <div className="mt-8 flex justify-between">
