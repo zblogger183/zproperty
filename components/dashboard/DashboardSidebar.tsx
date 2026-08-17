@@ -16,6 +16,7 @@ import {
   Menu,
   X,
   LogOut,
+  ShieldCheck,
 } from "lucide-react";
 import { signOutAction } from "@/lib/auth/actions";
 import { NotificationBell } from "@/components/shared/NotificationBell";
@@ -46,6 +47,13 @@ export function DashboardSidebar({ user }: { user: DashboardUser }) {
     return pathname === href || (href !== "/dashboard" && pathname.startsWith(`${href}/`));
   }
 
+  // Mirrors AdminSidebar's "Agent Dashboard" link — a super_admin browsing
+  // here otherwise has no way back to /admin except editing the URL.
+  const navLinks =
+    user.role === "super_admin"
+      ? [...NAV_LINKS, { label: "Admin Panel", href: "/admin", Icon: ShieldCheck }]
+      : NAV_LINKS;
+
   const navContent = (
     <>
       <Link href="/" className="flex items-center gap-2 px-4 py-4">
@@ -56,7 +64,7 @@ export function DashboardSidebar({ user }: { user: DashboardUser }) {
       </Link>
 
       <nav className="flex flex-1 flex-col gap-1 px-3">
-        {NAV_LINKS.map((link) => {
+        {navLinks.map((link) => {
           const active = isActive(link.href);
           return (
             <Link

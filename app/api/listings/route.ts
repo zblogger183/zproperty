@@ -4,6 +4,7 @@ import type { NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { createListingSchema } from "@/app/dashboard/listings/schemas";
+import { approveListingAction } from "@/app/admin/listings/actions";
 
 const ALLOWED_ROLES = new Set(["agent", "developer", "super_admin", "admin"]);
 const PLAN_LIMITS: Record<string, number> = { free: 5, pro: 50, elite: 999999 };
@@ -60,6 +61,11 @@ export async function POST(request: NextRequest) {
   }
   const body = parsed.data;
 
+  // super_admin lists on the platform's own behalf, not as a plan-limited
+  // tenant — no quota check, and (below) their listing skips the pending
+  // review queue entirely instead of waiting on themselves to approve it.
+  const isSuperAdmin = userRow.role === "super_admin";
+
   // Get agent_profile for subscription check
   const { data: profile } = await admin
     .from("agent_profiles")
@@ -68,7 +74,7 @@ export async function POST(request: NextRequest) {
     .single();
 
   // Check listing limits based on plan
-  if (profile) {
+  if (profile && !isSuperAdmin) {
     const limit = PLAN_LIMITS[profile.subscription_tier ?? "free"];
     if ((profile.active_listings ?? 0) >= limit) {
       return NextResponse.json(
@@ -154,7 +160,10 @@ export async function POST(request: NextRequest) {
   // `active_listings` against the plan limit above — meaning that limit
   // could never actually trigger, since the field it compared against never
   // changed. Both counters increment here so the check stays meaningful.
-  if (profile) {
+  // Skipped for super_admin: approveListingAction below increments
+  // active_listings itself on approval, and incrementing both here and
+  // there would double-count for the one path where both run.
+  if (profile && !isSuperAdmin) {
     await admin
       .from("agent_profiles")
       .update({
@@ -162,6 +171,14 @@ export async function POST(request: NextRequest) {
         active_listings: (profile.active_listings ?? 0) + 1,
       })
       .eq("user_id", user.id);
+  }
+
+  // super_admin's own listings publish immediately rather than sitting in
+  // the pending queue — reuses the same admin-approval path (schema_json
+  // generation, notifications, active_listings bump) a real admin approval
+  // would run, instead of duplicating that logic here.
+  if (isSuperAdmin) {
+    await approveListingAction(created.id);
   }
 
   return NextResponse.json({ id: created.id, slug: created.slug });

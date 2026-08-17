@@ -27,6 +27,7 @@ import {
   Settings,
   Menu,
   X,
+  LayoutGrid,
   type LucideIcon,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -115,6 +116,21 @@ export function AdminSidebar({ user }: { user: AdminUser }) {
     router.push("/login");
   }
 
+  // super_admin accounts can also own listings directly (see
+  // app/api/listings/route.ts's auto-approve path) — they need a way into
+  // the agent-side dashboard to post/manage those, which otherwise has no
+  // link from here at all.
+  const navSections =
+    user.role === "super_admin"
+      ? [
+          {
+            ...NAV_SECTIONS[0],
+            items: [...NAV_SECTIONS[0].items, { label: "Agent Dashboard", href: "/dashboard", Icon: LayoutGrid }],
+          },
+          ...NAV_SECTIONS.slice(1),
+        ]
+      : NAV_SECTIONS;
+
   const sidebarContent = (
     <>
       <div className="flex items-center gap-2 border-b border-primary-mid px-4 py-5">
@@ -126,7 +142,7 @@ export function AdminSidebar({ user }: { user: AdminUser }) {
       </div>
 
       <nav className="flex-1">
-        {NAV_SECTIONS.map((section) => (
+        {navSections.map((section) => (
           <div key={section.label}>
             <p className="px-4 pb-1 pt-5 text-[10px] font-bold uppercase tracking-widest text-white/70">
               {section.label}
