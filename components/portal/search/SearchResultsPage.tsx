@@ -166,8 +166,16 @@ export async function SearchResultsPage({
         </div>
       )}
 
-      <div className="flex flex-col gap-6 md:flex-row">
-        <Suspense fallback={<div className="hidden w-64 shrink-0 md:block" />}>
+      {/* Mobile only: the Filter button/drawer above the results, in the
+          same spot it's always been. Hidden at md+, where the desktop slot
+          below (sharing one column with LinksSidebar, on the right) takes
+          over — FilterSidebar's own internal mobile/desktop classes make
+          this safe to render twice without ever double-showing UI at any
+          width, so this avoids depending on the `order-*` utilities, which
+          this build isn't generating (a real, unrelated CSS output gap, not
+          used elsewhere in this project either). */}
+      <div className="md:hidden">
+        <Suspense fallback={null}>
           <FilterSidebar
             citySlug={city.slug}
             purpose={purpose}
@@ -180,7 +188,9 @@ export async function SearchResultsPage({
             basePath={basePathProp}
           />
         </Suspense>
+      </div>
 
+      <div className="flex flex-col gap-6 md:flex-row">
         <div className="flex-1">
           {listings.length === 0 ? (
             <div className="py-16 text-center">
@@ -240,8 +250,24 @@ export async function SearchResultsPage({
           )}
         </div>
 
-        <div className="hidden w-52 shrink-0 lg:block">
-          <LinksSidebar cityName={city.name} citySlug={city.slug} purpose={purpose} />
+        <div className="hidden md:block md:w-64 md:shrink-0">
+          <Suspense fallback={<div className="hidden w-64 shrink-0 md:block" />}>
+            <FilterSidebar
+              citySlug={city.slug}
+              purpose={purpose}
+              areaSlug={area?.slug}
+              societySlug={society?.slug}
+              typeOptions={visibleTypeOptions}
+              areaList={areaList}
+              societyList={societyList}
+              typeCounts={typeCounts}
+              basePath={basePathProp}
+            />
+          </Suspense>
+
+          <div className="mt-4 hidden lg:block">
+            <LinksSidebar cityName={city.name} citySlug={city.slug} purpose={purpose} />
+          </div>
         </div>
       </div>
     </div>
