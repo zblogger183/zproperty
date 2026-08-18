@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { Search } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { parsePropertyId } from "@/lib/utils/formatPropertyId";
@@ -77,8 +78,24 @@ export function HeroSection({ cities, stats }: { cities: HeroCity[]; stats: Hero
   }
 
   return (
-    <section className="bg-primary px-4 pb-20 pt-16">
-      <div className="mx-auto max-w-3xl text-center">
+    <section className="relative overflow-hidden bg-primary px-4 pb-20 pt-16">
+      {/* bg-primary above is the fallback shown before this loads (or if
+          public/images/hero-bg.webp is ever missing) — priority + fill
+          since this is the homepage's largest above-the-fold element. */}
+      <Image
+        src="/images/hero-bg.webp"
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover"
+      />
+      {/* Dark scrim so the white heading/text stays readable regardless of
+          the photo's own colors — matches the photographic-hero-with-dark-
+          overlay pattern zameen.com uses. */}
+      <div className="absolute inset-0 bg-primary/70" />
+
+      <div className="relative mx-auto max-w-3xl text-center">
         <h1 className="text-4xl font-bold text-white md:text-5xl">Find Your Property in Pakistan</h1>
         <p className="mt-3 text-lg text-white/70">Verified listings. Trusted agents.</p>
         <p className="mt-4 text-sm font-semibold text-secondary">
