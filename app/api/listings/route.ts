@@ -5,6 +5,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { createListingSchema } from "@/app/dashboard/listings/schemas";
 import { approveListingAction } from "@/app/admin/listings/actions";
+import { sanitizeRichText } from "@/lib/utils/sanitizeHtml";
 
 const ALLOWED_ROLES = new Set(["agent", "developer", "super_admin", "admin"]);
 const PLAN_LIMITS: Record<string, number> = { free: 5, pro: 50, elite: 999999 };
@@ -118,7 +119,9 @@ export async function POST(request: NextRequest) {
     parking_spaces: body.parking_spaces ?? 0,
     age_years: body.age_years ?? null,
     furnished_status: body.furnished_status ?? "unfurnished",
-    description: body.description,
+    // Sanitized here (write time), not just at render time, so the stored
+    // data is never live markup regardless of which page later renders it.
+    description: sanitizeRichText(body.description),
     features: body.features ?? {},
     video_url: body.video_url || null,
     contact_phone: body.contact_phone || null,

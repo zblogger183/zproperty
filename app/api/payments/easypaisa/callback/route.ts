@@ -2,17 +2,14 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { activateSubscription } from "@/lib/payments/subscriptions";
+import { confirmEasyPaisaTransaction } from "@/lib/payments/easypaisa";
 
-// SECURITY GAP, not just an untested integration: unlike JazzCash (which
-// signs its callback with pp_SecureHash, verifiable locally — see
-// lib/payments/jazzcash.ts), EasyPaisa's documented flow sends back only an
-// `auth_token` and expects the merchant to make a second server-to-server
-// call to confirm the final transaction status, rather than trusting query
-// params directly. That confirmation call isn't implemented here — this
-// currently trusts `orderId`/`responseCode` from the redirect as-is, which
-// is spoofable. Do not treat a "success" redirect here as authoritative
-// until that confirmation call is added once real EasyPaisa merchant docs
-// and credentials are available (see the note in lib/payments/easypaisa.ts).
+// Unlike JazzCash (which signs its callback with pp_SecureHash, verifiable
+// locally — see lib/payments/jazzcash.ts), EasyPaisa's redirect params are
+// unsigned, so `responseCode` from the query string is never treated as
+// authoritative on its own — activation only happens after an independent
+// server-to-server confirmation call (confirmEasyPaisaTransaction) confirms
+// the transaction actually settled as paid.
 export async function GET(request: NextRequest) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
   const { searchParams } = request.nextUrl;
@@ -36,7 +33,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(`${siteUrl}/dashboard/subscription?error=payment_failed`);
   }
 
-  if (responseCode === "0000") {
+  const { paid } = responseCode === "0000" ? await confirmEasyPaisaTransaction(orderId) : { paid: false };
+
+  if (paid) {
     await admin
       .from("payment_transactions")
       .update({

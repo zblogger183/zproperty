@@ -96,6 +96,23 @@ export async function POST(request: NextRequest) {
     }
 
     if (listingId) {
+      // Ownership check — without this, the admin client below (which
+      // bypasses the listing_images RLS policy that would otherwise enforce
+      // this) let any authenticated agent/developer overwrite images on any
+      // listing by supplying an arbitrary listing_id.
+      const { data: listing } = await admin
+        .from("listings")
+        .select("agent_id")
+        .eq("id", listingId)
+        .maybeSingle();
+
+      const isOwner = listing?.agent_id === user.id;
+      const isAdmin = profile.role === "admin" || profile.role === "super_admin";
+
+      if (!listing || (!isOwner && !isAdmin)) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
+
       const { count } = await admin
         .from("listing_images")
         .select("*", { count: "exact", head: true })

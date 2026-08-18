@@ -122,7 +122,11 @@ export async function sendLoginOtpAction(values: { identifier: string }): Promis
     : await supabase.auth.signInWithOtp({ phone: phone! });
 
   if (error) {
-    return { error: error.message };
+    // Generic on purpose — Supabase's raw message can distinguish "no such
+    // account" from other failures, which would let this double as an
+    // account-existence oracle. Real errors are still visible server-side.
+    console.error("[sendLoginOtpAction] signInWithOtp failed:", error.message);
+    return { error: "Could not send a code right now. Please try again." };
   }
 
   redirect(`/verify-otp?identifier=${encodeURIComponent(email ?? phone!)}&purpose=login`);
@@ -198,7 +202,10 @@ export async function resendOtpAction(values: {
         : await supabase.auth.signInWithOtp({ phone: phone! });
 
   if (error) {
-    return { error: error.message };
+    // Same rationale as sendLoginOtpAction — don't forward Supabase's raw
+    // message, which can act as an account-existence oracle.
+    console.error("[resendOtpAction] resend/signInWithOtp failed:", error.message);
+    return { error: "Could not resend the code right now. Please try again." };
   }
 }
 
@@ -280,7 +287,17 @@ export async function registerAction(input: RegisterInput): Promise<ActionResult
   });
 
   if (error || !data.user) {
-    return { error: error?.message ?? "Could not create your account." };
+    // Generic on purpose — Supabase's signUp() can distinguish "already
+    // registered" from other failures, which would let this double as an
+    // account-existence oracle for arbitrary emails. Password-strength and
+    // format issues are already caught by registerStep1Schema above, so
+    // whatever reaches here is either a genuine already-registered email or
+    // an unexpected backend failure; either way the same message is safe
+    // and still actionable.
+    console.error("[registerAction] signUp failed:", error?.message);
+    return {
+      error: "Could not create your account. If this email is already registered, try logging in instead.",
+    };
   }
 
   const admin = createAdminClient();
@@ -382,8 +399,11 @@ export async function requestPasswordResetAction(values: {
     redirectTo: `${origin}/callback?type=recovery`,
   });
 
+  // Always report success, whether or not the email is registered — a
+  // differing response here is exactly what an account-enumeration attack
+  // probes for. The real error (if any) is still logged for debugging.
   if (error) {
-    return { error: error.message };
+    console.error("[requestPasswordResetAction] resetPasswordForEmail failed:", error.message);
   }
 
   return { success: true };
