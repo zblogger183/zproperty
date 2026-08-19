@@ -11,7 +11,7 @@ export default async function BankTransferVerificationPage() {
 
   const { data } = await admin
     .from("payment_transactions")
-    .select("id, amount, bank_slip_url, initiated_at, user:users(name, email)")
+    .select("id, amount, bank_slip_url, initiated_at, user:users!payment_transactions_user_id_fkey(name, email)")
     .eq("method", "bank_transfer")
     .eq("status", "pending")
     .order("initiated_at", { ascending: true });

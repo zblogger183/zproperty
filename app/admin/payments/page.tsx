@@ -44,7 +44,10 @@ export default async function PaymentsOverviewPage({
 
   let query = admin
     .from("payment_transactions")
-    .select("id, amount, method, status, gateway_ref, initiated_at, user:users(name, email)", { count: "exact" });
+    .select(
+      "id, amount, method, status, gateway_ref, initiated_at, user:users!payment_transactions_user_id_fkey(name, email)",
+      { count: "exact" },
+    );
 
   if (method !== "all") query = query.eq("method", method);
 

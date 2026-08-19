@@ -47,8 +47,10 @@ export default async function AdminDashboardPage() {
       .limit(5),
     admin
       .from("payment_transactions")
-      .select("id, amount, method, status, created_at, user:users(name)")
-      .order("created_at", { ascending: false })
+      .select(
+        "id, amount, method, status, created_at:initiated_at, user:users!payment_transactions_user_id_fkey(name)",
+      )
+      .order("initiated_at", { ascending: false })
       .limit(5),
   ]);
 

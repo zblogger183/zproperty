@@ -24,7 +24,9 @@ export default async function InvoicesPage() {
 
   const { data } = await admin
     .from("payment_transactions")
-    .select("id, amount, method, status, invoice_number, invoice_url, completed_at, initiated_at, user:users(name, email)")
+    .select(
+      "id, amount, method, status, invoice_number, invoice_url, completed_at, initiated_at, user:users!payment_transactions_user_id_fkey(name, email)",
+    )
     .eq("status", "completed")
     .order("initiated_at", { ascending: false })
     .limit(100);

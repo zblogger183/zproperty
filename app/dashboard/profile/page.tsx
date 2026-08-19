@@ -21,7 +21,7 @@ export default async function ProfileBuilderPage() {
       .select(
         `profile_slug, headline, bio, whatsapp, specialties, cities_served, languages,
          facebook_url, instagram_url, youtube_url, experience_years,
-         user:users(name, avatar_url, email, phone)`,
+         user:users!agent_profiles_user_id_fkey(name, avatar_url, email, phone)`,
       )
       .eq("user_id", user.id)
       .maybeSingle(),
