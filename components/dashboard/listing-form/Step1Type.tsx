@@ -19,7 +19,7 @@ import type { Step1Data } from "@/app/dashboard/listings/schemas";
 import { errorClass } from "./styles";
 
 const PURPOSE_OPTIONS: { value: Step1Data["purpose"]; label: string; sublabel: string; Icon: LucideIcon }[] = [
-  { value: "buy", label: "Buy", sublabel: "Purchase property", Icon: Home },
+  { value: "buy", label: "Sell", sublabel: "List for sale", Icon: Home },
   { value: "rent", label: "Rent", sublabel: "Rent a property", Icon: KeyRound },
 ];
 
