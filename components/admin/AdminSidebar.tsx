@@ -101,8 +101,18 @@ const NAV_SECTIONS: NavSection[] = [
   },
 ];
 
-function isActive(pathname: string, href: string) {
-  return pathname === href || (href !== "/admin" && pathname.startsWith(href));
+// Picks the single most specific match rather than every href that happens
+// to be a prefix of the current path — e.g. on /admin/users/verification,
+// both "/admin/users" and "/admin/users/verification" match as prefixes,
+// which previously highlighted "All Users" and "CNIC Queue" at the same
+// time. Comparing string length among only the real matches (checked with
+// a "/" boundary, not a raw substring) picks the longest/most specific one.
+function getActiveHref(pathname: string, hrefs: string[]): string | null {
+  const matches = hrefs.filter(
+    (href) => pathname === href || (href !== "/admin" && pathname.startsWith(`${href}/`)),
+  );
+  if (matches.length === 0) return null;
+  return matches.reduce((longest, href) => (href.length > longest.length ? href : longest));
 }
 
 export function AdminSidebar({ user }: { user: AdminUser }) {
@@ -131,6 +141,11 @@ export function AdminSidebar({ user }: { user: AdminUser }) {
         ]
       : NAV_SECTIONS;
 
+  const activeHref = getActiveHref(
+    pathname,
+    navSections.flatMap((section) => section.items.map((item) => item.href)),
+  );
+
   const sidebarContent = (
     <>
       <div className="flex items-center gap-2 border-b border-primary-mid px-4 py-5">
@@ -148,7 +163,7 @@ export function AdminSidebar({ user }: { user: AdminUser }) {
               {section.label}
             </p>
             {section.items.map((item) => {
-              const active = isActive(pathname, item.href);
+              const active = item.href === activeHref;
               return (
                 <Link
                   key={item.href}

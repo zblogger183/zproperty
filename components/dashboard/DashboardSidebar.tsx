@@ -39,13 +39,22 @@ const NAV_LINKS = [
   { label: "Settings", href: "/dashboard/settings", Icon: Settings },
 ];
 
+// Picks the single most specific match rather than every href that happens
+// to be a prefix of the current path — e.g. on /dashboard/listings/new,
+// both "/dashboard/listings" and "/dashboard/listings/new" match as
+// prefixes, which previously highlighted "My Listings" and "Add Listing"
+// at the same time.
+function getActiveHref(pathname: string, hrefs: string[]): string | null {
+  const matches = hrefs.filter(
+    (href) => pathname === href || (href !== "/dashboard" && pathname.startsWith(`${href}/`)),
+  );
+  if (matches.length === 0) return null;
+  return matches.reduce((longest, href) => (href.length > longest.length ? href : longest));
+}
+
 export function DashboardSidebar({ user }: { user: DashboardUser }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  function isActive(href: string) {
-    return pathname === href || (href !== "/dashboard" && pathname.startsWith(`${href}/`));
-  }
 
   // Mirrors AdminSidebar's "Agent Dashboard" link — a super_admin browsing
   // here otherwise has no way back to /admin except editing the URL.
@@ -53,6 +62,11 @@ export function DashboardSidebar({ user }: { user: DashboardUser }) {
     user.role === "super_admin"
       ? [...NAV_LINKS, { label: "Admin Panel", href: "/admin", Icon: ShieldCheck }]
       : NAV_LINKS;
+
+  const activeHref = getActiveHref(
+    pathname,
+    navLinks.map((link) => link.href),
+  );
 
   const navContent = (
     <>
@@ -65,7 +79,7 @@ export function DashboardSidebar({ user }: { user: DashboardUser }) {
 
       <nav className="flex flex-1 flex-col gap-1 px-3">
         {navLinks.map((link) => {
-          const active = isActive(link.href);
+          const active = link.href === activeHref;
           return (
             <Link
               key={link.href}
