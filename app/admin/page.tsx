@@ -33,7 +33,15 @@ export default async function AdminDashboardPage() {
     admin.from("listings").select("*", { count: "exact", head: true }).eq("status", "active"),
     admin.from("listings").select("*", { count: "exact", head: true }).eq("status", "pending"),
     admin.from("users").select("*", { count: "exact", head: true }).eq("role", "agent"),
-    admin.from("agent_profiles").select("*", { count: "exact", head: true }).eq("cnic_verified", false),
+    // Matches app/admin/users/verification/page.tsx's own criteria exactly —
+    // "unverified" alone (cnic_verified = false) counts every agent who
+    // hasn't gone through verification at all, including ones who never
+    // submitted anything, not just the ones actually waiting on a review.
+    admin
+      .from("agent_profiles")
+      .select("*", { count: "exact", head: true })
+      .eq("cnic_verified", false)
+      .not("cnic_front_url", "is", null),
     admin
       .from("payment_transactions")
       .select("*", { count: "exact", head: true })
