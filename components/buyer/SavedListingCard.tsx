@@ -12,6 +12,7 @@ export interface SavedListingData {
   slug: string;
   title: string;
   purpose: "buy" | "rent";
+  rental_period: "monthly" | "weekly" | "daily";
   price: number;
   primary_image_url: string | null;
   city: { name: string } | null;
@@ -50,7 +51,9 @@ export function SavedListingCard({ listing }: { listing: SavedListingData }) {
           {listing.title}
         </Link>
         {location && <p className="mt-0.5 text-xs text-primary-mid">{location}</p>}
-        <p className="mt-1 text-sm font-bold text-black">{formatPrice(listing.price, listing.purpose)}</p>
+        <p className="mt-1 text-sm font-bold text-black">
+          {formatPrice(listing.price, listing.purpose, listing.rental_period)}
+        </p>
       </div>
       <button
         type="button"

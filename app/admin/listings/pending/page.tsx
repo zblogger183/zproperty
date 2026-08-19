@@ -23,7 +23,7 @@ export default async function PendingListingsPage({
   const { data } = await admin
     .from("listings")
     .select(
-      `id, title, slug, purpose, type, price,
+      `id, title, slug, purpose, rental_period, type, price,
        area_marla, beds, baths, description,
        primary_image_url, image_count, has_video,
        created_at, features, address, plot_number, agent_id,

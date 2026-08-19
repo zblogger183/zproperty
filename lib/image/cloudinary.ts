@@ -31,6 +31,15 @@ export async function uploadImageToCloudinary(
       resource_type: "image" as const,
       overwrite: false,
       exif: false,
+      // Applied to the file BEFORE it's stored, not just on delivery — an
+      // agent uploading a straight-off-the-camera 6000x4000, 10MB photo
+      // gets that stored as a ~2400px, auto-quality asset instead, with no
+      // action needed on their end. Every thumb/medium/large/og URL below
+      // is then derived from this already-reasonable source rather than
+      // the untouched original, so both Cloudinary storage and the cost of
+      // generating those derived sizes shrink accordingly. `crop: "limit"`
+      // only ever downsizes — an already-small upload is left alone.
+      transformation: [{ width: 2400, height: 2400, crop: "limit", quality: "auto:good" }],
     };
 
     cloudinary.uploader

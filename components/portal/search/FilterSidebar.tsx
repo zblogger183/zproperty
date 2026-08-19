@@ -25,6 +25,12 @@ const FLOOR_OPTIONS: { label: string; value: string }[] = [
 // Marla" search is common; a "6.3 Marla" one basically never happens).
 const MARLA_OPTIONS = ["3", "5", "7", "8", "10", "12", "14", "20"];
 
+const RENTAL_PERIOD_OPTIONS: { label: string; value: "monthly" | "weekly" | "daily" }[] = [
+  { label: "Long Term (Monthly)", value: "monthly" },
+  { label: "Short Term (Weekly)", value: "weekly" },
+  { label: "Short Term (Daily)", value: "daily" },
+];
+
 export function FilterSidebar({
   citySlug,
   purpose,
@@ -62,6 +68,7 @@ export function FilterSidebar({
   const currentFloors = searchParams.get("floors") ?? "";
   const currentMinArea = searchParams.get("min_area_marla") ?? "";
   const currentMaxArea = searchParams.get("max_area_marla") ?? "";
+  const currentRentalPeriod = searchParams.get("rental_period") ?? "";
   const [minPrice, setMinPrice] = useState(searchParams.get("min_price") ?? "");
   const [maxPrice, setMaxPrice] = useState(searchParams.get("max_price") ?? "");
 
@@ -74,6 +81,7 @@ export function FilterSidebar({
     "floors",
     "min_area_marla",
     "max_area_marla",
+    ...(purpose === "rent" ? ["rental_period"] : []),
   ].filter((key) => searchParams.get(key)).length;
 
   function updateParams(updates: Record<string, string | undefined>) {
@@ -88,6 +96,10 @@ export function FilterSidebar({
 
   function handleTypeToggle(value: string) {
     updateParams({ type: currentType === value ? undefined : value });
+  }
+
+  function handleRentalPeriodSelect(value: string) {
+    updateParams({ rental_period: currentRentalPeriod === value ? undefined : value });
   }
 
   function handleBedsSelect(option: string) {
@@ -154,6 +166,25 @@ export function FilterSidebar({
           ))}
         </div>
       </div>
+
+      {purpose === "rent" && (
+        <div>
+          <p className="mb-2 text-sm font-semibold text-black">Rental Term</p>
+          <div className="space-y-1.5">
+            {RENTAL_PERIOD_OPTIONS.map((option) => (
+              <label key={option.value} className="flex items-center gap-2 text-sm text-black">
+                <input
+                  type="checkbox"
+                  checked={currentRentalPeriod === option.value}
+                  onChange={() => handleRentalPeriodSelect(option.value)}
+                  className="accent-secondary"
+                />
+                {option.label}
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div>
         <p className="mb-2 text-sm font-semibold text-black">Price Range</p>

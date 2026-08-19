@@ -41,7 +41,7 @@ export default async function AdminDashboardPage() {
       .eq("status", "pending"),
     admin
       .from("listings")
-      .select("id, title, status, created_at, price, type, purpose, agent:public_agent_contact(name)")
+      .select("id, title, status, created_at, price, type, purpose, rental_period, agent:public_agent_contact(name)")
       .eq("status", "pending")
       .order("created_at", { ascending: false })
       .limit(5),

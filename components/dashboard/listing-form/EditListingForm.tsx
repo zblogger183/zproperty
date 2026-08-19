@@ -206,7 +206,14 @@ export function EditListingForm({
 
       <section className="rounded-xl border border-primary bg-white p-5">
         <h2 className="mb-4 text-base font-bold text-black">Property Details</h2>
-        <Step3Details data={data} errors={errors} propertyType={data.type} onChange={updateData} />
+        <Step3Details
+          data={data}
+          errors={errors}
+          propertyType={data.type}
+          purpose={data.purpose}
+          rentalPeriod={data.rental_period}
+          onChange={updateData}
+        />
       </section>
 
       <section className="rounded-xl border border-primary bg-white p-5">

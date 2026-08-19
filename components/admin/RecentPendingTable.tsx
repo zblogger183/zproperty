@@ -7,6 +7,7 @@ export interface RecentPendingListing {
   title: string;
   type: string;
   purpose: "buy" | "rent";
+  rental_period: "monthly" | "weekly" | "daily";
   price: number;
   created_at: string;
   agent: { name: string } | null;
@@ -45,7 +46,7 @@ export function RecentPendingTable({ listings }: { listings: RecentPendingListin
                 </td>
                 <td className="px-4 py-3 text-xs text-black">{listing.agent?.name ?? "—"}</td>
                 <td className="px-4 py-3 text-xs text-black">
-                  {formatPrice(listing.price, listing.purpose)}
+                  {formatPrice(listing.price, listing.purpose, listing.rental_period)}
                 </td>
                 <td className="px-4 py-3 text-xs text-primary-mid">
                   {formatDistanceToNow(new Date(listing.created_at), { addSuffix: true })}

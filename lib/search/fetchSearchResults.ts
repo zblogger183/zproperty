@@ -27,6 +27,12 @@ export interface SearchFilters {
   // Slug, not id — resolved against the current society below. Only
   // meaningful once a society is resolved; ignored otherwise.
   phase?: string;
+  // Only meaningful on /rent searches — short-term (weekly/daily) vs
+  // long-term (monthly) rentals. Ignored on /buy since every "buy" listing
+  // defaults to rental_period='monthly' regardless (the column is unused
+  // there), so filtering on it would just be a no-op, not wrong — omitted
+  // from the query below anyway to keep buy-side query plans unaffected.
+  rental_period?: "monthly" | "weekly" | "daily";
 }
 
 export interface CitySummary {
@@ -88,9 +94,15 @@ export function parseSearchFilters(sp: RawSearchParams): SearchFilters {
   const beds = param(sp, "beds");
   const baths = param(sp, "baths");
   const page = Math.max(1, Number(param(sp, "page")) || 1);
+  const rentalPeriodRaw = param(sp, "rental_period");
+  const rentalPeriod =
+    rentalPeriodRaw === "monthly" || rentalPeriodRaw === "weekly" || rentalPeriodRaw === "daily"
+      ? rentalPeriodRaw
+      : undefined;
 
   return {
     type: param(sp, "type") || undefined,
+    rental_period: rentalPeriod,
     min_price: minPrice ? Number(minPrice) : undefined,
     max_price: maxPrice ? Number(maxPrice) : undefined,
     min_area_marla: minArea ? Number(minArea) : undefined,
@@ -105,7 +117,7 @@ export function parseSearchFilters(sp: RawSearchParams): SearchFilters {
   };
 }
 
-const LISTING_SELECT = `id, slug, title, purpose, type, price, area_marla, beds, baths, floors, primary_image_url,
+const LISTING_SELECT = `id, slug, title, purpose, rental_period, type, price, area_marla, beds, baths, floors, primary_image_url,
        is_featured, is_hot_deal, agent_id, created_at,
        city:cities(name,slug), area:areas(name,slug), agent:public_agent_contact(name, whatsapp, profile_slug)`;
 
@@ -192,6 +204,9 @@ export async function fetchSearchResults(params: {
   if (phase) listingsQuery = listingsQuery.eq("phase_id", phase.id);
   if (params.baseTypes?.length) listingsQuery = listingsQuery.in("type", params.baseTypes);
   if (filters.type) listingsQuery = listingsQuery.eq("type", filters.type);
+  if (params.purpose === "rent" && filters.rental_period) {
+    listingsQuery = listingsQuery.eq("rental_period", filters.rental_period);
+  }
   if (filters.min_price != null) listingsQuery = listingsQuery.gte("price", filters.min_price);
   if (filters.max_price != null) listingsQuery = listingsQuery.lte("price", filters.max_price);
   if (filters.min_area_marla != null) listingsQuery = listingsQuery.gte("area_marla", filters.min_area_marla);

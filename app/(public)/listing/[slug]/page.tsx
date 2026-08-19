@@ -154,7 +154,7 @@ export default async function PropertyDetailPage({
             <div>
               <div className="flex flex-wrap items-center gap-3">
                 <span className="text-3xl font-bold text-black">
-                  {formatPrice(listing.price, listing.purpose)}
+                  {formatPrice(listing.price, listing.purpose, listing.rental_period)}
                 </span>
                 {listing.is_negotiable && (
                   <span className="rounded-full bg-secondary px-3 py-1 text-xs font-bold text-primary">

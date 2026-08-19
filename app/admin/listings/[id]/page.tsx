@@ -49,6 +49,7 @@ interface ListingDetail {
   slug: string;
   title: string;
   purpose: "buy" | "rent";
+  rental_period: "monthly" | "weekly" | "daily";
   type: Step1Data["type"];
   status: string;
   price: number;
@@ -103,7 +104,7 @@ export default async function AdminListingDetailPage({ params }: { params: Promi
       .from("listings")
       .select(
         `
-        id, listing_number, slug, title, purpose, type, status,
+        id, listing_number, slug, title, purpose, rental_period, type, status,
         price, beds, baths, area_marla, area_sqft,
         description, address, lat, lng,
         views_count, leads_count, calls_count,
@@ -206,7 +207,10 @@ export default async function AdminListingDetailPage({ params }: { params: Promi
             <dl className="grid grid-cols-2 gap-x-6">
               <DetailRow label="Purpose" value={listing.purpose === "buy" ? "Buy" : "Rent"} />
               <DetailRow label="Type" value={TYPE_LABELS[listing.type] ?? listing.type} />
-              <DetailRow label="Price" value={formatPrice(listing.price, listing.purpose)} />
+              <DetailRow
+                label="Price"
+                value={formatPrice(listing.price, listing.purpose, listing.rental_period)}
+              />
               <DetailRow label="Beds" value={listing.beds ?? "—"} />
               <DetailRow label="Baths" value={listing.baths ?? "—"} />
               <DetailRow label="Area" value={listing.area_marla ? `${listing.area_marla} Marla` : "—"} />

@@ -107,6 +107,7 @@ export async function POST(request: NextRequest) {
     title: body.title,
     slug,
     purpose: body.purpose,
+    rental_period: body.rental_period,
     type: body.type,
     price: body.price,
     is_negotiable: body.is_negotiable ?? false,

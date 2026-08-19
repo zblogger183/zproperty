@@ -31,6 +31,7 @@ interface AdminListingRow {
   slug: string;
   status: string;
   purpose: "buy" | "rent";
+  rental_period: "monthly" | "weekly" | "daily";
   price: number;
   created_at: string;
   primary_image_url: string | null;
@@ -57,7 +58,7 @@ export default async function AllListingsPage({
   let query = admin
     .from("listings")
     .select(
-      `id, listing_number, title, slug, status, purpose, type, price,
+      `id, listing_number, title, slug, status, purpose, rental_period, type, price,
        beds, baths, area_marla, image_count, created_at,
        primary_image_url,
        city:cities(name), area:areas(name),
@@ -185,7 +186,7 @@ export default async function AllListingsPage({
                 <td className="px-4 py-3 text-xs text-primary-mid">{listing.agent?.name ?? "—"}</td>
                 <td className="px-4 py-3 text-xs text-primary-mid">{listing.city?.name ?? "—"}</td>
                 <td className="px-4 py-3 text-xs font-semibold text-black">
-                  {formatPrice(listing.price, listing.purpose)}
+                  {formatPrice(listing.price, listing.purpose, listing.rental_period)}
                 </td>
                 <td className="px-4 py-3">
                   <span

@@ -2,6 +2,10 @@ import { z } from "zod";
 
 export const step1Schema = z.object({
   purpose: z.enum(["buy", "rent"]),
+  // Only meaningful when purpose === "rent" (short-term daily/weekly vs
+  // long-term monthly) — defaults to "monthly" so "buy" listings, where
+  // it's simply unused, never need to think about it.
+  rental_period: z.enum(["monthly", "weekly", "daily"]).default("monthly"),
   type: z.enum([
     "house",
     "flat",

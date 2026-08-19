@@ -5,11 +5,23 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+const RENT_SUFFIX: Record<"monthly" | "weekly" | "daily", string> = {
+  monthly: "/mo",
+  weekly: "/week",
+  daily: "/day",
+};
+
 // Pakistani real-estate convention: abbreviate to Crore/Lac for sale prices,
-// keep rent prices as a plain per-month figure (they rarely cross a lac).
-export function formatPkrPrice(amount: number, purpose: "buy" | "rent" = "buy"): string {
+// keep rent prices as a plain per-period figure (they rarely cross a lac).
+// rentalPeriod defaults to "monthly" so existing callers that don't pass it
+// keep showing "/mo" exactly as before.
+export function formatPkrPrice(
+  amount: number,
+  purpose: "buy" | "rent" = "buy",
+  rentalPeriod: "monthly" | "weekly" | "daily" = "monthly",
+): string {
   if (purpose === "rent") {
-    return `PKR ${Math.round(amount).toLocaleString("en-PK")}/mo`;
+    return `PKR ${Math.round(amount).toLocaleString("en-PK")}${RENT_SUFFIX[rentalPeriod]}`;
   }
 
   if (amount >= 1_00_00_000) {

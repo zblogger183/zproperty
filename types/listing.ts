@@ -1,5 +1,10 @@
 export type ListingPurpose = "buy" | "rent";
 
+// Only meaningful when purpose === "rent" — monthly is long-term,
+// weekly/daily are short-term. Always present (defaults to "monthly" at
+// the DB level) even on "buy" listings, where it's simply unused.
+export type ListingRentalPeriod = "monthly" | "weekly" | "daily";
+
 export type ListingPropertyType =
   | "house"
   | "flat"
@@ -37,6 +42,7 @@ export interface Listing {
   title: string;
   slug: string;
   purpose: ListingPurpose;
+  rental_period: ListingRentalPeriod;
   type: ListingPropertyType;
   price: number;
   price_currency: string;
@@ -138,6 +144,7 @@ export interface ListingCardData {
   slug: string;
   title: string;
   purpose: ListingPurpose;
+  rental_period: ListingRentalPeriod;
   price: number;
   beds: number | null;
   baths: number | null;

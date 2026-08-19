@@ -13,6 +13,7 @@ export interface PerformanceListing {
   whatsapp_count: number;
   price: number;
   purpose: "buy" | "rent";
+  rental_period: "monthly" | "weekly" | "daily";
   primary_image_url: string | null;
   created_at: string;
   is_featured: boolean;
@@ -67,7 +68,9 @@ export function ListingPerformanceCard({ listings }: { listings: PerformanceList
                     {listing.status}
                   </span>
                 </p>
-                <p className="text-xs text-primary-mid">{formatPrice(listing.price, listing.purpose)}</p>
+                <p className="text-xs text-primary-mid">
+                  {formatPrice(listing.price, listing.purpose, listing.rental_period)}
+                </p>
               </div>
 
               <div className="shrink-0 text-right">

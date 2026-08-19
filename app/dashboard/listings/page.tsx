@@ -35,7 +35,7 @@ export default async function AllListingsPage({
   let listingsQuery = admin
     .from("listings")
     .select(
-      `id, slug, title, status, purpose, type, price,
+      `id, slug, title, status, purpose, rental_period, type, price,
        area_marla, beds, baths, image_count, has_video,
        views_count, leads_count, calls_count, whatsapp_count,
        is_featured, is_hot_deal, featured_until,

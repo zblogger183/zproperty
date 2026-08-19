@@ -139,6 +139,8 @@ export function ListingForm() {
             data={formData.step3}
             errors={errors}
             propertyType={formData.step1.type}
+            purpose={formData.step1.purpose}
+            rentalPeriod={formData.step1.rental_period}
             onChange={(data) => updateFormData("step3", data)}
           />
         )}

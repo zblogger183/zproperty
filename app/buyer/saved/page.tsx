@@ -22,7 +22,9 @@ export default async function SavedListingsPage() {
 
   const { data } = await supabase
     .from("saved_listings")
-    .select("listing:listings(id, slug, title, purpose, price, primary_image_url, city:cities(name), area:areas(name))")
+    .select(
+      "listing:listings(id, slug, title, purpose, rental_period, price, primary_image_url, city:cities(name), area:areas(name))",
+    )
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
 

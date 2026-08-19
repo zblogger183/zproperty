@@ -20,6 +20,7 @@ export interface DashboardListingRow {
   title: string;
   status: string;
   purpose: "buy" | "rent";
+  rental_period: "monthly" | "weekly" | "daily";
   type: string;
   price: number;
   area_marla: number | null;
@@ -161,7 +162,9 @@ export function ListingRow({ listing }: { listing: DashboardListingRow }) {
         </div>
       </td>
 
-      <td className="px-4 py-3 text-sm font-semibold text-black">{formatPrice(listing.price, listing.purpose)}</td>
+      <td className="px-4 py-3 text-sm font-semibold text-black">
+        {formatPrice(listing.price, listing.purpose, listing.rental_period)}
+      </td>
 
       <td className="px-4 py-3">
         <div className="flex flex-wrap items-center gap-2">

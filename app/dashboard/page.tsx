@@ -66,7 +66,7 @@ export default async function DashboardOverviewPage() {
       admin
         .from("listings")
         .select(
-          "id, slug, title, status, views_count, leads_count, calls_count, whatsapp_count, price, purpose, primary_image_url, created_at, is_featured",
+          "id, slug, title, status, views_count, leads_count, calls_count, whatsapp_count, price, purpose, rental_period, primary_image_url, created_at, is_featured",
         )
         .eq("agent_id", user.id)
         .order("views_count", { ascending: false })

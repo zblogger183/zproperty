@@ -31,6 +31,12 @@ const FURNISHED_OPTIONS: { value: NonNullable<Step3Data["furnished_status"]>; la
 
 const FLOOR_TYPES: Step1Data["type"][] = ["flat", "upper_portion", "lower_portion"];
 
+const PRICE_LABELS: Record<NonNullable<Step1Data["rental_period"]>, string> = {
+  monthly: "Monthly Rent",
+  weekly: "Weekly Rate",
+  daily: "Daily Rate",
+};
+
 function formatWithCommas(value: number): string {
   return value.toLocaleString("en-US");
 }
@@ -43,14 +49,19 @@ export function Step3Details({
   data,
   errors,
   propertyType,
+  purpose,
+  rentalPeriod,
   onChange,
 }: {
   data: Partial<Step3Data>;
   errors: Record<string, string>;
   propertyType?: Step1Data["type"];
+  purpose?: Step1Data["purpose"];
+  rentalPeriod?: Step1Data["rental_period"];
   onChange: (data: Partial<Step3Data>) => void;
 }) {
   const showFloorFields = propertyType != null && FLOOR_TYPES.includes(propertyType);
+  const priceLabel = purpose === "rent" ? PRICE_LABELS[rentalPeriod ?? "monthly"] : "Price";
   const kanal = data.area_marla != null ? round2(data.area_marla / MARLA_PER_KANAL) : null;
 
   function handlePriceChange(raw: string) {
@@ -100,13 +111,13 @@ export function Step3Details({
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <label className={labelClass}>Price</label>
+        <label className={labelClass}>{priceLabel}</label>
         <div className="flex items-center gap-2">
           <span className="text-sm text-primary-mid">PKR</span>
           <input
             value={data.price != null ? formatWithCommas(data.price) : ""}
             onChange={(event) => handlePriceChange(event.target.value)}
-            placeholder="4,500,000"
+            placeholder={purpose === "rent" && rentalPeriod !== "monthly" ? "5,000" : "4,500,000"}
             inputMode="numeric"
             className={inputClass}
           />

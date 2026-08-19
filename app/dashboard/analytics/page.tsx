@@ -27,7 +27,7 @@ export default async function AnalyticsPage() {
     admin
       .from("listings")
       .select(
-        `id, slug, title, status, purpose, type, price,
+        `id, slug, title, status, purpose, rental_period, type, price,
          views_count, leads_count, calls_count, whatsapp_count,
          created_at, published_at, primary_image_url`,
       )
@@ -170,7 +170,9 @@ export default async function AnalyticsPage() {
                   <tr key={listing.id} className="border-b border-primary hover:bg-secondary/5">
                     <td className="max-w-[220px] px-4 py-3">
                       <p className="line-clamp-1 text-sm font-medium text-black">{listing.title}</p>
-                      <p className="text-xs text-primary-mid">{formatPrice(listing.price, listing.purpose)}</p>
+                      <p className="text-xs text-primary-mid">
+                        {formatPrice(listing.price, listing.purpose, listing.rental_period)}
+                      </p>
                     </td>
                     <td className="px-4 py-3 text-xs capitalize text-primary-mid">{listing.status}</td>
                     <td className="px-4 py-3 text-sm text-black">{listing.views_count}</td>

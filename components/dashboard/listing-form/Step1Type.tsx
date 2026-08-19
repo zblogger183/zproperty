@@ -23,6 +23,16 @@ const PURPOSE_OPTIONS: { value: Step1Data["purpose"]; label: string; sublabel: s
   { value: "rent", label: "Rent", sublabel: "Rent a property", Icon: KeyRound },
 ];
 
+const RENTAL_PERIOD_OPTIONS: {
+  value: NonNullable<Step1Data["rental_period"]>;
+  label: string;
+  sublabel: string;
+}[] = [
+  { value: "monthly", label: "Long Term", sublabel: "Monthly" },
+  { value: "weekly", label: "Short Term", sublabel: "Weekly" },
+  { value: "daily", label: "Short Term", sublabel: "Daily" },
+];
+
 const TYPE_OPTIONS: { value: Step1Data["type"]; label: string; Icon: LucideIcon }[] = [
   { value: "house", label: "House", Icon: Home },
   { value: "flat", label: "Flat / Apartment", Icon: Building2 },
@@ -70,6 +80,31 @@ export function Step1Type({
         })}
       </div>
       {errors.purpose && <p className={errorClass}>⚠ {errors.purpose}</p>}
+
+      {data.purpose === "rent" && (
+        <div className="mt-4">
+          <h3 className="text-base font-bold text-black">Rental term</h3>
+          <div className="mt-3 flex gap-3">
+            {RENTAL_PERIOD_OPTIONS.map((option) => {
+              const selected = (data.rental_period ?? "monthly") === option.value;
+              return (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => onChange({ rental_period: option.value })}
+                  style={selected ? { backgroundColor: "rgba(180,231,23,0.08)" } : undefined}
+                  className={`flex-1 rounded-xl border-2 p-3 text-center transition ${
+                    selected ? "border-secondary" : "border-primary"
+                  }`}
+                >
+                  <p className="text-sm font-bold text-black">{option.label}</p>
+                  <p className="mt-0.5 text-xs text-primary-mid">{option.sublabel}</p>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       <h3 className="mt-6 text-base font-bold text-black">What type of property?</h3>
       <div className="mt-3 grid grid-cols-3 gap-3">

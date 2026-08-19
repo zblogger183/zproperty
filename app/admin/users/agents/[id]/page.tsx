@@ -26,7 +26,7 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
       .maybeSingle(),
     admin
       .from("listings")
-      .select("id, slug, title, status, price, purpose, views_count, leads_count, created_at")
+      .select("id, slug, title, status, price, purpose, rental_period, views_count, leads_count, created_at")
       .eq("agent_id", id)
       .order("created_at", { ascending: false }),
     admin
@@ -141,7 +141,9 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
                   <tr key={listing.id} className="border-b border-primary last:border-b-0">
                     <td className="max-w-[160px] truncate px-4 py-3 text-black">{listing.title}</td>
                     <td className="px-4 py-3 text-xs capitalize text-primary-mid">{listing.status}</td>
-                    <td className="px-4 py-3 text-xs text-black">{formatPrice(listing.price, listing.purpose)}</td>
+                    <td className="px-4 py-3 text-xs text-black">
+                      {formatPrice(listing.price, listing.purpose, listing.rental_period)}
+                    </td>
                     <td className="px-4 py-3 text-xs text-primary-mid">{listing.views_count} views</td>
                   </tr>
                 ))}

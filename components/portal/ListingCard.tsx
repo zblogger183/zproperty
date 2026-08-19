@@ -70,7 +70,7 @@ export function ListingCard({
           </span>
 
           <span className="absolute bottom-0 left-0 rounded-tr-lg bg-black px-3 py-1 text-sm font-bold text-secondary">
-            {formatPkrPrice(listing.price, listing.purpose)}
+            {formatPkrPrice(listing.price, listing.purpose, listing.rental_period)}
           </span>
 
           <SaveButton listingId={listing.id} className="absolute bottom-2 right-2" />

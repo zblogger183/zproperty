@@ -16,6 +16,7 @@ interface FeaturedListingRow {
   slug: string;
   status: string;
   purpose: "buy" | "rent";
+  rental_period: "monthly" | "weekly" | "daily";
   price: number;
   primary_image_url: string | null;
   featured_until: string | null;
@@ -39,7 +40,7 @@ export default async function FeaturedListingsPage() {
   const { data } = await admin
     .from("listings")
     .select(
-      `id, title, slug, status, purpose, price, primary_image_url, featured_until, is_hot_deal,
+      `id, title, slug, status, purpose, rental_period, price, primary_image_url, featured_until, is_hot_deal,
        city:cities(name), agent:public_agent_contact(name)`,
     )
     .eq("is_featured", true)
@@ -101,7 +102,7 @@ export default async function FeaturedListingsPage() {
                   <td className="px-4 py-3 text-xs text-primary-mid">{listing.agent?.name ?? "—"}</td>
                   <td className="px-4 py-3 text-xs text-primary-mid">{listing.city?.name ?? "—"}</td>
                   <td className="px-4 py-3 text-xs font-semibold text-black">
-                    {formatPrice(listing.price, listing.purpose)}
+                    {formatPrice(listing.price, listing.purpose, listing.rental_period)}
                   </td>
                   <td className="px-4 py-3 text-xs">
                     {listing.featured_until ? (

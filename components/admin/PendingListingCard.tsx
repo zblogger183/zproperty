@@ -13,6 +13,7 @@ export interface PendingListing {
   title: string;
   slug: string;
   purpose: "buy" | "rent";
+  rental_period: "monthly" | "weekly" | "daily";
   type: string;
   price: number;
   area_marla: number | null;
@@ -130,7 +131,9 @@ export function PendingListingCard({
         )}
 
         <div className="min-w-0 flex-1">
-          <p className="text-lg font-bold text-black">{formatPrice(listing.price, listing.purpose)}</p>
+          <p className="text-lg font-bold text-black">
+            {formatPrice(listing.price, listing.purpose, listing.rental_period)}
+          </p>
           <div className="mt-1 flex flex-wrap gap-3 text-xs text-primary-mid">
             {listing.beds != null && <span>{listing.beds} Beds</span>}
             {listing.baths != null && <span>{listing.baths} Baths</span>}

@@ -124,7 +124,7 @@ export async function getSimilarListings(
   const { data } = await supabase
     .from("listings")
     .select(
-      `id, slug, title, purpose, price, area_marla, beds, baths, primary_image_url, is_featured, is_hot_deal,
+      `id, slug, title, purpose, rental_period, price, area_marla, beds, baths, primary_image_url, is_featured, is_hot_deal,
        agent_id, city:cities(name, slug), area:areas(name, slug), agent:public_agent_contact(${AGENT_CONTACT_COLUMNS})`,
     )
     .eq("city_id", cityId)
