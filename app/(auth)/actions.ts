@@ -377,6 +377,17 @@ export async function registerAction(input: RegisterInput): Promise<ActionResult
 
   await emailNotify.welcome({ to: input.email, name: input.fullName, role: role.data });
 
+  // signUp() only returns a session when Supabase's "Confirm email" setting
+  // is off — i.e. the account is already fully active with no code needed.
+  // When that setting is on, data.session is null here and the user still
+  // needs /verify-otp. This branches on Supabase's own setting rather than
+  // a hardcoded skip, so re-enabling email confirmation later (once a real
+  // sending domain is set up) automatically restores the OTP step with no
+  // further code change.
+  if (data.session) {
+    redirect(getRoleRedirectPath(role.data));
+  }
+
   redirect(`/verify-otp?identifier=${encodeURIComponent(input.email)}&purpose=signup`);
 }
 
