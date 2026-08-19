@@ -11,6 +11,7 @@ export interface AreaGuideInput {
   meta_title: string;
   meta_desc: string;
   is_published: boolean;
+  map_pdf_url: string;
 }
 
 export async function saveAreaGuideAction(societyId: string, input: AreaGuideInput) {
@@ -35,6 +36,16 @@ export async function saveAreaGuideAction(societyId: string, input: AreaGuideInp
   );
 
   if (error) throw new Error(error.message);
+
+  // map_pdf_url lives on societies, not area_guides — it's a fact about the
+  // society itself (shown regardless of guide publish status), not editorial
+  // guide content.
+  const { error: mapError } = await admin
+    .from("societies")
+    .update({ map_pdf_url: input.map_pdf_url || null })
+    .eq("id", societyId);
+
+  if (mapError) throw new Error(mapError.message);
 
   revalidatePath("/admin/content/area-guides");
   revalidatePath(`/admin/content/area-guides/${societyId}`);

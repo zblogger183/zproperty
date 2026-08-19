@@ -72,3 +72,26 @@ export async function uploadImageToCloudinary(
     height: result.height,
   };
 }
+
+// Society map PDFs (master-plan downloads) — stored as-is, no derived
+// sizes/transformations needed the way listing photos get. `resource_type:
+// "auto"` lets Cloudinary store and deliver the PDF directly rather than
+// trying to treat it as an image.
+export async function uploadPdfToCloudinary(buffer: Buffer, folder: string, fileId: string): Promise<string> {
+  const result = await new Promise<UploadApiResponse>((resolve, reject) => {
+    const options = {
+      public_id: `zproperty/${folder}/${fileId}`,
+      resource_type: "auto" as const,
+      overwrite: false,
+    };
+
+    cloudinary.uploader
+      .upload_stream(options, (error, res) => {
+        if (error || !res) reject(error ?? new Error("Cloudinary upload returned no result"));
+        else resolve(res);
+      })
+      .end(buffer);
+  });
+
+  return result.secure_url;
+}

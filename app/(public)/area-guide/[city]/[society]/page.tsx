@@ -9,6 +9,7 @@ import { SchemaScript, areaGuideSchema } from "@/lib/seo/schemas";
 import { Breadcrumb } from "@/components/portal/Breadcrumb";
 import { ListingCard } from "@/components/portal/ListingCard";
 import { TiptapRenderer } from "@/components/portal/blog/TiptapRenderer";
+import MiniMapLoader from "@/components/portal/listing/MiniMapLoader";
 import type { ListingCardData } from "@/types";
 
 export const revalidate = 86400;
@@ -36,6 +37,9 @@ interface SocietyRow {
   area: { slug: string } | null;
   meta_title: string | null;
   meta_desc: string | null;
+  lat: number | null;
+  lng: number | null;
+  map_pdf_url: string | null;
 }
 
 interface AreaGuideRow {
@@ -64,7 +68,7 @@ const getCityAndSociety = cache(async (citySlug: string, societySlug: string) =>
     .select(
       `id, name, slug, description, established_yr, developer_name, total_plots, total_phases,
        amenities, cover_image_url, avg_price_marla, listing_count, area_id, area:areas(slug),
-       meta_title, meta_desc`,
+       meta_title, meta_desc, lat, lng, map_pdf_url`,
     )
     .eq("slug", societySlug)
     .eq("city_id", city.id)
@@ -348,6 +352,25 @@ export default async function AreaGuidePage({
               >
                 Browse {society.listing_count} Listings
               </Link>
+
+              {(society.lat != null && society.lng != null) || society.map_pdf_url ? (
+                <div className="mt-4">
+                  <h3 className="mb-2 text-sm font-bold text-black">Location</h3>
+                  {society.lat != null && society.lng != null && (
+                    <MiniMapLoader lat={society.lat} lng={society.lng} title={society.name} />
+                  )}
+                  {society.map_pdf_url && (
+                    <a
+                      href={society.map_pdf_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mt-3 block w-full rounded-lg border border-primary py-2.5 text-center text-sm font-semibold text-primary hover:bg-secondary/10"
+                    >
+                      Download Map (PDF)
+                    </a>
+                  )}
+                </div>
+              ) : null}
 
               {society.avg_price_marla != null && (
                 <div className="mt-4 rounded-xl border border-primary bg-white p-4">

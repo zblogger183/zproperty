@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { saveAreaGuideAction, deleteAreaGuideAction } from "@/app/admin/content/area-guides/actions";
 import { inputClass } from "./styles";
@@ -13,6 +13,7 @@ export interface AreaGuideInitial {
   meta_title: string;
   meta_desc: string;
   is_published: boolean;
+  map_pdf_url: string;
 }
 
 export function AreaGuideEditor({
@@ -20,11 +21,13 @@ export function AreaGuideEditor({
   societyName,
   initial,
   hasExistingGuide,
+  hasCoordinates,
 }: {
   societyId: string;
   societyName: string;
   initial: AreaGuideInitial;
   hasExistingGuide: boolean;
+  hasCoordinates: boolean;
 }) {
   const router = useRouter();
   const [overview, setOverview] = useState(initial.overview);
@@ -34,9 +37,35 @@ export function AreaGuideEditor({
   const [metaTitle, setMetaTitle] = useState(initial.meta_title);
   const [metaDesc, setMetaDesc] = useState(initial.meta_desc);
   const [isPublished, setIsPublished] = useState(initial.is_published);
+  const [mapPdfUrl, setMapPdfUrl] = useState(initial.map_pdf_url);
+  const [isUploadingMap, setIsUploadingMap] = useState(false);
+  const [mapUploadError, setMapUploadError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [savedMessage, setSavedMessage] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const mapFileInputRef = useRef<HTMLInputElement>(null);
+
+  async function handleMapFile(file: File) {
+    setIsUploadingMap(true);
+    setMapUploadError(null);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch("/api/upload/society-map", { method: "POST", body: formData });
+      const result = (await response.json()) as { url?: string; error?: string };
+
+      if (!response.ok || !result.url) {
+        throw new Error(result.error ?? "Upload failed.");
+      }
+      setMapPdfUrl(result.url);
+    } catch (uploadError) {
+      setMapUploadError(uploadError instanceof Error ? uploadError.message : "Upload failed.");
+    } finally {
+      setIsUploadingMap(false);
+    }
+  }
 
   async function handleSave() {
     setIsSaving(true);
@@ -52,6 +81,7 @@ export function AreaGuideEditor({
         meta_title: metaTitle,
         meta_desc: metaDesc,
         is_published: isPublished,
+        map_pdf_url: mapPdfUrl,
       });
       setSavedMessage(true);
       router.refresh();
@@ -151,6 +181,67 @@ export function AreaGuideEditor({
           placeholder="A short summary of resident sentiment..."
           className={`${inputClass} mt-3`}
         />
+      </section>
+
+      <section className="rounded-xl border border-primary bg-white p-5">
+        <h2 className="text-base font-bold text-black">Map</h2>
+        <p className="mt-1 text-xs text-primary-mid">
+          {hasCoordinates
+            ? "The interactive map on the public page uses this society's saved location. Upload a master-plan PDF below to also show a download button."
+            : "This society has no saved location yet, so the interactive map won't show on the public page — a PDF here will still display as a download."}
+        </p>
+
+        <input
+          ref={mapFileInputRef}
+          type="file"
+          accept="application/pdf"
+          className="hidden"
+          onChange={(event) => {
+            const file = event.target.files?.[0];
+            if (file) void handleMapFile(file);
+            event.target.value = "";
+          }}
+        />
+
+        {mapPdfUrl ? (
+          <div className="mt-3 flex items-center gap-3 rounded-lg border border-secondary bg-white p-3">
+            <span className="text-sm font-semibold text-black">✓ Map PDF uploaded</span>
+            <a href={mapPdfUrl} target="_blank" rel="noreferrer" className="text-xs text-primary underline">
+              View
+            </a>
+            <button
+              type="button"
+              disabled={isUploadingMap}
+              onClick={() => mapFileInputRef.current?.click()}
+              className="ml-auto cursor-pointer text-xs text-primary-mid underline disabled:opacity-60"
+            >
+              {isUploadingMap ? "Uploading..." : "Replace"}
+            </button>
+            <button
+              type="button"
+              onClick={() => setMapPdfUrl("")}
+              className="cursor-pointer text-xs text-primary-mid underline"
+            >
+              Remove
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            disabled={isUploadingMap}
+            onClick={() => mapFileInputRef.current?.click()}
+            className="mt-3 w-full cursor-pointer rounded-lg border-2 border-dashed border-primary p-4 text-center text-sm font-semibold text-black disabled:opacity-60"
+          >
+            {isUploadingMap ? "Uploading..." : "Upload Map PDF"}
+          </button>
+        )}
+
+        {mapUploadError && (
+          <p className="mt-2 text-sm font-medium text-black">
+            <span aria-hidden="true">⚠ </span>
+            {mapUploadError}
+          </p>
+        )}
       </section>
 
       <section className="rounded-xl border border-primary bg-white p-5">

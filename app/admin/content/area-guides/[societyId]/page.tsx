@@ -13,7 +13,7 @@ export default async function EditAreaGuidePage({ params }: { params: Promise<{ 
   const admin = createAdminClient();
 
   const [{ data: society }, { data: guide }] = await Promise.all([
-    admin.from("societies").select("id, name").eq("id", societyId).single(),
+    admin.from("societies").select("id, name, lat, lng, map_pdf_url").eq("id", societyId).single(),
     admin
       .from("area_guides")
       .select("overview, pros, cons, review_summary, meta_title, meta_desc, is_published")
@@ -35,6 +35,7 @@ export default async function EditAreaGuidePage({ params }: { params: Promise<{ 
           societyId={society.id}
           societyName={society.name}
           hasExistingGuide={!!guide}
+          hasCoordinates={society.lat != null && society.lng != null}
           initial={{
             overview: guide?.overview ?? "",
             pros: guide?.pros ?? [],
@@ -43,6 +44,7 @@ export default async function EditAreaGuidePage({ params }: { params: Promise<{ 
             meta_title: guide?.meta_title ?? "",
             meta_desc: guide?.meta_desc ?? "",
             is_published: guide?.is_published ?? false,
+            map_pdf_url: society.map_pdf_url ?? "",
           }}
         />
       </div>
