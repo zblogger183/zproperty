@@ -299,11 +299,38 @@ export function areaGuideMeta(params: {
 }
 
 // ── NEW PROJECT ──────────────────────────────────────────
+const PROJECT_STATUS_LABEL: Record<string, string> = {
+  pre_launch: "Pre-Launch",
+  launching: "Launching Now",
+  under_construction: "Under Construction",
+  ready: "Ready to Move",
+  completed: "Completed",
+};
+
+// A raw admin-entered address is usually plot/office-number-first
+// ("Office No 203, 2nd Floor, Divine Mega 2, Airport Road, Lahore") - the
+// last segment before the city is normally the actual locality/road name
+// (what buyers search for), so that's what surfaces in the title/description
+// rather than the full string or just the bare city.
+function shortLocation(address: string | null | undefined, cityName: string): string {
+  if (!address) return cityName;
+  const segments = address
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .filter((part) => !part.toLowerCase().includes(cityName.toLowerCase()));
+  const locality = segments[segments.length - 1];
+  return locality ? `${locality}, ${cityName}` : cityName;
+}
+
 export function projectMeta(project: {
   name: string;
   slug: string;
   property_type?: string | null;
   city_name: string;
+  address?: string | null;
+  status?: string | null;
+  total_units?: number | null;
   min_price?: number | null;
   max_price?: number | null;
   og_image_url?: string | null;
@@ -311,14 +338,35 @@ export function projectMeta(project: {
   meta_title?: string | null;
   meta_desc?: string | null;
 }): Metadata {
-  const typeStr = project.property_type?.replace(/_/g, " ") || "Properties";
-  const priceStr = project.min_price ? `from ${formatPrice(project.min_price, "buy")}` : "";
+  const typeStr = project.property_type?.replace(/_/g, " ") || "Property";
+  const typeLabel = typeStr.charAt(0).toUpperCase() + typeStr.slice(1);
+  const location = shortLocation(project.address, project.city_name);
+  const statusLabel = project.status ? (PROJECT_STATUS_LABEL[project.status] ?? null) : null;
+  const priceStr = project.min_price ? `From ${formatPrice(project.min_price, "buy")}` : null;
+
   const title =
     project.meta_title ||
-    `${project.name} — New ${typeStr} in ${project.city_name}${priceStr ? " " + priceStr : ""} | ${SITE_NAME}`;
+    [
+      `${project.name} —`,
+      `New ${typeLabel} for Sale in ${location}`,
+      priceStr ? `| ${priceStr}` : null,
+      `| ${SITE_NAME}`,
+    ]
+      .filter(Boolean)
+      .join(" ");
+
   const desc =
     project.meta_desc ||
-    `${project.name} is a new ${typeStr.toLowerCase()} development in ${project.city_name}. ${priceStr ? `Starting ${priceStr}.` : ""} Get details, payment plans and agent contact on ${SITE_NAME}.`;
+    [
+      `${project.name} is a new ${typeLabel.toLowerCase()} project for sale in ${location}.`,
+      statusLabel ? `${statusLabel}.` : null,
+      priceStr ? `${priceStr}.` : null,
+      project.total_units ? `${project.total_units} units.` : null,
+      `View floor plans, payment plan and developer contact on ${SITE_NAME}.`,
+    ]
+      .filter(Boolean)
+      .join(" ");
+
   const ogImage = project.og_image_url || project.cover_image_url || `${SITE_URL}/og-default.jpg`;
   const canonical = `${SITE_URL}/new-projects/${project.slug}`;
 

@@ -27,7 +27,32 @@ const CSP = [
   "form-action 'self'",
 ].join("; ");
 
+// Project slugs were switched from "{name}-{random-hash}" to a clean
+// "{name}" (SEO-friendly, and doesn't imply the URL is developer-specific
+// when one developer can have several projects) - these permanent redirects
+// preserve any link/bookmark to the handful of projects that briefly lived
+// at the old hash-suffixed URLs.
+const OLD_PROJECT_SLUG_REDIRECTS: Record<string, string> = {
+  "unity-heights-be0c52d3": "unity-heights",
+  "pearl-towers-5c16dde6": "pearl-towers",
+  "hiba-downtown-efd1d333": "hiba-downtown",
+  "the-opus-accc37f7": "the-opus",
+  "summit-heights-11ed5d5f": "summit-heights",
+  "de-view-67f2f980": "de-view",
+  "heaven-20-heights-d342f6f4": "heaven-20-heights",
+  "bahria-sky-4a110fc6": "bahria-sky",
+  "talux-one-b686b951": "talux-one",
+  "falah-technology-tower-ac58cc82": "falah-technology-tower",
+};
+
 const nextConfig: NextConfig = {
+  async redirects() {
+    return Object.entries(OLD_PROJECT_SLUG_REDIRECTS).map(([oldSlug, newSlug]) => ({
+      source: `/new-projects/${oldSlug}`,
+      destination: `/new-projects/${newSlug}`,
+      permanent: true,
+    }));
+  },
   async headers() {
     return [
       {

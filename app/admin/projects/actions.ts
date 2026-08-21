@@ -2,8 +2,25 @@
 
 import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { verifyAdmin } from "@/app/admin/listings/actions";
 import { slugify } from "@/lib/utils";
+
+// Clean, permanent-looking slugs (project name only, e.g. "unity-heights")
+// read far better for SEO and for a developer with multiple projects than a
+// random-suffixed one — the suffix only kicks in on an actual name collision,
+// same pattern as generateUniqueAgentSlug in app/(auth)/actions.ts.
+async function generateUniqueProjectSlug(admin: SupabaseClient, name: string): Promise<string> {
+  const base = slugify(name) || "project";
+
+  for (let attempt = 0; attempt < 50; attempt += 1) {
+    const candidate = attempt === 0 ? base : `${base}-${attempt + 1}`;
+    const { data } = await admin.from("projects").select("id").eq("slug", candidate).maybeSingle();
+    if (!data) return candidate;
+  }
+
+  return `${base}-${Date.now().toString(36)}`;
+}
 
 export interface ProjectUnitTypeInput {
   unit_type: string;
@@ -61,7 +78,7 @@ export async function createProjectAction(input: CreateProjectInput) {
   if (!input.property_type) throw new Error("Select a property type");
 
   const projectId = randomUUID();
-  const slug = `${slugify(name)}-${projectId.slice(0, 8)}`;
+  const slug = await generateUniqueProjectSlug(admin, name);
   const coverImage = input.images[0] ?? null;
 
   const { error } = await admin.from("projects").insert({

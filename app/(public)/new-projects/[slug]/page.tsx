@@ -15,7 +15,7 @@ export const revalidate = 600;
 
 const PROJECT_DETAIL_COLUMNS = `
   id, slug, name, tagline, type, property_type,
-  status, description, amenities,
+  status, address, description, amenities,
   launch_date, possession_date, completion_pct,
   total_units, min_price, max_price,
   min_area, max_area, lat, lng, developer_id,
@@ -65,6 +65,7 @@ interface ProjectDetail {
   type: string | null;
   property_type: string | null;
   status: string;
+  address: string | null;
   description: string | null;
   amenities: unknown;
   launch_date: string | null;
@@ -138,6 +139,9 @@ export async function generateMetadata({
     slug: project.slug,
     property_type: project.property_type,
     city_name: project.city?.name ?? "",
+    address: project.address,
+    status: project.status,
+    total_units: project.total_units,
     min_price: project.min_price,
     max_price: project.max_price,
     og_image_url: project.og_image_url,
