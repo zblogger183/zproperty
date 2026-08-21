@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { createPublicClient } from "@/lib/supabase/public";
 import { ProjectCard, type ProjectListCardData } from "@/components/portal/projects/ProjectCard";
 import { ProjectsFilterBar } from "@/components/portal/projects/ProjectsFilterBar";
+import { ProjectsLinksSidebar } from "@/components/portal/projects/ProjectsLinksSidebar";
 
 export const revalidate = 3600;
 
@@ -50,13 +51,16 @@ export default async function NewProjectsCityPage({
   }
 
   const supabase = createPublicClient();
-  const { data: projectsRaw } = await supabase
-    .from("projects")
-    .select(PROJECT_COLUMNS)
-    .eq("status_platform", "active")
-    .eq("city_id", city.id)
-    .order("is_featured", { ascending: false })
-    .order("created_at", { ascending: false });
+  const [{ data: projectsRaw }, { data: cities }] = await Promise.all([
+    supabase
+      .from("projects")
+      .select(PROJECT_COLUMNS)
+      .eq("status_platform", "active")
+      .eq("city_id", city.id)
+      .order("is_featured", { ascending: false })
+      .order("created_at", { ascending: false }),
+    supabase.from("cities").select("id, name, slug").eq("is_active", true).order("display_order"),
+  ]);
 
   let projects = (projectsRaw ?? []) as unknown as ProjectListCardData[];
 
@@ -81,14 +85,22 @@ export default async function NewProjectsCityPage({
         </Suspense>
       </div>
 
-      <div className="mx-auto max-w-6xl px-6 py-8">
+      <div className="mx-auto max-w-7xl px-4 py-8 md:px-6">
         {projects.length === 0 ? (
           <div className="py-20 text-center text-primary-mid">No projects listed yet.</div>
         ) : (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {projects.map((project, index) => (
-              <ProjectCard key={project.id} project={project} priority={index === 0} />
-            ))}
+          <div className="flex flex-col gap-6 md:flex-row">
+            <div className="flex-1">
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                {projects.map((project, index) => (
+                  <ProjectCard key={project.id} project={project} priority={index === 0} />
+                ))}
+              </div>
+            </div>
+
+            <div className="md:w-64 md:shrink-0">
+              <ProjectsLinksSidebar cities={(cities ?? []).filter((c) => c.slug !== citySlug)} />
+            </div>
           </div>
         )}
       </div>
