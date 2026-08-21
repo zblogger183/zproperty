@@ -67,6 +67,12 @@ export default async function AllProjectsPage({
         <span className="rounded-full border border-primary px-3 py-1 text-sm font-semibold text-primary">
           {count ?? 0} total
         </span>
+        <Link
+          href="/admin/projects/new"
+          className="ml-auto rounded-lg bg-secondary px-4 py-2 text-sm font-bold text-primary hover:bg-secondary-dark"
+        >
+          + Add Project
+        </Link>
       </div>
 
       <div className="mb-6 mt-6 flex flex-wrap items-center gap-3 rounded-xl border border-primary bg-white p-4">

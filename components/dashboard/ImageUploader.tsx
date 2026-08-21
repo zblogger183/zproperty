@@ -18,11 +18,13 @@ interface UploadApiResult {
 
 export function ImageUploader({
   listingId,
+  folder = "listings",
   onUploaded,
   maxFiles = 20,
   existingImages,
 }: {
   listingId?: string;
+  folder?: string;
   onUploaded: (images: UploadedImage[]) => void;
   maxFiles?: number;
   existingImages?: UploadedImage[];
@@ -43,7 +45,7 @@ export function ImageUploader({
     return new Promise((resolve, reject) => {
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("folder", "listings");
+      formData.append("folder", folder);
       if (listingId) formData.append("listing_id", listingId);
 
       const xhr = new XMLHttpRequest();

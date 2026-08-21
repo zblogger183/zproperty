@@ -53,7 +53,9 @@ export function AreaGuideEditor({
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await fetch("/api/upload/society-map", { method: "POST", body: formData });
+      formData.append("folder", "society-maps");
+
+      const response = await fetch("/api/upload/pdf", { method: "POST", body: formData });
       const result = (await response.json()) as { url?: string; error?: string };
 
       if (!response.ok || !result.url) {
