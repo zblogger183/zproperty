@@ -27,22 +27,32 @@ const CSP = [
   "form-action 'self'",
 ].join("; ");
 
-// Project slugs were switched from "{name}-{random-hash}" to a clean
-// "{name}" (SEO-friendly, and doesn't imply the URL is developer-specific
-// when one developer can have several projects) - these permanent redirects
-// preserve any link/bookmark to the handful of projects that briefly lived
-// at the old hash-suffixed URLs.
+// Project slugs went through two formats before settling on "{name}-{city}"
+// (e.g. unity-heights-lahore) - first "{name}-{random-hash}", then briefly a
+// bare "{name}" with no location keyword at all. Every old form a project
+// lived at gets a single-hop permanent redirect straight to its final slug
+// (never chained hop-to-hop) so no bookmark/backlink breaks.
 const OLD_PROJECT_SLUG_REDIRECTS: Record<string, string> = {
-  "unity-heights-be0c52d3": "unity-heights",
-  "pearl-towers-5c16dde6": "pearl-towers",
-  "hiba-downtown-efd1d333": "hiba-downtown",
-  "the-opus-accc37f7": "the-opus",
-  "summit-heights-11ed5d5f": "summit-heights",
-  "de-view-67f2f980": "de-view",
-  "heaven-20-heights-d342f6f4": "heaven-20-heights",
-  "bahria-sky-4a110fc6": "bahria-sky",
-  "talux-one-b686b951": "talux-one",
-  "falah-technology-tower-ac58cc82": "falah-technology-tower",
+  "unity-heights-be0c52d3": "unity-heights-lahore",
+  "unity-heights": "unity-heights-lahore",
+  "pearl-towers-5c16dde6": "pearl-towers-lahore",
+  "pearl-towers": "pearl-towers-lahore",
+  "hiba-downtown-efd1d333": "hiba-downtown-karachi",
+  "hiba-downtown": "hiba-downtown-karachi",
+  "the-opus-accc37f7": "the-opus-lahore",
+  "the-opus": "the-opus-lahore",
+  "summit-heights-11ed5d5f": "summit-heights-lahore",
+  "summit-heights": "summit-heights-lahore",
+  "de-view-67f2f980": "de-view-lahore",
+  "de-view": "de-view-lahore",
+  "heaven-20-heights-d342f6f4": "heaven-20-heights-lahore",
+  "heaven-20-heights": "heaven-20-heights-lahore",
+  "bahria-sky-4a110fc6": "bahria-sky-lahore",
+  "bahria-sky": "bahria-sky-lahore",
+  "talux-one-b686b951": "talux-one-lahore",
+  "talux-one": "talux-one-lahore",
+  "falah-technology-tower-ac58cc82": "falah-technology-tower-lahore",
+  "falah-technology-tower": "falah-technology-tower-lahore",
 };
 
 const nextConfig: NextConfig = {

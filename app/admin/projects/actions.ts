@@ -6,12 +6,14 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { verifyAdmin } from "@/app/admin/listings/actions";
 import { slugify } from "@/lib/utils";
 
-// Clean, permanent-looking slugs (project name only, e.g. "unity-heights")
-// read far better for SEO and for a developer with multiple projects than a
-// random-suffixed one — the suffix only kicks in on an actual name collision,
-// same pattern as generateUniqueAgentSlug in app/(auth)/actions.ts.
-async function generateUniqueProjectSlug(admin: SupabaseClient, name: string): Promise<string> {
-  const base = slugify(name) || "project";
+// Clean, permanent-looking slugs ("{name}-{city}", e.g. "unity-heights-lahore")
+// read far better for SEO than a random-suffixed one, and the city segment
+// gives every project page a location keyword and keeps two same-named
+// projects in different cities apart without needing a numeric suffix — that
+// only kicks in on a genuine same-name-same-city collision, same retry
+// pattern as generateUniqueAgentSlug in app/(auth)/actions.ts.
+async function generateUniqueProjectSlug(admin: SupabaseClient, name: string, citySlug: string): Promise<string> {
+  const base = [slugify(name), citySlug].filter(Boolean).join("-") || "project";
 
   for (let attempt = 0; attempt < 50; attempt += 1) {
     const candidate = attempt === 0 ? base : `${base}-${attempt + 1}`;
@@ -77,8 +79,11 @@ export async function createProjectAction(input: CreateProjectInput) {
   if (!input.city_id) throw new Error("Select a city");
   if (!input.property_type) throw new Error("Select a property type");
 
+  const { data: cityRow } = await admin.from("cities").select("slug").eq("id", input.city_id).single();
+  if (!cityRow) throw new Error("City not found");
+
   const projectId = randomUUID();
-  const slug = await generateUniqueProjectSlug(admin, name);
+  const slug = await generateUniqueProjectSlug(admin, name, cityRow.slug);
   const coverImage = input.images[0] ?? null;
 
   const { error } = await admin.from("projects").insert({
