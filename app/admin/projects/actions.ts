@@ -133,6 +133,7 @@ export async function createProjectAction(input: CreateProjectInput) {
 
   revalidatePath("/admin/projects");
   revalidatePath("/new-projects");
+  revalidatePath("/");
 
   return { ok: true, id: projectId, slug };
 }
@@ -149,6 +150,7 @@ export async function approveProjectAction(projectId: string) {
   revalidatePath("/admin/projects");
   revalidatePath(`/admin/projects/${projectId}`);
   revalidatePath("/new-projects");
+  revalidatePath("/");
 
   return { ok: true };
 }
@@ -176,6 +178,7 @@ export async function featureProjectAction(projectId: string) {
   revalidatePath(`/admin/projects/${projectId}`);
   revalidatePath("/admin/projects");
   revalidatePath("/new-projects");
+  revalidatePath("/");
 
   return { ok: true };
 }
