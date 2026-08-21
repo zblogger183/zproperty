@@ -226,7 +226,7 @@ export default async function ProjectDetailPage({
         })}
       />
 
-      <div className="mx-auto max-w-5xl px-6 py-8">
+      <div className="mx-auto w-full max-w-6xl px-4 py-8 md:px-6">
         {/* Breadcrumb already emits its own BreadcrumbList JSON-LD. */}
         <Breadcrumb items={breadcrumbItems} />
 
