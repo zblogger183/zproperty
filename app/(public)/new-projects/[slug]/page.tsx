@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import { createPublicClient } from "@/lib/supabase/public";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatPrice } from "@/lib/utils/formatPrice";
@@ -250,6 +251,14 @@ export default async function ProjectDetailPage({
             <p className="mt-1 text-sm text-primary-mid">
               {project.area ? `${project.area.name}, ${project.city?.name}` : project.city?.name}
             </p>
+            {project.society && project.city && (
+              <Link
+                href={`/area-guide/${project.city.slug}/${project.society.slug}`}
+                className="mt-1 inline-block text-sm text-primary hover:text-primary-mid"
+              >
+                Part of {project.society.name} →
+              </Link>
+            )}
 
             <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4">
               <InfoCard label="Status" value={project.status.replace(/_/g, " ")} capitalize />
