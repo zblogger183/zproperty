@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { format } from "date-fns";
-import { Eye, List, MessageCircle, Users } from "lucide-react";
+import { Eye, List, MessageCircle, Users, Building2, Inbox } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { DashboardStatCard } from "@/components/dashboard/DashboardStatCard";
 import { RecentLeadsCard, type RecentLead } from "@/components/dashboard/RecentLeadsCard";
 import { ListingPerformanceCard, type PerformanceListing } from "@/components/dashboard/ListingPerformanceCard";
+import { ProjectPerformanceCard, type PerformanceProject } from "@/components/dashboard/ProjectPerformanceCard";
 
 export const dynamic = "force-dynamic";
 
@@ -35,23 +36,34 @@ export default async function DashboardOverviewPage() {
   if (!user) redirect("/login");
 
   const admin = createAdminClient();
+  const { data: userRow } = await admin.from("users").select("name, role").eq("id", user.id).maybeSingle();
 
+  if (userRow?.role === "developer") {
+    return <DeveloperOverview userId={user.id} name={userRow?.name ?? "Developer"} admin={admin} />;
+  }
+
+  return <AgentOverview userId={user.id} admin={admin} />;
+}
+
+type AdminClient = ReturnType<typeof createAdminClient>;
+
+async function AgentOverview({ userId, admin }: { userId: string; admin: AdminClient }) {
   const thirtyDaysAgo = getThirtyDaysAgoISOString();
 
   const [{ data: userRow }, { data: profile }, [{ data: activeListings }, { count: leadsCount }], { data: recentLeadsRaw }, { data: performanceRaw }] =
     await Promise.all([
-      admin.from("users").select("name").eq("id", user.id).maybeSingle(),
+      admin.from("users").select("name").eq("id", userId).maybeSingle(),
       admin
         .from("agent_profiles")
         .select("subscription_tier, subscription_end, active_listings, total_listings, total_leads, cnic_verified, cnic_number")
-        .eq("user_id", user.id)
+        .eq("user_id", userId)
         .maybeSingle(),
       Promise.all([
-        admin.from("listings").select("views_count, whatsapp_count").eq("agent_id", user.id).eq("status", "active"),
+        admin.from("listings").select("views_count, whatsapp_count").eq("agent_id", userId).eq("status", "active"),
         admin
           .from("leads")
           .select("id", { count: "exact", head: true })
-          .eq("agent_id", user.id)
+          .eq("agent_id", userId)
           .gte("created_at", thirtyDaysAgo),
       ]),
       admin
@@ -60,7 +72,7 @@ export default async function DashboardOverviewPage() {
           `id, lead_type, name, phone, status, created_at, message,
            listing:listings(title, slug, primary_image_url)`,
         )
-        .eq("agent_id", user.id)
+        .eq("agent_id", userId)
         .order("created_at", { ascending: false })
         .limit(10),
       admin
@@ -68,7 +80,7 @@ export default async function DashboardOverviewPage() {
         .select(
           "id, slug, title, status, views_count, leads_count, calls_count, whatsapp_count, price, purpose, rental_period, primary_image_url, created_at, is_featured",
         )
-        .eq("agent_id", user.id)
+        .eq("agent_id", userId)
         .order("views_count", { ascending: false })
         .limit(5),
     ]);
@@ -184,6 +196,85 @@ export default async function DashboardOverviewPage() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+async function DeveloperOverview({ userId, name, admin }: { userId: string; name: string; admin: AdminClient }) {
+  const thirtyDaysAgo = getThirtyDaysAgoISOString();
+
+  const [{ data: allProjects }, { count: leadsCount }, { data: recentLeadsRaw }, { data: performanceRaw }] = await Promise.all([
+    admin.from("projects").select("status_platform, views_count, leads_count").eq("developer_id", userId),
+    admin
+      .from("leads")
+      .select("id", { count: "exact", head: true })
+      .eq("developer_id", userId)
+      .gte("created_at", thirtyDaysAgo),
+    admin
+      .from("leads")
+      .select(
+        `id, lead_type, name, phone, status, created_at, message,
+         project:projects(name, slug, cover_image_url)`,
+      )
+      .eq("developer_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(10),
+    admin
+      .from("projects")
+      .select("id, slug, name, status_platform, views_count, leads_count, min_price, max_price, cover_image_url")
+      .eq("developer_id", userId)
+      .order("views_count", { ascending: false })
+      .limit(5),
+  ]);
+
+  const activeCount = (allProjects ?? []).filter((p) => p.status_platform === "active").length;
+  const pendingCount = (allProjects ?? []).filter((p) => p.status_platform === "pending").length;
+  const totalViews = (allProjects ?? []).reduce((sum, project) => sum + (project.views_count ?? 0), 0);
+
+  const recentLeads = (recentLeadsRaw ?? []).map((lead) => ({ ...lead, listing: null })) as unknown as RecentLead[];
+  const performanceProjects = (performanceRaw ?? []) as unknown as PerformanceProject[];
+
+  return (
+    <div className="mx-auto max-w-6xl px-6 py-6">
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <p className="text-sm text-primary-mid">Welcome back!</p>
+          <p className="text-2xl font-bold text-black">{name}</p>
+        </div>
+      </div>
+
+      <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-4">
+        <DashboardStatCard label="Active Projects" value={activeCount} icon={Building2} />
+        <DashboardStatCard label="Pending Review" value={pendingCount} icon={Inbox} />
+        <DashboardStatCard label="Total Views (All Time)" value={totalViews} icon={Eye} />
+        <DashboardStatCard label="Total Leads (30d)" value={leadsCount ?? 0} icon={Users} />
+      </div>
+
+      <div className="mb-6 flex flex-wrap gap-3">
+        <Link
+          href="/dashboard/projects/new"
+          className="rounded-lg bg-secondary px-4 py-2.5 text-sm font-bold text-primary hover:bg-secondary-dark"
+        >
+          + Add Project
+        </Link>
+        <Link
+          href="/dashboard/leads"
+          className="rounded-lg border border-primary px-4 py-2.5 text-sm text-primary"
+        >
+          View All Leads
+        </Link>
+        <Link
+          href="/dashboard/settings"
+          className="rounded-lg border border-primary px-4 py-2.5 text-sm text-primary"
+        >
+          Edit Profile
+        </Link>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        <RecentLeadsCard leads={recentLeads} emptyMessage="No leads yet. Approved projects will start receiving enquiries." />
+        <ProjectPerformanceCard projects={performanceProjects} />
+      </div>
     </div>
   );
 }

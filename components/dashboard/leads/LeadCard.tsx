@@ -31,6 +31,12 @@ export interface LeadWithDetails {
     primary_image_url: string | null;
     price: number;
   } | null;
+  project?: {
+    id: string;
+    slug: string;
+    name: string;
+    cover_image_url: string | null;
+  } | null;
   notes: LeadNote[];
 }
 
@@ -119,6 +125,7 @@ export function LeadCard({ lead }: { lead: LeadWithDetails }) {
           <div className="flex items-center gap-2 text-xs text-primary-mid">
             {(lead.phone || lead.email) && <span>{lead.phone ?? lead.email}</span>}
             {lead.listing && <span className="truncate text-primary">{lead.listing.title}</span>}
+            {lead.project && <span className="truncate text-primary">{lead.project.name}</span>}
           </div>
         </div>
 
@@ -158,6 +165,25 @@ export function LeadCard({ lead }: { lead: LeadWithDetails }) {
                   className="block truncate text-sm font-medium text-black hover:underline"
                 >
                   {lead.listing.title}
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {lead.project && (
+            <div className="flex items-center gap-3 border-t border-primary px-4 py-3">
+              <div className="relative h-12 w-16 shrink-0 overflow-hidden rounded-lg border border-primary">
+                {lead.project.cover_image_url && (
+                  <Image src={lead.project.cover_image_url} alt="" fill className="object-cover" />
+                )}
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs text-primary-mid">Re:</p>
+                <Link
+                  href={`/new-projects/${lead.project.slug}`}
+                  className="block truncate text-sm font-medium text-black hover:underline"
+                >
+                  {lead.project.name}
                 </Link>
               </div>
             </div>

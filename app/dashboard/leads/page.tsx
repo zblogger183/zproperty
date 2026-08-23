@@ -33,17 +33,25 @@ export default async function LeadInboxPage({
 
   const admin = createAdminClient();
 
-  let leadsQuery = admin
-    .from("leads")
-    .select(
-      `id, lead_type, name, phone, email, message,
+  const { data: profile } = await admin.from("users").select("role").eq("id", user.id).maybeSingle();
+  const isDeveloper = profile?.role === "developer";
+  const ownerColumn = isDeveloper ? "developer_id" : "agent_id";
+  const selectColumns = isDeveloper
+    ? `id, lead_type, name, phone, email, message,
+       status, created_at, updated_at, last_activity,
+       next_followup, deal_value, source_page,
+       project:projects(id, slug, name, cover_image_url),
+       notes:lead_notes(id, note, created_at)`
+    : `id, lead_type, name, phone, email, message,
        status, created_at, updated_at, last_activity,
        next_followup, deal_value, source_page,
        listing:listings(id, slug, title, purpose, type, primary_image_url, price),
-       notes:lead_notes(id, note, created_at)`,
-      { count: "exact" },
-    )
-    .eq("agent_id", user.id)
+       notes:lead_notes(id, note, created_at)`;
+
+  let leadsQuery = admin
+    .from("leads")
+    .select(selectColumns, { count: "exact" })
+    .eq(ownerColumn, user.id)
     .order("created_at", { ascending: false })
     .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
 
@@ -52,7 +60,7 @@ export default async function LeadInboxPage({
 
   const [{ data: leadsRaw, count }, { data: allLeads }] = await Promise.all([
     leadsQuery,
-    admin.from("leads").select("status, lead_type").eq("agent_id", user.id),
+    admin.from("leads").select("status, lead_type").eq(ownerColumn, user.id),
   ]);
 
   const leads = ((leadsRaw ?? []) as unknown as LeadWithDetails[]).map((lead) => ({
@@ -141,7 +149,7 @@ export default async function LeadInboxPage({
           <div className="py-16 text-center">
             <p className="text-base font-semibold text-black">No leads yet.</p>
             <p className="mt-2 text-sm text-primary-mid">
-              When buyers call, WhatsApp, or message you through your listings, they&apos;ll appear here.
+              When buyers call, WhatsApp, or message you through your {isDeveloper ? "projects" : "listings"}, they&apos;ll appear here.
             </p>
           </div>
         ) : (
