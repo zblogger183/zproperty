@@ -11,6 +11,7 @@ import { ListingCard } from "@/components/portal/ListingCard";
 import { ProjectCard, type ProjectListCardData } from "@/components/portal/projects/ProjectCard";
 import { TiptapRenderer } from "@/components/portal/blog/TiptapRenderer";
 import MiniMapLoader from "@/components/portal/listing/MiniMapLoader";
+import { ImageGallery } from "@/components/portal/listing/ImageGallery";
 import type { ListingCardData } from "@/types";
 
 export const revalidate = 86400;
@@ -32,6 +33,7 @@ interface SocietyRow {
   total_phases: number | null;
   amenities: string[] | null;
   cover_image_url: string | null;
+  gallery_images: { url: string; thumb_url: string | null }[] | null;
   avg_price_marla: number | null;
   listing_count: number;
   area_id: string | null;
@@ -68,7 +70,7 @@ const getCityAndSociety = cache(async (citySlug: string, societySlug: string) =>
     .from("societies")
     .select(
       `id, name, slug, description, established_yr, developer_name, total_plots, total_phases,
-       amenities, cover_image_url, avg_price_marla, listing_count, area_id, area:areas(slug),
+       amenities, cover_image_url, gallery_images, avg_price_marla, listing_count, area_id, area:areas(slug),
        meta_title, meta_desc, lat, lng, map_pdf_url`,
     )
     .eq("slug", societySlug)
@@ -240,6 +242,20 @@ export default async function AreaGuidePage({
             </div>
           </div>
         </div>
+
+        {society.gallery_images && society.gallery_images.length > 0 && (
+          <div className="mt-6">
+            <ImageGallery
+              images={society.gallery_images.map((image, index) => ({
+                thumb_url: image.thumb_url ?? image.url,
+                large_url: image.url,
+                alt_text: society.name,
+                display_order: index,
+              }))}
+              title={society.name}
+            />
+          </div>
+        )}
 
         <div className="mt-8 grid gap-6 md:grid-cols-3">
           <div className="md:col-span-2">

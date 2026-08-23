@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { SocietyCreateForm, type CityOption } from "@/components/admin/SocietyCreateForm";
+import { SocietyForm, type CityOption } from "@/components/admin/SocietyCreateForm";
 
 export const dynamic = "force-dynamic";
 
@@ -25,7 +25,7 @@ export default async function NewSocietyPage() {
       </p>
 
       <div className="mt-6">
-        <SocietyCreateForm cities={cities} />
+        <SocietyForm cities={cities} />
       </div>
     </div>
   );

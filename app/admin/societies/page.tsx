@@ -84,15 +84,20 @@ export default async function AllSocietiesPage() {
                   </span>
                 </td>
                 <td className="px-4 py-3">
-                  {society.city && (
-                    <Link
-                      href={`/area-guide/${society.city.slug}/${society.slug}`}
-                      target="_blank"
-                      className="text-xs text-primary underline"
-                    >
-                      View
+                  <div className="flex items-center gap-3">
+                    <Link href={`/admin/societies/${society.id}`} className="text-xs text-primary underline">
+                      Edit
                     </Link>
-                  )}
+                    {society.city && (
+                      <Link
+                        href={`/area-guide/${society.city.slug}/${society.slug}`}
+                        target="_blank"
+                        className="text-xs text-primary underline"
+                      >
+                        View
+                      </Link>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}
