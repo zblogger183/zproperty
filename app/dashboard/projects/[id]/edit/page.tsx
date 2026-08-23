@@ -89,7 +89,11 @@ export default async function EditDeveloperProjectPage({ params }: { params: Pro
     max_price: projectRaw.max_price,
     min_area: projectRaw.min_area,
     max_area: projectRaw.max_area,
-    amenities: (projectRaw.amenities as string[] | null) ?? [],
+    // amenities is DB-typed as jsonb — most rows hold a string[], but a
+    // handful of older/directly-inserted rows hold '{}' (the column's old,
+    // wrong default, see 022_fix_projects_amenities_default.sql) or null.
+    // Array.isArray guards all three cases instead of trusting the shape.
+    amenities: Array.isArray(projectRaw.amenities) ? (projectRaw.amenities as string[]) : [],
     images: uploadedImages,
     video_url: projectRaw.video_url,
     virtual_tour_url: projectRaw.virtual_tour_url,
