@@ -20,7 +20,7 @@ export default async function PendingListingsPage({
   const { highlight } = await searchParams;
   const admin = createAdminClient();
 
-  const { data } = await admin
+  const { data, error } = await admin
     .from("listings")
     .select(
       `id, title, slug, purpose, rental_period, type, price,
@@ -36,6 +36,16 @@ export default async function PendingListingsPage({
     )
     .eq("status", "pending")
     .order("created_at", { ascending: true });
+
+  // A query error here (e.g. a missing grant on one of the embedded
+  // tables) previously fell through silently to an empty array — the page
+  // rendered "0 awaiting review" with no indication anything had gone
+  // wrong, while real pending listings sat unreviewed. Logging it at least
+  // surfaces the failure in runtime logs instead of looking like "nothing
+  // pending".
+  if (error) {
+    console.error("Failed to load pending listings:", error);
+  }
 
   // Admins need agent name/CNIC-status/WhatsApp to actually make an
   // approve/reject call, so this is one of the few admin queries worth

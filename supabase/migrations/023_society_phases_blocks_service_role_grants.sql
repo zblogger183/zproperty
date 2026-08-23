@@ -1,0 +1,20 @@
+-- 013_society_phases_blocks.sql granted SELECT/INSERT on society_phases
+-- and society_blocks to anon and authenticated only — service_role was
+-- never granted anything. RLS bypass and table-level GRANTs are separate
+-- authorization layers in Postgres: service_role bypasses the RLS
+-- policies (013's admin_all/public_read policies), but still needs its
+-- own explicit GRANT to touch the table at all, same root cause as
+-- 020_listing_number_seq_grants.sql's sequence-permission bug.
+--
+-- This broke /admin/listings/pending silently: its query embeds
+-- `phase:society_phases(name)` and `block:society_blocks(name)` via the
+-- service_role admin client. With no grant, PostgREST/Postgres returned a
+-- permission-denied error for the whole query — and the page code only
+-- destructured `{ data }`, discarding `error`, so `data` came back `null`
+-- and rendered as "0 awaiting review" despite real pending listings
+-- existing (visible correctly on the admin dashboard, whose simpler query
+-- doesn't embed these two tables). Confirmed via
+-- information_schema.role_table_grants: every other table `listings`
+-- embeds (cities, areas, societies) had full service_role grants;
+-- society_phases/society_blocks had none.
+GRANT SELECT, INSERT, UPDATE, DELETE ON society_phases, society_blocks TO service_role;
