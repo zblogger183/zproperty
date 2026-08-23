@@ -5,7 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createPublicClient, backfillAgentContacts } from "@/lib/supabase/public";
 import { areaGuideMeta } from "@/lib/seo/metadata";
-import { SchemaScript, areaGuideSchema } from "@/lib/seo/schemas";
+import { SchemaScript, areaGuideSchema, societySchema } from "@/lib/seo/schemas";
 import { Breadcrumb } from "@/components/portal/Breadcrumb";
 import { ListingCard } from "@/components/portal/ListingCard";
 import { ProjectCard, type ProjectListCardData } from "@/components/portal/projects/ProjectCard";
@@ -177,6 +177,22 @@ export default async function AreaGuidePage({
 
   return (
     <>
+      <SchemaScript
+        schema={societySchema({
+          name: society.name,
+          slug: society.slug,
+          city_slug: city.slug,
+          description: guide?.overview ?? society.description,
+          developer_name: society.developer_name,
+          established_yr: society.established_yr,
+          total_plots: society.total_plots,
+          total_phases: society.total_phases,
+          avg_price_marla: society.avg_price_marla,
+          cover_image_url: society.cover_image_url,
+          lat: society.lat,
+          lng: society.lng,
+        })}
+      />
       <SchemaScript
         schema={areaGuideSchema({
           society_name: society.name,
