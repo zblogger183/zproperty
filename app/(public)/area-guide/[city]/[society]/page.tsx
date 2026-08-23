@@ -203,7 +203,7 @@ export default async function AreaGuidePage({
         })}
       />
 
-      <div className="mx-auto max-w-4xl px-6">
+      <div className="mx-auto max-w-7xl px-4">
         <div className="pt-6">
           {/* <Breadcrumb> already emits its own BreadcrumbList JSON-LD — see
               the same note on the listing detail page. */}
@@ -265,6 +265,8 @@ export default async function AreaGuidePage({
                 <p className="text-base leading-relaxed text-black">{guide.overview}</p>
               ) : guide?.content ? (
                 <TiptapRenderer content={guide.content} />
+              ) : society.description ? (
+                <p className="whitespace-pre-line text-base leading-relaxed text-black">{society.description}</p>
               ) : (
                 <p className="text-primary-mid">Area guide coming soon.</p>
               )}
