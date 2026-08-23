@@ -11,6 +11,7 @@ export interface RecentLead {
   created_at: string;
   message: string | null;
   listing: { title: string; slug: string; primary_image_url: string | null } | null;
+  project?: { name: string; slug: string; cover_image_url: string | null } | null;
 }
 
 const LEAD_TYPE_STYLES: Record<RecentLead["lead_type"], { className: string; Icon: typeof Phone }> = {
@@ -25,7 +26,13 @@ const STATUS_STYLES: Record<string, string> = {
   contacted: "bg-primary-mid text-white",
 };
 
-export function RecentLeadsCard({ leads }: { leads: RecentLead[] }) {
+export function RecentLeadsCard({
+  leads,
+  emptyMessage = "No leads yet. Listings approved by admin will start receiving enquiries.",
+}: {
+  leads: RecentLead[];
+  emptyMessage?: string;
+}) {
   return (
     <div className="rounded-xl border border-primary bg-white">
       <div className="flex items-center justify-between border-b border-primary px-5 py-4">
@@ -36,9 +43,7 @@ export function RecentLeadsCard({ leads }: { leads: RecentLead[] }) {
       </div>
 
       {leads.length === 0 ? (
-        <p className="px-5 py-8 text-center text-sm text-primary-mid">
-          No leads yet. Listings approved by admin will start receiving enquiries.
-        </p>
+        <p className="px-5 py-8 text-center text-sm text-primary-mid">{emptyMessage}</p>
       ) : (
         <div className="divide-y divide-primary">
           {leads.map((lead) => {
@@ -64,6 +69,13 @@ export function RecentLeadsCard({ leads }: { leads: RecentLead[] }) {
                     <p className="mt-0.5 line-clamp-1 text-xs text-primary-mid">
                       <Link href={`/listing/${lead.listing.slug}`} className="text-primary hover:underline">
                         {lead.listing.title}
+                      </Link>
+                    </p>
+                  )}
+                  {lead.project && (
+                    <p className="mt-0.5 line-clamp-1 text-xs text-primary-mid">
+                      <Link href={`/new-projects/${lead.project.slug}`} className="text-primary hover:underline">
+                        {lead.project.name}
                       </Link>
                     </p>
                   )}

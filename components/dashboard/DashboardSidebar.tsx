@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   Home,
   List,
+  Building2,
   Plus,
   Inbox,
   Kanban,
@@ -27,7 +28,7 @@ export interface DashboardUser {
   role: string;
 }
 
-const NAV_LINKS = [
+const AGENT_NAV_LINKS = [
   { label: "Dashboard", href: "/dashboard", Icon: Home },
   { label: "My Listings", href: "/dashboard/listings", Icon: List },
   { label: "Add Listing", href: "/dashboard/listings/new", Icon: Plus },
@@ -36,6 +37,17 @@ const NAV_LINKS = [
   { label: "Analytics", href: "/dashboard/analytics", Icon: BarChart3 },
   { label: "Subscription", href: "/dashboard/subscription", Icon: CreditCard },
   { label: "Boost Center", href: "/dashboard/boost", Icon: Zap },
+  { label: "Settings", href: "/dashboard/settings", Icon: Settings },
+];
+
+// Developers manage `projects` (keyed by developer_id), not `listings`
+// (keyed by agent_id) — a developer landing on the agent nav above always
+// saw an empty dashboard since they own zero rows in `listings`.
+const DEVELOPER_NAV_LINKS = [
+  { label: "Dashboard", href: "/dashboard", Icon: Home },
+  { label: "My Projects", href: "/dashboard/projects", Icon: Building2 },
+  { label: "Add Project", href: "/dashboard/projects/new", Icon: Plus },
+  { label: "Lead Inbox", href: "/dashboard/leads", Icon: Inbox },
   { label: "Settings", href: "/dashboard/settings", Icon: Settings },
 ];
 
@@ -56,12 +68,14 @@ export function DashboardSidebar({ user }: { user: DashboardUser }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  const baseNavLinks = user.role === "developer" ? DEVELOPER_NAV_LINKS : AGENT_NAV_LINKS;
+
   // Mirrors AdminSidebar's "Agent Dashboard" link — a super_admin browsing
   // here otherwise has no way back to /admin except editing the URL.
   const navLinks =
     user.role === "super_admin"
-      ? [...NAV_LINKS, { label: "Admin Panel", href: "/admin", Icon: ShieldCheck }]
-      : NAV_LINKS;
+      ? [...baseNavLinks, { label: "Admin Panel", href: "/admin", Icon: ShieldCheck }]
+      : baseNavLinks;
 
   const activeHref = getActiveHref(
     pathname,

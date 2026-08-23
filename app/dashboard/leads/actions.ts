@@ -13,9 +13,9 @@ export async function updateLeadStatusAction(leadId: string, newStatus: string) 
 
   const admin = createAdminClient();
 
-  const { data: lead } = await admin.from("leads").select("agent_id, status").eq("id", leadId).single();
+  const { data: lead } = await admin.from("leads").select("agent_id, developer_id, status").eq("id", leadId).single();
 
-  if (!lead || lead.agent_id !== user.id) throw new Error("Forbidden");
+  if (!lead || (lead.agent_id !== user.id && lead.developer_id !== user.id)) throw new Error("Forbidden");
 
   const now = new Date().toISOString();
 
@@ -46,8 +46,8 @@ export async function addLeadNoteAction(leadId: string, note: string) {
 
   const admin = createAdminClient();
 
-  const { data: lead } = await admin.from("leads").select("agent_id").eq("id", leadId).single();
-  if (!lead || lead.agent_id !== user.id) throw new Error("Forbidden");
+  const { data: lead } = await admin.from("leads").select("agent_id, developer_id").eq("id", leadId).single();
+  if (!lead || (lead.agent_id !== user.id && lead.developer_id !== user.id)) throw new Error("Forbidden");
 
   const { data: inserted, error } = await admin
     .from("lead_notes")

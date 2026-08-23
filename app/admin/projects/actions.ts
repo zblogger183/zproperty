@@ -12,7 +12,7 @@ import { slugify } from "@/lib/utils";
 // projects in different cities apart without needing a numeric suffix — that
 // only kicks in on a genuine same-name-same-city collision, same retry
 // pattern as generateUniqueAgentSlug in app/(auth)/actions.ts.
-async function generateUniqueProjectSlug(admin: SupabaseClient, name: string, citySlug: string): Promise<string> {
+export async function generateUniqueProjectSlug(admin: SupabaseClient, name: string, citySlug: string): Promise<string> {
   const base = [slugify(name), citySlug].filter(Boolean).join("-") || "project";
 
   for (let attempt = 0; attempt < 50; attempt += 1) {
