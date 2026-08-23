@@ -5,9 +5,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createPublicClient, backfillAgentContacts } from "@/lib/supabase/public";
 import { areaGuideMeta } from "@/lib/seo/metadata";
-import { SchemaScript, areaGuideSchema } from "@/lib/seo/schemas";
+import { SchemaScript, areaGuideSchema, societySchema } from "@/lib/seo/schemas";
 import { Breadcrumb } from "@/components/portal/Breadcrumb";
 import { ListingCard } from "@/components/portal/ListingCard";
+import { ProjectCard, type ProjectListCardData } from "@/components/portal/projects/ProjectCard";
 import { TiptapRenderer } from "@/components/portal/blog/TiptapRenderer";
 import MiniMapLoader from "@/components/portal/listing/MiniMapLoader";
 import type { ListingCardData } from "@/types";
@@ -132,7 +133,7 @@ export default async function AreaGuidePage({
 
   const supabase = createPublicClient();
 
-  const [{ data: areaGuide }, { data: listingsRaw }] = await Promise.all([
+  const [{ data: areaGuide }, { data: listingsRaw }, { data: projectsRaw }] = await Promise.all([
     supabase
       .from("area_guides")
       .select("overview, content, pros, cons, nearby_places")
@@ -149,6 +150,18 @@ export default async function AreaGuidePage({
       .order("is_featured", { ascending: false })
       .order("created_at", { ascending: false })
       .limit(6),
+    supabase
+      .from("projects")
+      .select(
+        `id, slug, name, tagline, property_type, status, min_price, max_price, total_units, completion_pct,
+         cover_image_url, og_image_url, is_featured, is_verified, views_count, leads_count,
+         city:cities(name, slug), area:areas(name, slug)`,
+      )
+      .eq("society_id", society.id)
+      .eq("status_platform", "active")
+      .order("is_featured", { ascending: false })
+      .order("created_at", { ascending: false })
+      .limit(6),
   ]);
 
   const guide = areaGuide as unknown as AreaGuideRow | null;
@@ -156,6 +169,7 @@ export default async function AreaGuidePage({
     supabase,
     (listingsRaw ?? []) as unknown as ListingCardData[],
   );
+  const projects = (projectsRaw ?? []) as unknown as ProjectListCardData[];
 
   const browseHref = society.area?.slug ? `/buy/${city.slug}/${society.area.slug}/` : `/buy/${city.slug}/`;
   const hasProsOrCons = (guide?.pros?.length ?? 0) > 0 || (guide?.cons?.length ?? 0) > 0;
@@ -163,6 +177,22 @@ export default async function AreaGuidePage({
 
   return (
     <>
+      <SchemaScript
+        schema={societySchema({
+          name: society.name,
+          slug: society.slug,
+          city_slug: city.slug,
+          description: guide?.overview ?? society.description,
+          developer_name: society.developer_name,
+          established_yr: society.established_yr,
+          total_plots: society.total_plots,
+          total_phases: society.total_phases,
+          avg_price_marla: society.avg_price_marla,
+          cover_image_url: society.cover_image_url,
+          lat: society.lat,
+          lng: society.lng,
+        })}
+      />
       <SchemaScript
         schema={areaGuideSchema({
           society_name: society.name,
@@ -284,6 +314,25 @@ export default async function AreaGuidePage({
                     >
                       {amenity}
                     </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {projects.length > 0 && (
+              <div className="mt-8">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-bold text-black">New Projects in {society.name}</h2>
+                  <Link
+                    href={`/new-projects/city/${city.slug}`}
+                    className="text-sm text-primary hover:text-primary-mid"
+                  >
+                    View all →
+                  </Link>
+                </div>
+                <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  {projects.map((project) => (
+                    <ProjectCard key={project.id} project={project} />
                   ))}
                 </div>
               </div>

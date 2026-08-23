@@ -202,6 +202,50 @@ export function blogPostSchema(params: {
   };
 }
 
+export function societySchema(params: {
+  name: string;
+  slug: string;
+  city_slug: string;
+  description?: string | null;
+  developer_name?: string | null;
+  established_yr?: number | null;
+  total_plots?: number | null;
+  total_phases?: number | null;
+  avg_price_marla?: number | null;
+  cover_image_url?: string | null;
+  lat?: number | null;
+  lng?: number | null;
+}) {
+  const additionalProperty = [
+    ...(params.developer_name ? [{ "@type": "PropertyValue", name: "Developer", value: params.developer_name }] : []),
+    ...(params.established_yr
+      ? [{ "@type": "PropertyValue", name: "Established", value: params.established_yr }]
+      : []),
+    ...(params.total_plots
+      ? [{ "@type": "PropertyValue", name: "Total Plots", value: params.total_plots }]
+      : []),
+    ...(params.total_phases
+      ? [{ "@type": "PropertyValue", name: "Total Phases", value: params.total_phases }]
+      : []),
+    ...(params.avg_price_marla
+      ? [{ "@type": "PropertyValue", name: "Average Price per Marla (PKR)", value: params.avg_price_marla }]
+      : []),
+  ];
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Place",
+    name: params.name,
+    description: params.description ?? undefined,
+    url: `${SITE_URL}/area-guide/${params.city_slug}/${params.slug}`,
+    image: params.cover_image_url ?? undefined,
+    ...(params.lat != null && params.lng != null
+      ? { geo: { "@type": "GeoCoordinates", latitude: params.lat, longitude: params.lng } }
+      : {}),
+    ...(additionalProperty.length ? { additionalProperty } : {}),
+  };
+}
+
 export function areaGuideSchema(params: { society_name: string; pros?: string[]; cons?: string[] }) {
   const faqs = [
     ...(params.pros ?? []).map((pro) => ({
