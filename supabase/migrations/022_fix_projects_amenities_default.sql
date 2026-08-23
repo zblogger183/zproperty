@@ -1,0 +1,18 @@
+-- projects.amenities has always been read/written as a string[] everywhere
+-- in the app (ProjectCreateForm, ProjectForm, the public project detail
+-- page's Array.isArray guard, admin's pending-review view) but the column
+-- itself defaulted to an empty JSON *object* ('{}'), not an empty array
+-- ('[]') — copy/paste drift from a different table at table-creation time
+-- (001_schema.sql; compare societies.amenities, which correctly defaults
+-- to '[]'). Any INSERT that omitted `amenities` (e.g. a direct SQL insert,
+-- as opposed to going through the app's own forms, which always send an
+-- array) silently got '{}' instead.
+--
+-- This surfaced as "/dashboard/projects/[id]/edit couldn't load" for Pine
+-- Hills Residencia 2 — the new developer-facing edit page called
+-- `.join("\n")` on `amenities` without checking its shape first (the
+-- public project page already had this exact Array.isArray guard; the new
+-- dashboard page didn't). Fixed in code alongside this migration. The 4
+-- rows already holding '{}' (Pine Hills Residencia 2, Hiba Downtown,
+-- Indigo Signature Apartments, Talux One) were backfilled to '[]' directly.
+ALTER TABLE projects ALTER COLUMN amenities SET DEFAULT '[]'::jsonb;
