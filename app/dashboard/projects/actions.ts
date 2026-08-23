@@ -245,6 +245,7 @@ export async function updateDeveloperProjectAction(projectId: string, input: Dev
   if (!wasRejected) {
     revalidatePath(`/new-projects/${existing.slug}`);
     revalidatePath("/new-projects");
+    revalidatePath("/");
   }
 
   return { ok: true, id: projectId };
