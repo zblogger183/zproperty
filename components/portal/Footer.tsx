@@ -4,14 +4,14 @@ import { NewsletterSignup } from "./NewsletterSignup";
 
 const PROPERTIES_LINKS = [
   { label: "Houses for Sale in Lahore", href: "/buy/lahore?type=house" },
-  { label: "Flats for Sale in Lahore", href: "/buy/lahore?type=flat" },
-  { label: "Plots for Sale in Lahore", href: "/buy/lahore?type=residential_plot" },
+  { label: "Flats for Sale in Karachi", href: "/buy/karachi?type=flat" },
+  { label: "Plots for Sale in Islamabad", href: "/buy/islamabad?type=residential_plot" },
   { label: "Houses for Rent in Lahore", href: "/rent/lahore?type=house" },
-  { label: "Commercial for Sale", href: "/commercial/lahore" },
-  { label: "Houses in Karachi", href: "/buy/karachi" },
-  { label: "Properties in Islamabad", href: "/buy/islamabad" },
+  { label: "Commercial for Sale in Karachi", href: "/commercial/karachi" },
+  { label: "Properties in Peshawar", href: "/buy/peshawar" },
+  { label: "Properties in Rawalpindi", href: "/buy/rawalpindi" },
   { label: "New Projects", href: "/new-projects" },
-  { label: "All Listings", href: "/buy/lahore" },
+  { label: "All Listings", href: "/" },
 ];
 
 const TOOLS_LINKS = [
@@ -33,9 +33,10 @@ const CITY_LINKS = [
   { label: "Properties in Rawalpindi", href: "/buy/rawalpindi" },
   { label: "Properties in Faisalabad", href: "/buy/faisalabad" },
   { label: "Properties in Multan", href: "/buy/multan" },
+  { label: "Properties in Peshawar", href: "/buy/peshawar" },
+  { label: "Properties in Quetta", href: "/buy/quetta" },
   { label: "DHA Lahore", href: "/buy/lahore/dha" },
   { label: "Bahria Town Lahore", href: "/buy/lahore/bahria-town" },
-  { label: "Gulberg Lahore", href: "/buy/lahore/gulberg" },
   { label: "DHA Karachi", href: "/buy/karachi/dha" },
   { label: "Clifton Karachi", href: "/buy/karachi/clifton" },
 ];
@@ -72,7 +73,7 @@ export function Footer() {
       <div className="bg-primary-mid px-6 py-6">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-6">
           <div>
-            <p className="text-base font-bold text-white">Get property alerts for Lahore, Karachi & Islamabad</p>
+            <p className="text-base font-bold text-white">Get property alerts across Pakistan</p>
             <p className="mt-0.5 text-sm text-white/70">New listings straight to your inbox</p>
           </div>
           <NewsletterSignup />
@@ -89,7 +90,7 @@ export function Footer() {
           </Link>
           <p className="mt-2 text-sm text-white/60">Pakistan&apos;s Real Estate Growth Ecosystem</p>
           <p className="mt-2 text-xs leading-relaxed text-white/60">
-            Find verified properties for sale and rent in Lahore, Karachi and Islamabad.
+            Find verified properties for sale and rent across Pakistan.
           </p>
           <div className="mt-4 flex gap-3">
             {SOCIAL_LINKS.map(({ label, href, Icon }) => (

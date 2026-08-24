@@ -27,7 +27,7 @@ export async function generateMetadata(): Promise<Metadata> {
       "Latest property news, buying guides, market updates and investment tips for Pakistan real estate.",
     meta_title: "Pakistan Real Estate Blog — Market Updates & Guides | ZProperty",
     meta_desc:
-      "Read the latest property news, buying guides, market trends and investment tips for real estate in Lahore, Karachi and Islamabad.",
+      "Read the latest property news, buying guides, market trends and investment tips for real estate across Pakistan.",
     canonical_url: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://zproperty.pk"}/blog`,
   });
 }
