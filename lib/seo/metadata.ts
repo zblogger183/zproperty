@@ -4,7 +4,7 @@ import { formatPrice } from "@/lib/utils/formatPrice";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://zproperty.pk";
 const SITE_NAME = "ZProperty.pk";
 const SITE_DESC =
-  "Pakistan's trusted real estate marketplace. Browse verified properties for sale and rent in Lahore, Karachi and Islamabad.";
+  "Pakistan's trusted real estate marketplace. Browse verified properties for sale and rent across Pakistan.";
 
 // ── BASE (used by all other generators) ──────────────────
 export function baseMeta(overrides: Partial<Metadata> = {}): Metadata {
@@ -31,6 +31,8 @@ export function homepageMeta(): Metadata {
       "real estate Pakistan",
       "houses for sale Lahore",
       "flats for rent Karachi",
+      "plots for sale Islamabad",
+      "property for sale Peshawar",
       "zameen",
       "property portal Pakistan",
     ],

@@ -16,7 +16,7 @@ type NewProjectsSearchParams = { city?: string; property_type?: string; status?:
 
 const BASE_TITLE = "New Property Projects in Pakistan — Off-Plan & Ready | ZProperty";
 const BASE_DESCRIPTION =
-  "Browse new residential and commercial projects in Lahore, Karachi and Islamabad. Pre-launch prices, payment plans, and developer contact.";
+  "Browse new residential and commercial projects across Pakistan. Pre-launch prices, payment plans, and developer contact.";
 
 export async function generateMetadata({
   searchParams,

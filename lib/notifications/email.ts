@@ -335,9 +335,9 @@ export async function emailWelcome(params: { to: string; name: string; role: "ag
         Go to Dashboard →
       </a>`,
     buyer: `
-      <p>Start browsing verified properties in
-         Lahore, Karachi and Islamabad.</p>
-      <a class="cta" href="${SITE}/buy/lahore/">
+      <p>Start browsing verified properties
+         across Pakistan.</p>
+      <a class="cta" href="${SITE}/">
         Browse Properties →
       </a>`,
     developer: `

@@ -11,7 +11,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return resolvePageSeo("/about", {
     title: "About ZProperty.pk — Pakistan Real Estate Platform",
     description:
-      "ZProperty.pk is Pakistan's next-generation real estate platform, connecting buyers, sellers, and agents across Lahore, Karachi, and Islamabad.",
+      "ZProperty.pk is Pakistan's next-generation real estate platform, connecting buyers, sellers, and agents across Pakistan.",
   });
 }
 
@@ -47,7 +47,7 @@ export default async function AboutUsPage() {
         <h2 className="mb-4 text-2xl font-bold text-black">Our Mission</h2>
         <p className="text-base leading-relaxed text-black">
           ZProperty.pk is Pakistan&apos;s next-generation real estate platform, built to connect buyers, sellers,
-          and agents across Lahore, Karachi, and Islamabad. We saw a market full of outdated listings, unverified
+          and agents across Pakistan. We saw a market full of outdated listings, unverified
           agents, and buyers left guessing whether a property even existed — so we built a platform that fixes
           that from the ground up.
         </p>
