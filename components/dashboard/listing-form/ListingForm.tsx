@@ -104,7 +104,20 @@ export function ListingForm() {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error ?? "Could not submit listing.");
+        // The API validates the full merged payload server-side (a step
+        // can pass its own client-side check yet still fail here if the
+        // user went Back and changed something upstream without
+        // re-advancing through every later step) and returns exactly
+        // which field(s) failed via zod's .flatten() — surface that
+        // instead of just the generic "Invalid listing data", which told
+        // nobody, including us, what was actually wrong.
+        const fieldErrors = result.details?.fieldErrors as Record<string, string[]> | undefined;
+        const detail = fieldErrors
+          ? Object.entries(fieldErrors)
+              .map(([field, messages]) => `${field}: ${messages.join(", ")}`)
+              .join("; ")
+          : null;
+        throw new Error(detail ? `${result.error ?? "Invalid listing data"} (${detail})` : (result.error ?? "Could not submit listing."));
       }
 
       router.push("/dashboard/listings?submitted=true");
