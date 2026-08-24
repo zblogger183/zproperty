@@ -8,7 +8,9 @@ import { approveListingAction } from "@/app/admin/listings/actions";
 import { sanitizeRichText } from "@/lib/utils/sanitizeHtml";
 
 const ALLOWED_ROLES = new Set(["agent", "developer", "super_admin", "admin"]);
-const PLAN_LIMITS: Record<string, number> = { free: 5, pro: 50, elite: 999999 };
+// free is temporarily uncapped while the platform is growing its listing
+// base — the user will say when to reinstate a real limit here.
+const PLAN_LIMITS: Record<string, number> = { free: 999999, pro: 50, elite: 999999 };
 
 function generateSlug(title: string, id: string): string {
   const base = title

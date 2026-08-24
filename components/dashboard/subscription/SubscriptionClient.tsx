@@ -27,7 +27,7 @@ type PaymentMethodId = "jazzcash" | "easypaisa" | "stripe" | "bank_transfer";
 type BillingCycle = "monthly" | "annual";
 
 const PLAN_FEATURES: Record<string, string[]> = {
-  free: ["5 listings", "5 photos per listing", "Basic CRM"],
+  free: ["Unlimited listings", "5 photos per listing", "Basic CRM"],
   pro: [
     "50 listings",
     "20 photos + video",
