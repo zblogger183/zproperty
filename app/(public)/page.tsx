@@ -9,10 +9,11 @@ import { PopularSearches } from "@/components/portal/home/PopularSearches";
 import { CitiesSection, type CitySummary } from "@/components/portal/home/CitiesSection";
 import { FeaturedListings } from "@/components/portal/home/FeaturedListings";
 import { ProjectsSection } from "@/components/portal/home/ProjectsSection";
+import { SocietiesSection } from "@/components/portal/home/SocietiesSection";
 import { ToolsBar } from "@/components/portal/home/ToolsBar";
 import { WhyUsSection } from "@/components/portal/home/WhyUsSection";
 import { StatsBar } from "@/components/portal/home/StatsBar";
-import type { ListingCardData, ProjectCardData } from "@/types";
+import type { ListingCardData, ProjectCardData, SocietyCardData } from "@/types";
 
 export const revalidate = 3600;
 
@@ -66,19 +67,32 @@ async function getFeaturedProjects(supabase: SupabasePublicClient): Promise<Proj
     .eq("status_platform", "active")
     .eq("is_featured", true)
     .order("created_at", { ascending: false })
-    .limit(4);
+    .limit(6);
 
   if (error || !data) return [];
   return data as unknown as ProjectCardData[];
 }
 
+async function getFeaturedSocieties(supabase: SupabasePublicClient): Promise<SocietyCardData[]> {
+  const { data, error } = await supabase
+    .from("societies")
+    .select("id, slug, name, developer_name, avg_price_marla, cover_image_url, city:cities(name, slug)")
+    .eq("is_active", true)
+    .order("name")
+    .limit(6);
+
+  if (error || !data) return [];
+  return data as unknown as SocietyCardData[];
+}
+
 export default async function HomePage() {
   const supabase = createPublicClient();
 
-  const [cities, listings, projects, stats] = await Promise.all([
+  const [cities, listings, projects, societies, stats] = await Promise.all([
     getCities(supabase),
     getFeaturedListings(supabase),
     getFeaturedProjects(supabase),
+    getFeaturedSocieties(supabase),
     getHomeStats(),
   ]);
 
@@ -99,6 +113,7 @@ export default async function HomePage() {
       <CitiesSection cities={cities} />
       <FeaturedListings listings={listings} />
       <ProjectsSection projects={projects} />
+      <SocietiesSection societies={societies} />
       <ToolsBar />
       <WhyUsSection />
       <StatsBar stats={stats} />

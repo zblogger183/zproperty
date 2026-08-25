@@ -190,3 +190,16 @@ export interface ProjectCardData {
   cover_image_url: string | null;
   city: { name: string } | null;
 }
+
+// The joined shape returned by the homepage's featured-societies query
+// (societies + cities). city.slug is needed to build the
+// /area-guide/[city]/[society] link.
+export interface SocietyCardData {
+  id: string;
+  slug: string;
+  name: string;
+  developer_name: string | null;
+  avg_price_marla: number | null;
+  cover_image_url: string | null;
+  city: { name: string; slug: string } | null;
+}
