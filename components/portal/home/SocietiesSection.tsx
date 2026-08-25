@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { SocietyCardData } from "@/types";
 import { SocietyCard } from "../SocietyCard";
 
@@ -7,6 +8,9 @@ export function SocietiesSection({ societies }: { societies: SocietyCardData[] }
       <div className="mx-auto max-w-7xl">
         <div className="flex items-center justify-between">
           <h2 className="text-3xl font-bold text-black">Societies</h2>
+          <Link href="/societies" className="text-sm text-primary transition hover:text-primary-mid">
+            View all →
+          </Link>
         </div>
 
         {societies.length === 0 ? (
