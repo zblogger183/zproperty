@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, LogOut, Menu, ShieldCheck, X } from "lucide-react";
@@ -100,9 +101,7 @@ export function Navbar() {
     <header className="sticky top-0 z-50 h-14 w-full bg-primary">
       <div className="mx-auto flex h-full max-w-7xl items-center justify-between gap-4 px-4">
         <Link href="/" className="flex shrink-0 items-center gap-2.5">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-secondary text-xl font-bold text-primary">
-            Z
-          </span>
+          <Image src="/logo.png" alt="" width={26} height={32} className="h-8 w-auto" priority />
           <span className="text-lg font-bold text-white">ZProperty</span>
         </Link>
 
@@ -196,9 +195,7 @@ export function Navbar() {
         <div className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-primary p-6 md:hidden">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2.5" onClick={() => setMobileOpen(false)}>
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-secondary text-xl font-bold text-primary">
-                Z
-              </span>
+              <Image src="/logo.png" alt="" width={26} height={32} className="h-8 w-auto" />
               <span className="text-lg font-bold text-white">ZProperty</span>
             </Link>
             <button

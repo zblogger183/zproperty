@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { FacebookIcon, InstagramIcon, XIcon, YoutubeIcon } from "./SocialIcons";
 import { NewsletterSignup } from "./NewsletterSignup";
@@ -83,9 +84,7 @@ export function Footer() {
       <div className="mx-auto grid max-w-7xl grid-cols-2 gap-8 px-6 py-12 md:grid-cols-5">
         <div className="col-span-2 md:col-span-1">
           <Link href="/" className="flex items-center gap-2.5">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-secondary text-xl font-bold text-primary">
-              Z
-            </span>
+            <Image src="/logo.png" alt="" width={26} height={32} className="h-8 w-auto" />
             <span className="text-lg font-bold text-white">ZProperty</span>
           </Link>
           <p className="mt-2 text-sm text-white/60">Pakistan&apos;s Real Estate Growth Ecosystem</p>
