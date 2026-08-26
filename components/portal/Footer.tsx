@@ -22,7 +22,7 @@ const TOOLS_LINKS = [
   { label: "ROI Calculator", href: "/tools/roi-calculator" },
   { label: "Rent vs Buy", href: "/tools/rent-vs-buy" },
   { label: "Stamp Duty Calculator", href: "/tools/stamp-duty" },
-  { label: "Area Guides", href: "/area-guide/lahore/dha-phase-6" },
+  { label: "Area Guides", href: "/societies" },
   { label: "Forum", href: "/forum" },
   { label: "Blog", href: "/blog" },
 ];

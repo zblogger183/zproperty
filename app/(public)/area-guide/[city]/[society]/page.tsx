@@ -210,7 +210,7 @@ export default async function AreaGuidePage({
           <Breadcrumb
             items={[
               { label: "Home", href: "/" },
-              { label: "Area Guides", href: "/area-guide" },
+              { label: "Area Guides", href: "/societies" },
               { label: city.name },
               { label: society.name },
             ]}
