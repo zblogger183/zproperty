@@ -156,6 +156,7 @@ export default async function NewProjectsCityPage({
       </div>
 
       <div className="mx-auto w-full max-w-7xl px-4 py-8 md:px-6">
+        <h2 className="sr-only">Projects in {city.name}</h2>
         {projects.length === 0 ? (
           <div className="py-20 text-center text-primary-mid">No projects listed yet.</div>
         ) : (

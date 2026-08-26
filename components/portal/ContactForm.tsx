@@ -51,6 +51,7 @@ export function ContactForm() {
 
   return (
     <form onSubmit={handleSubmit} className="rounded-xl border border-primary bg-white p-6">
+      <h2 className="mb-4 text-lg font-bold text-black">Send Us a Message</h2>
       <div>
         <label className="block text-sm font-semibold text-black" htmlFor="contact-name">
           Name

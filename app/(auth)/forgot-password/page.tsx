@@ -30,6 +30,7 @@ export default async function ForgotPasswordPage() {
 
   return (
     <AuthCard title="Reset your password" subtitle="We'll email you a link to choose a new password.">
+      <h2 className="sr-only">Password Reset Request Form</h2>
       <ForgotPasswordForm />
     </AuthCard>
   );

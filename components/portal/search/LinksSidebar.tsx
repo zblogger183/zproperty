@@ -76,7 +76,7 @@ export function LinksSidebar({
   return (
     <div>
       <div className="rounded-xl border border-primary bg-white p-4">
-        <p className="mb-3 text-sm font-bold text-black">Popular Searches</p>
+        <h2 className="mb-3 text-sm font-bold text-black">Popular Searches</h2>
         {popularSearches.map((item) => (
           <Link
             key={item.label}
@@ -90,7 +90,7 @@ export function LinksSidebar({
 
       {areas.length > 0 && (
         <div className="mt-4 rounded-xl border border-primary bg-white p-4">
-          <p className="mb-3 text-sm font-bold text-black">Top Areas in {cityName}</p>
+          <h2 className="mb-3 text-sm font-bold text-black">Top Areas in {cityName}</h2>
           {areas.map((area) => (
             <Link
               key={area.slug}
@@ -104,7 +104,7 @@ export function LinksSidebar({
       )}
 
       <div className="mt-4 rounded-xl border border-primary bg-white p-4">
-        <p className="mb-3 text-sm font-bold text-black">Property Tools</p>
+        <h2 className="mb-3 text-sm font-bold text-black">Property Tools</h2>
         {TOOL_LINKS.map((tool) => (
           <Link
             key={tool.href}
@@ -117,7 +117,7 @@ export function LinksSidebar({
       </div>
 
       <div className="mt-4 rounded-xl border border-primary bg-white p-4">
-        <p className="mb-3 text-sm font-bold text-black">Top Agents in {cityName}</p>
+        <h2 className="mb-3 text-sm font-bold text-black">Top Agents in {cityName}</h2>
         <Link href="/agents" className="text-sm text-primary underline hover:text-primary-mid">
           Browse all agents →
         </Link>

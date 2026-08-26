@@ -37,6 +37,7 @@ export default async function RegisterPage() {
 
   return (
     <AuthCard title="Create an Account">
+      <h2 className="sr-only">Registration Form</h2>
       <RegisterWizard cities={cities ?? []} />
     </AuthCard>
   );

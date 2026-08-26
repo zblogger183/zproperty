@@ -35,6 +35,7 @@ export default async function SocietiesPage() {
       </div>
 
       <div className="mx-auto w-full max-w-7xl px-4 py-8 md:px-6">
+        <h2 className="sr-only">All Societies</h2>
         {societies.length === 0 ? (
           <div className="py-20 text-center text-primary-mid">No societies listed yet.</div>
         ) : (
