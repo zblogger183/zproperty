@@ -353,11 +353,27 @@ export async function buildSearchMetadata(params: {
   // view (?type=flat, ?beds=2, ...) is treated as its own indexable page
   // (noIndex only fires on zero results), so it needs to canonicalize to
   // itself, filters and all, not collapse into the bare unfiltered URL.
+  //
+  // Built from the parsed/whitelisted `filters` object, not by echoing back
+  // every raw query param verbatim — the earlier version did that and
+  // leaked anything present in the URL into the canonical, including
+  // tracking params (utm_source, fbclid, gclid, ...) a visitor's referrer
+  // might append, which is the opposite of correct canonicalization.
+  const f = results.filters;
   const query = new URLSearchParams();
-  for (const [key, value] of Object.entries(params.searchParams)) {
-    const first = Array.isArray(value) ? value[0] : value;
-    if (first) query.set(key, first);
-  }
+  if (f.type) query.set("type", f.type);
+  if (f.min_price != null) query.set("min_price", String(f.min_price));
+  if (f.max_price != null) query.set("max_price", String(f.max_price));
+  if (f.min_area_marla != null) query.set("min_area_marla", String(f.min_area_marla));
+  if (f.max_area_marla != null) query.set("max_area_marla", String(f.max_area_marla));
+  if (f.floors != null) query.set("floors", String(f.floors));
+  if (f.beds != null) query.set("beds", String(f.beds));
+  if (f.baths != null) query.set("baths", String(f.baths));
+  if (f.q) query.set("q", f.q);
+  if (f.phase) query.set("phase", f.phase);
+  if (f.rental_period) query.set("rental_period", f.rental_period);
+  if (f.sort !== "newest") query.set("sort", f.sort);
+  if (f.page > 1) query.set("page", String(f.page));
   const queryString = query.toString();
   const canonicalUrl = `${siteUrl}${basePath}${queryString ? `?${queryString}` : ""}`;
 
