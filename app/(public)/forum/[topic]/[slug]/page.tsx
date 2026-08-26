@@ -5,6 +5,7 @@ import { formatDistanceToNow } from "date-fns";
 import { createPublicClient } from "@/lib/supabase/public";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { SITE_URL } from "@/lib/seo/metadata";
 import { Breadcrumb } from "@/components/portal/Breadcrumb";
 import { ForumReplyForm } from "@/components/portal/forum/ForumReplyForm";
 
@@ -55,6 +56,7 @@ export async function generateMetadata({
   return {
     title: `${data.title} | ZProperty Forum`,
     description: data.body.slice(0, 160),
+    alternates: { canonical: `${SITE_URL}/forum/${topic}/${slug}` },
   };
 }
 

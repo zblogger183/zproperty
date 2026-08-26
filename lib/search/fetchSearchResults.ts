@@ -349,6 +349,18 @@ export async function buildSearchMetadata(params: {
       : `${routeBase}/${params.citySlug}/${params.areaSlug}/`
     : `${routeBase}/${params.citySlug}/`;
 
+  // Self-canonical, not "canonicalize page 2+ back to page 1" — a filtered
+  // view (?type=flat, ?beds=2, ...) is treated as its own indexable page
+  // (noIndex only fires on zero results), so it needs to canonicalize to
+  // itself, filters and all, not collapse into the bare unfiltered URL.
+  const query = new URLSearchParams();
+  for (const [key, value] of Object.entries(params.searchParams)) {
+    const first = Array.isArray(value) ? value[0] : value;
+    if (first) query.set(key, first);
+  }
+  const queryString = query.toString();
+  const canonicalUrl = `${siteUrl}${basePath}${queryString ? `?${queryString}` : ""}`;
+
   return searchMeta({
     purpose: params.purpose,
     type: results.filters.type,
@@ -361,7 +373,7 @@ export async function buildSearchMetadata(params: {
     max_area_marla: results.filters.max_area_marla,
     floors: results.filters.floors,
     count: results.total,
-    canonicalUrl: results.filters.page > 1 ? `${siteUrl}${basePath}` : undefined,
+    canonicalUrl,
     noIndex: results.total === 0,
   });
 }

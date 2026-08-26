@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { baseMeta, SITE_URL } from "@/lib/seo/metadata";
 import { EMICalculator } from "@/components/portal/tools/EMICalculator";
 import { ToolsSidebar } from "@/components/portal/tools/ToolsSidebar";
 
 export const dynamic = "force-static";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = baseMeta({
   title: "EMI Calculator Pakistan — Mortgage & Home Loan | ZProperty",
   description:
     "Calculate your monthly home loan installment (EMI) for Pakistan. Enter property price, down payment, interest rate and loan tenure to get instant results.",
-};
+  alternates: { canonical: `${SITE_URL}/tools/emi-calculator` },
+});
 
 export default function EMICalculatorPage() {
   return (

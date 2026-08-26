@@ -1,5 +1,5 @@
 import { createPublicClient } from "@/lib/supabase/public";
-import { baseMeta } from "@/lib/seo/metadata";
+import { baseMeta, SITE_URL } from "@/lib/seo/metadata";
 import type { Metadata } from "next";
 
 interface PageSeoRow {
@@ -39,6 +39,6 @@ export async function resolvePageSeo(
     robots: { index: !robots.includes("noindex"), follow: !robots.includes("nofollow") },
     openGraph: { title, description, type: "website" },
     twitter: { card: "summary_large_image", title, description },
-    ...(row?.canonical ? { alternates: { canonical: row.canonical } } : {}),
+    alternates: { canonical: row?.canonical || `${SITE_URL}${path}` },
   });
 }

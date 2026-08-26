@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
+import { baseMeta, SITE_URL } from "@/lib/seo/metadata";
 import { StampDutyCalculator } from "@/components/portal/tools/StampDutyCalculator";
 import { ToolsSidebar } from "@/components/portal/tools/ToolsSidebar";
 
 export const dynamic = "force-static";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = baseMeta({
   title: "Stamp Duty Calculator Pakistan — Property Transfer Tax",
   description:
     "Calculate stamp duty and transfer taxes for property purchase in Pakistan. Includes CVT and Withholding Tax.",
-};
+  alternates: { canonical: `${SITE_URL}/tools/stamp-duty` },
+});
 
 export default function StampDutyCalculatorPage() {
   return (

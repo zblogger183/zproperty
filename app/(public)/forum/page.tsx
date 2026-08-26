@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { createPublicClient } from "@/lib/supabase/public";
+import { SITE_URL } from "@/lib/seo/metadata";
 import { ForumCategoryTabs } from "@/components/portal/forum/ForumCategoryTabs";
 import { FORUM_CATEGORIES } from "@/lib/constants/forumCategories";
 
@@ -25,19 +26,26 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { category: categoryFilter, city: cityFilter } = await searchParams;
 
+  const query = new URLSearchParams();
+  if (categoryFilter) query.set("category", categoryFilter);
+  if (cityFilter) query.set("city", cityFilter);
+  const queryString = query.toString();
+  const canonical = `${SITE_URL}/forum${queryString ? `?${queryString}` : ""}`;
+
   if (!categoryFilter && !cityFilter) {
-    return { title: FORUM_TITLE, description: FORUM_DESC };
+    return { title: FORUM_TITLE, description: FORUM_DESC, alternates: { canonical } };
   }
 
   const supabase = createPublicClient();
-  let query = supabase.from("forum_topics").select("id", { count: "exact", head: true });
-  if (categoryFilter) query = query.eq("category", categoryFilter);
-  if (cityFilter) query = query.eq("city_id", cityFilter);
-  const { count } = await query;
+  let dbQuery = supabase.from("forum_topics").select("id", { count: "exact", head: true });
+  if (categoryFilter) dbQuery = dbQuery.eq("category", categoryFilter);
+  if (cityFilter) dbQuery = dbQuery.eq("city_id", cityFilter);
+  const { count } = await dbQuery;
 
   return {
     title: FORUM_TITLE,
     description: FORUM_DESC,
+    alternates: { canonical },
     robots: count === 0 ? { index: false, follow: true } : undefined,
   };
 }

@@ -1,16 +1,18 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { createPublicClient } from "@/lib/supabase/public";
+import { baseMeta, SITE_URL } from "@/lib/seo/metadata";
 import { AgentCard, type DirectoryAgent } from "@/components/portal/agents/AgentCard";
 import { AgentsFilterBar } from "@/components/portal/agents/AgentsFilterBar";
 
 export const revalidate = 3600;
 
-export const metadata: Metadata = {
+export const metadata: Metadata = baseMeta({
   title: "Real Estate Agents in Pakistan | ZProperty",
   description:
     "Find verified real estate agents across Pakistan. All agents are CNIC-verified. Contact directly via WhatsApp.",
-};
+  alternates: { canonical: `${SITE_URL}/agents` },
+});
 
 const TIER_ORDER: Record<string, number> = { elite: 0, pro: 1, free: 2 };
 
