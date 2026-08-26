@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
-import { baseMeta } from "@/lib/seo/metadata";
+import { baseMeta, SITE_URL } from "@/lib/seo/metadata";
 import { AuthCard } from "@/components/auth/AuthCard";
 import { VerifyOtpForm } from "./VerifyOtpForm";
 
+// Canonicalizes to the bare path, not the identifier/purpose-bearing URL —
+// the page content only differs by interpolated text, and self-canonicalizing
+// to a URL carrying a specific email/phone would create one indexable URL per
+// verification email sent rather than treating this as the one transactional page it is.
 export const metadata: Metadata = baseMeta({
   title: "Verify Your Account | ZProperty.pk",
   description: "Enter the verification code sent to your email or phone to verify your ZProperty.pk account.",
+  alternates: { canonical: `${SITE_URL}/verify-otp` },
 });
 
 export default async function VerifyOtpPage({
