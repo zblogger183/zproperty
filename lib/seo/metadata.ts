@@ -321,8 +321,84 @@ function shortLocation(address: string | null | undefined, cityName: string): st
     .map((part) => part.trim())
     .filter(Boolean)
     .filter((part) => !part.toLowerCase().includes(cityName.toLowerCase()));
-  const locality = segments[segments.length - 1];
+  let locality = segments[segments.length - 1];
+  if (locality) {
+    // Some admin-entered addresses split a parenthetical aside across a comma
+    // ("...opposite BZU), Multan") - the tail segment is then left with a
+    // dangling, unmatched ")" that reads as broken punctuation once it's the
+    // whole locality string on its own.
+    const opens = (locality.match(/\(/g) ?? []).length;
+    const closes = (locality.match(/\)/g) ?? []).length;
+    if (closes > opens) locality = locality.replace(/\)+\s*$/, "").trim();
+  }
   return locality ? `${locality}, ${cityName}` : cityName;
+}
+
+// Free-text unit_type strings from payment_plans ("2-Bed Apartment (735
+// sqft)", "Ground Floor Shop", "Imarat Executive Suites") are the closest
+// thing this database has to a real inventory list per project - grouping
+// them into a handful of buyer-facing categories gives titles/descriptions
+// specific, keyword-rich phrasing ("Apartments & Shops") instead of the
+// single generic `property_type` value every "mixed" project previously
+// shared verbatim ("New Mixed for Sale in ...", repeated across ~half of
+// all live projects).
+const UNIT_CATEGORY_PATTERNS: [RegExp, string][] = [
+  [/\bplots?\b/i, "Plots"],
+  [/\b(villas?|houses?|bungalows?|townhouses?)\b/i, "Houses"],
+  [/\b(shops?|retail|showroom)\b/i, "Shops"],
+  [/\boffices?\b/i, "Offices"],
+  [/\b(hotel|suites?)\b/i, "Suites"],
+  [/\b(studios?|beds?|apartments?|flats?|penthouses?)\b/i, "Apartments"],
+];
+
+const PROPERTY_TYPE_FALLBACK: Record<string, string> = {
+  mixed: "Mixed-Use",
+  flats: "Apartments",
+  houses: "Houses",
+  plots: "Plots",
+  shops: "Shops",
+};
+
+function inventoryCategories(unitTypes: (string | null | undefined)[]): string[] {
+  const counts = new Map<string, number>();
+  for (const raw of unitTypes) {
+    if (!raw) continue;
+    const hit = UNIT_CATEGORY_PATTERNS.find(([re]) => re.test(raw));
+    if (hit) counts.set(hit[1], (counts.get(hit[1]) ?? 0) + 1);
+  }
+  return [...counts.entries()].sort((a, b) => b[1] - a[1]).map(([label]) => label);
+}
+
+// Builds the most specific title that still fits Google's ~60-70 character
+// display budget: tries progressively less detailed candidates (full
+// locality + price, then without price, then city-only, then bare name) and
+// keeps the first one that fits, so every project gets the richest title its
+// own name/location length allows rather than one fixed-length template.
+function buildProjectTitle(params: {
+  name: string;
+  unitLabel: string;
+  location: string;
+  cityName: string;
+  priceStr: string | null;
+}): string {
+  const { name, unitLabel, location, cityName, priceStr } = params;
+  const suffix = ` | ${SITE_NAME}`;
+  const candidates = [
+    priceStr ? `${name} — ${unitLabel} for Sale in ${location} | ${priceStr}` : null,
+    `${name} — ${unitLabel} for Sale in ${location}`,
+    `${name} — ${unitLabel} for Sale in ${cityName}`,
+    `${name} — ${unitLabel} in ${location}`,
+    `${name} — ${unitLabel} in ${cityName}`,
+    `${name} — ${unitLabel}, ${cityName}`,
+    `${name} | ${unitLabel}`,
+    name,
+  ].filter((candidate): candidate is string => Boolean(candidate));
+
+  for (const candidate of candidates) {
+    if ((candidate + suffix).length <= 70) return candidate + suffix;
+  }
+  const shortest = `${candidates[candidates.length - 1]}${suffix}`;
+  return shortest.length <= 80 ? shortest : `${shortest.slice(0, 77)}...`;
 }
 
 export function projectMeta(project: {
@@ -335,35 +411,37 @@ export function projectMeta(project: {
   total_units?: number | null;
   min_price?: number | null;
   max_price?: number | null;
+  unit_types?: (string | null | undefined)[];
+  amenities?: unknown;
   og_image_url?: string | null;
   cover_image_url?: string | null;
   meta_title?: string | null;
   meta_desc?: string | null;
 }): Metadata {
-  const typeStr = project.property_type?.replace(/_/g, " ") || "Property";
-  const typeLabel = typeStr.charAt(0).toUpperCase() + typeStr.slice(1);
+  const categories = inventoryCategories(project.unit_types ?? []);
+  const fallbackLabel = PROPERTY_TYPE_FALLBACK[project.property_type ?? ""] ?? "Property";
+  const titleLabel = categories.length > 0 ? categories.slice(0, 2).join(" & ") : fallbackLabel;
+  const descLabel = categories.length > 0 ? categories.join(", ") : fallbackLabel.toLowerCase();
+
   const location = shortLocation(project.address, project.city_name);
   const statusLabel = project.status ? (PROJECT_STATUS_LABEL[project.status] ?? null) : null;
   const priceStr = project.min_price ? `From ${formatPrice(project.min_price, "buy")}` : null;
 
   const title =
     project.meta_title ||
-    [
-      `${project.name} —`,
-      `New ${typeLabel} for Sale in ${location}`,
-      priceStr ? `| ${priceStr}` : null,
-      `| ${SITE_NAME}`,
-    ]
-      .filter(Boolean)
-      .join(" ");
+    buildProjectTitle({ name: project.name, unitLabel: titleLabel, location, cityName: project.city_name, priceStr });
+
+  const amenitiesList = Array.isArray(project.amenities) ? (project.amenities as unknown[]) : [];
+  const topAmenities = amenitiesList.filter((item): item is string => typeof item === "string").slice(0, 3);
 
   const desc =
     project.meta_desc ||
     [
-      `${project.name} is a new ${typeLabel.toLowerCase()} project for sale in ${location}.`,
+      `${project.name} in ${location} — ${descLabel} for sale.`,
       statusLabel ? `${statusLabel}.` : null,
       priceStr ? `${priceStr}.` : null,
       project.total_units ? `${project.total_units} units.` : null,
+      topAmenities.length ? `Amenities: ${topAmenities.join(", ")}.` : null,
       `View floor plans, payment plan and developer contact on ${SITE_NAME}.`,
     ]
       .filter(Boolean)
