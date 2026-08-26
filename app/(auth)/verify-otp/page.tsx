@@ -1,5 +1,12 @@
+import type { Metadata } from "next";
+import { baseMeta } from "@/lib/seo/metadata";
 import { AuthCard } from "@/components/auth/AuthCard";
 import { VerifyOtpForm } from "./VerifyOtpForm";
+
+export const metadata: Metadata = baseMeta({
+  title: "Verify Your Account | ZProperty.pk",
+  description: "Enter the verification code sent to your email or phone to verify your ZProperty.pk account.",
+});
 
 export default async function VerifyOtpPage({
   searchParams,
