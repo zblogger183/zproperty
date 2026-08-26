@@ -1,7 +1,15 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { baseMeta, SITE_URL } from "@/lib/seo/metadata";
 import { AuthCard } from "@/components/auth/AuthCard";
 import { ResetPasswordForm } from "./ResetPasswordForm";
+
+export const metadata: Metadata = baseMeta({
+  title: "Reset Your Password | ZProperty.pk",
+  description: "Choose a new password for your ZProperty.pk account.",
+  alternates: { canonical: `${SITE_URL}/reset-password` },
+});
 
 export default async function ResetPasswordPage() {
   const supabase = await createClient();

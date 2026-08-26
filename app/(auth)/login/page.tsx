@@ -1,8 +1,16 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getRoleRedirectPath } from "@/lib/auth/redirect";
+import { baseMeta, SITE_URL } from "@/lib/seo/metadata";
 import { AuthCard } from "@/components/auth/AuthCard";
 import { LoginForm } from "./LoginForm";
+
+export const metadata: Metadata = baseMeta({
+  title: "Login to Your Account | ZProperty.pk",
+  description: "Log in to your ZProperty.pk account to manage listings, saved properties, and leads.",
+  alternates: { canonical: `${SITE_URL}/login` },
+});
 
 export default async function LoginPage() {
   const supabase = await createClient();
@@ -21,7 +29,7 @@ export default async function LoginPage() {
   }
 
   return (
-    <AuthCard subtitle="Sign in to your account">
+    <AuthCard title="Welcome Back" subtitle="Sign in to your account">
       <LoginForm />
     </AuthCard>
   );

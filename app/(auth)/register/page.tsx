@@ -1,8 +1,17 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getRoleRedirectPath } from "@/lib/auth/redirect";
+import { baseMeta, SITE_URL } from "@/lib/seo/metadata";
 import { AuthCard } from "@/components/auth/AuthCard";
 import { RegisterWizard } from "./RegisterWizard";
+
+export const metadata: Metadata = baseMeta({
+  title: "Create an Account | ZProperty.pk",
+  description:
+    "Sign up for a free ZProperty.pk account as a buyer, agent, or developer and start browsing or listing properties across Pakistan.",
+  alternates: { canonical: `${SITE_URL}/register` },
+});
 
 export default async function RegisterPage() {
   const supabase = await createClient();
@@ -27,7 +36,7 @@ export default async function RegisterPage() {
     .order("display_order");
 
   return (
-    <AuthCard>
+    <AuthCard title="Create an Account">
       <RegisterWizard cities={cities ?? []} />
     </AuthCard>
   );
