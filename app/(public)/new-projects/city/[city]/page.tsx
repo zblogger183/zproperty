@@ -40,10 +40,11 @@ export async function generateMetadata({
 
   const page = Math.max(1, Number(pageParam) || 1);
   const baseTitle = `New Projects in ${city.name} — Off-Plan & Ready | ZProperty`;
+  const baseDescription = `Browse new residential and commercial projects in ${city.name}. Pre-launch prices, payment plans, and developer contact.`;
 
   return {
     title: page > 1 ? `${baseTitle} — Page ${page}` : baseTitle,
-    description: `Browse new residential and commercial projects in ${city.name}. Pre-launch prices, payment plans, and developer contact.`,
+    description: page > 1 ? `${baseDescription} (Page ${page}.)` : baseDescription,
     alternates: {
       canonical: page > 1 ? `/new-projects/city/${citySlug}?page=${page}` : `/new-projects/city/${citySlug}`,
     },

@@ -28,7 +28,7 @@ export async function generateMetadata({
 
   return {
     title: page > 1 ? `${BASE_TITLE} — Page ${page}` : BASE_TITLE,
-    description: BASE_DESCRIPTION,
+    description: page > 1 ? `${BASE_DESCRIPTION} (Page ${page}.)` : BASE_DESCRIPTION,
     alternates: { canonical: page > 1 ? `/new-projects?page=${page}` : "/new-projects" },
   };
 }

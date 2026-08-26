@@ -372,6 +372,8 @@ export async function buildSearchMetadata(params: {
     min_area_marla: results.filters.min_area_marla,
     max_area_marla: results.filters.max_area_marla,
     floors: results.filters.floors,
+    beds: results.filters.beds,
+    page: results.filters.page,
     count: results.total,
     canonicalUrl,
     noIndex: results.total === 0,
