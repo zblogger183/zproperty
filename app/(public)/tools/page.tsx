@@ -57,7 +57,8 @@ export default function ToolsIndexPage() {
         Free calculators to help you buy, rent, and build with confidence.
       </p>
 
-      <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <h2 className="mt-8 text-xl font-bold text-black">All Tools</h2>
+      <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {TOOLS.map(({ label, href, Icon, note }) => (
           <Link
             key={label}

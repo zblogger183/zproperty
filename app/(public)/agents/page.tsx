@@ -68,6 +68,7 @@ export default async function AgentsDirectoryPage({
       <p className="px-6 pt-4 text-sm text-black">{agents.length} agents found</p>
 
       <div className="mx-auto max-w-6xl px-6 py-6">
+        <h2 className="sr-only">Agent Listings</h2>
         {agents.length === 0 ? (
           <div className="py-16 text-center">
             <p className="text-base font-semibold text-black">No agents found.</p>

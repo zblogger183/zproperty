@@ -29,6 +29,7 @@ export default function ContactUsPage() {
 
       <div className="mx-auto grid max-w-4xl grid-cols-1 gap-8 px-6 py-10 md:grid-cols-2">
         <div className="rounded-xl border border-primary bg-white p-6">
+          <h2 className="mb-4 text-lg font-bold text-black">Contact Information</h2>
           {CONTACT_METHODS.map(({ Icon, title, detail }) => (
             <div key={title} className="mb-5 flex items-start gap-3 last:mb-0">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-white">

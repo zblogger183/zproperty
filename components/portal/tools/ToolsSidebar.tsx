@@ -13,7 +13,7 @@ export function ToolsSidebar({ activeHref }: { activeHref: string }) {
   return (
     <div className="w-full shrink-0 lg:w-64">
       <div className="rounded-xl border border-primary bg-white p-4">
-        <p className="mb-3 text-sm font-bold text-black">Other Tools</p>
+        <h2 className="mb-3 text-sm font-bold text-black">Other Tools</h2>
         <div className="flex flex-col gap-1">
           {TOOLS.map((tool) => (
             <Link
@@ -32,7 +32,7 @@ export function ToolsSidebar({ activeHref }: { activeHref: string }) {
       </div>
 
       <div className="mt-4 rounded-xl bg-primary p-4">
-        <p className="text-sm font-bold text-white">Ready to buy a property?</p>
+        <h2 className="text-sm font-bold text-white">Ready to buy a property?</h2>
         <p className="mt-1 text-xs text-white">Browse verified listings in Lahore</p>
         <Link
           href="/buy/lahore"
@@ -43,7 +43,7 @@ export function ToolsSidebar({ activeHref }: { activeHref: string }) {
       </div>
 
       <div className="mt-4 rounded-xl border border-primary bg-white p-4">
-        <p className="text-sm font-bold text-black">Need expert advice?</p>
+        <h2 className="text-sm font-bold text-black">Need expert advice?</h2>
         <p className="mt-1 text-xs text-primary-mid">Connect with a CNIC-verified agent</p>
         <Link
           href="/agents"

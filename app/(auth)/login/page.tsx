@@ -30,6 +30,7 @@ export default async function LoginPage() {
 
   return (
     <AuthCard title="Welcome Back" subtitle="Sign in to your account">
+      <h2 className="sr-only">Login Form</h2>
       <LoginForm />
     </AuthCard>
   );

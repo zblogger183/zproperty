@@ -183,7 +183,7 @@ export default async function ForumPage({
           </div>
 
           <div className="mt-4 rounded-xl border border-primary bg-white p-5">
-            <p className="mb-3 text-sm font-semibold text-black">Browse by Category</p>
+            <h2 className="mb-3 text-sm font-semibold text-black">Browse by Category</h2>
             <div className="space-y-1">
               {FORUM_CATEGORIES.filter((category) => category.value).map((category) => (
                 <Link
@@ -200,7 +200,7 @@ export default async function ForumPage({
 
           {!!cities?.length && (
             <div className="mt-4 rounded-xl border border-primary bg-white p-5">
-              <p className="mb-3 text-sm font-semibold text-black">Browse by City</p>
+              <h2 className="mb-3 text-sm font-semibold text-black">Browse by City</h2>
               <div className="flex flex-wrap gap-2">
                 {cities.map((city) => (
                   <Link
