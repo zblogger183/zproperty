@@ -145,6 +145,8 @@ export async function generateMetadata({
     total_units: project.total_units,
     min_price: project.min_price,
     max_price: project.max_price,
+    unit_types: project.payment_plans.map((plan) => plan.unit_type),
+    amenities: project.amenities,
     og_image_url: project.og_image_url,
     cover_image_url: project.cover_image_url,
     meta_title: project.meta_title,
