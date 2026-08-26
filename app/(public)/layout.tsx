@@ -11,7 +11,7 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
       <Suspense fallback={null}>
         <AuthErrorHandler />
       </Suspense>
-      {children}
+      <main>{children}</main>
       <Footer />
     </>
   );

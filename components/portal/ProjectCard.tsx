@@ -30,7 +30,8 @@ export function ProjectCard({ project }: { project: ProjectCardData }) {
               src={project.cover_image_url}
               alt={project.name}
               fill
-              sizes="(min-width: 1024px) 50vw, 100vw"
+              sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+              quality={65}
               placeholder="blur"
               blurDataURL={BLUR_DATA_URL}
               className="object-cover"

@@ -79,6 +79,11 @@ const nextConfig: NextConfig = {
     ];
   },
   images: {
+    // Next 16 requires an explicit allowlist for any quality value used via
+    // the `quality` prop (default-only allowlist is [75]) — 65 is used on
+    // homepage card thumbnails, flagged by PageSpeed Insights as having
+    // compression headroom at the default 75.
+    qualities: [65, 75],
     remotePatterns: [
       {
         protocol: "https",
