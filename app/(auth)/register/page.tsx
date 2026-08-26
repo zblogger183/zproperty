@@ -27,7 +27,7 @@ export default async function RegisterPage() {
     .order("display_order");
 
   return (
-    <AuthCard>
+    <AuthCard title="Create an Account">
       <RegisterWizard cities={cities ?? []} />
     </AuthCard>
   );

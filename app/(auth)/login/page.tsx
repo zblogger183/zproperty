@@ -21,7 +21,7 @@ export default async function LoginPage() {
   }
 
   return (
-    <AuthCard subtitle="Sign in to your account">
+    <AuthCard title="Welcome Back" subtitle="Sign in to your account">
       <LoginForm />
     </AuthCard>
   );
