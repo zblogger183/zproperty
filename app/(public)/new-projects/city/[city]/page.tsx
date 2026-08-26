@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { createPublicClient } from "@/lib/supabase/public";
+import { SITE_URL } from "@/lib/seo/metadata";
 import { ProjectCard, type ProjectListCardData } from "@/components/portal/projects/ProjectCard";
 import { ProjectsFilterBar } from "@/components/portal/projects/ProjectsFilterBar";
 import { ProjectsLinksSidebar } from "@/components/portal/projects/ProjectsLinksSidebar";
@@ -40,12 +41,16 @@ export async function generateMetadata({
 
   const page = Math.max(1, Number(pageParam) || 1);
   const baseTitle = `New Projects in ${city.name} — Off-Plan & Ready | ZProperty`;
+  const baseDescription = `Browse new residential and commercial projects in ${city.name}. Pre-launch prices, payment plans, and developer contact.`;
 
   return {
     title: page > 1 ? `${baseTitle} — Page ${page}` : baseTitle,
-    description: `Browse new residential and commercial projects in ${city.name}. Pre-launch prices, payment plans, and developer contact.`,
+    description: page > 1 ? `${baseDescription} (Page ${page}.)` : baseDescription,
     alternates: {
-      canonical: page > 1 ? `/new-projects/city/${citySlug}?page=${page}` : `/new-projects/city/${citySlug}`,
+      canonical:
+        page > 1
+          ? `${SITE_URL}/new-projects/city/${citySlug}?page=${page}`
+          : `${SITE_URL}/new-projects/city/${citySlug}`,
     },
   };
 }

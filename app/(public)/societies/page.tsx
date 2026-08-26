@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { createPublicClient } from "@/lib/supabase/public";
+import { SITE_URL } from "@/lib/seo/metadata";
 import { SocietyCard } from "@/components/portal/SocietyCard";
 import type { SocietyCardData } from "@/types";
 
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
   title: "Housing Societies in Pakistan — DHA, Bahria Town & More | ZProperty",
   description:
     "Browse master-planned housing societies across Pakistan — DHA, Bahria Town, and more, with developer details, plot sizes, and payment plans.",
-  alternates: { canonical: "/societies" },
+  alternates: { canonical: `${SITE_URL}/societies` },
 };
 
 const SOCIETY_COLUMNS = "id, slug, name, developer_name, avg_price_marla, cover_image_url, city:cities(name, slug)";

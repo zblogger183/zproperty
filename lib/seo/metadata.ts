@@ -142,6 +142,8 @@ export function searchMeta(params: {
   min_area_marla?: number | null;
   max_area_marla?: number | null;
   floors?: number | null;
+  beds?: number | null;
+  page?: number;
   count: number;
   canonicalUrl?: string;
   // Pre-launch, most filter combinations return 0 results — indexing those
@@ -187,10 +189,22 @@ export function searchMeta(params: {
           ? `Up to ${params.max_area_marla} Marla `
           : "";
   const floorsStr = params.floors != null ? `${FLOORS_LABEL[params.floors] ?? `${params.floors}-Story`} ` : "";
-  const descriptor = `${sizeStr}${floorsStr}`;
+  // Distinguishes e.g. ?type=flat from ?type=flat&beds=2 in the indexed
+  // description — without this the two collapsed into the exact same
+  // wording whenever both queries happened to match the same result count
+  // (common with this site's still-thin listing inventory).
+  const bedsStr = params.beds != null ? `${params.beds} Bed ` : "";
+  const descriptor = `${sizeStr}${floorsStr}${bedsStr}`;
+  // Distinct pagination isn't reachable yet at current listing volumes
+  // (PAGE_SIZE is large relative to how many listings match most filters),
+  // but the same title/description otherwise given to every page of a
+  // paginated result set would collapse into duplicates the moment
+  // inventory grows enough to paginate — same pattern already fixed on
+  // /new-projects's own pagination.
+  const pageSuffix = params.page && params.page > 1 ? ` — Page ${params.page}` : "";
 
-  const title = `${params.count.toLocaleString()} ${descriptor}${typeStr} for ${purposeStr} in ${location} | ${SITE_NAME}`;
-  const desc = `Browse ${params.count.toLocaleString()} verified ${descriptor}${typeStr.toLowerCase()} for ${purposeStr.toLowerCase()} in ${location}. Filter by price, size, bedrooms. Contact CNIC-verified agents directly on ${SITE_NAME}.`;
+  const title = `${params.count.toLocaleString()} ${descriptor}${typeStr} for ${purposeStr} in ${location}${pageSuffix} | ${SITE_NAME}`;
+  const desc = `Browse ${params.count.toLocaleString()} verified ${descriptor}${typeStr.toLowerCase()} for ${purposeStr.toLowerCase()} in ${location}. Filter by price, size, bedrooms. Contact CNIC-verified agents directly on ${SITE_NAME}.${params.page && params.page > 1 ? ` (Page ${params.page}.)` : ""}`;
 
   return baseMeta({
     title,
