@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
+import { baseMeta, SITE_URL } from "@/lib/seo/metadata";
 import { ROICalculator } from "@/components/portal/tools/ROICalculator";
 import { ToolsSidebar } from "@/components/portal/tools/ToolsSidebar";
 
 export const dynamic = "force-static";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = baseMeta({
   title: "Property ROI Calculator Pakistan — Rental Yield Calculator",
   description: "Calculate your property investment returns in Pakistan. Rental yield, capital gains, and total ROI calculator.",
-};
+  alternates: { canonical: `${SITE_URL}/tools/roi-calculator` },
+});
 
 export default function ROICalculatorPage() {
   return (

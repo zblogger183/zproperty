@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
+import { baseMeta, SITE_URL } from "@/lib/seo/metadata";
 import { RentVsBuyCalculator } from "@/components/portal/tools/RentVsBuyCalculator";
 import { ToolsSidebar } from "@/components/portal/tools/ToolsSidebar";
 
 export const dynamic = "force-static";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = baseMeta({
   title: "Rent vs Buy Calculator Pakistan — Should I Rent or Buy?",
   description: "Compare renting vs buying a home in Pakistan. Calculate which option saves more money over time.",
-};
+  alternates: { canonical: `${SITE_URL}/tools/rent-vs-buy` },
+});
 
 export default function RentVsBuyCalculatorPage() {
   return (

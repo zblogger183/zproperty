@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
+import { baseMeta, SITE_URL } from "@/lib/seo/metadata";
 import { ConstructionCostCalculator } from "@/components/portal/tools/ConstructionCostCalculator";
 import { ToolsSidebar } from "@/components/portal/tools/ToolsSidebar";
 
 export const dynamic = "force-static";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = baseMeta({
   title: "Construction Cost Calculator Pakistan",
   description:
     "Estimate the cost of building your house in Pakistan. Calculate construction cost per sqft, materials, and labour.",
-};
+  alternates: { canonical: `${SITE_URL}/tools/construction-cost` },
+});
 
 export default function ConstructionCostCalculatorPage() {
   return (

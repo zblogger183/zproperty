@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Calculator, HardHat, Receipt, Ruler, Scale, TrendingUp } from "lucide-react";
-import { baseMeta } from "@/lib/seo/metadata";
+import { baseMeta, SITE_URL } from "@/lib/seo/metadata";
 
 export const metadata: Metadata = baseMeta({
   title: "Free Property Tools — EMI, ROI, Stamp Duty & More | ZProperty.pk",
   description:
     "Free calculators for buying, renting, and building property in Pakistan: EMI, construction cost, area conversion (marla/kanal/sqft), ROI, rent vs buy, and stamp duty.",
+  alternates: { canonical: `${SITE_URL}/tools` },
 });
 
 const TOOLS = [

@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createPublicClient } from "@/lib/supabase/public";
+import { SITE_URL } from "@/lib/seo/metadata";
 import { ListingCard } from "@/components/portal/ListingCard";
 import type { ListingCardData } from "@/types";
 
@@ -57,6 +58,7 @@ export async function generateMetadata({
   return {
     title: agency.meta_title ?? `${agency.name} | ZProperty.pk`,
     description: agency.meta_desc ?? agency.description ?? undefined,
+    alternates: { canonical: `${SITE_URL}/agencies/${agency.slug}` },
   };
 }
 
