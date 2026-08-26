@@ -36,6 +36,7 @@ export function ListingCard({
               alt={listing.title}
               fill
               sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 90vw"
+              quality={65}
               placeholder="blur"
               blurDataURL={BLUR_DATA_URL}
               className="object-cover"

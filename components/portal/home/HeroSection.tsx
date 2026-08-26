@@ -80,14 +80,19 @@ export function HeroSection({ cities, stats }: { cities: HeroCity[]; stats: Hero
   return (
     <section className="relative overflow-hidden bg-primary px-4 pb-20 pt-16">
       {/* bg-primary above is the fallback shown before this loads (or if
-          public/images/hero-bg.webp is ever missing) — priority + fill
-          since this is the homepage's largest above-the-fold element. */}
+          public/images/hero-bg.webp is ever missing) — eager + high
+          fetchPriority since this is the homepage's LCP element. Next 16
+          deprecated `priority` in favor of `preload`, but its own docs say
+          not to combine preload with fetchPriority — use fetchPriority
+          directly instead (see node_modules/next/dist/docs/.../image.md). */}
       <Image
         src="/images/hero-bg.webp"
         alt=""
         fill
-        priority
+        loading="eager"
+        fetchPriority="high"
         sizes="100vw"
+        quality={65}
         className="object-cover"
       />
       {/* Dark scrim so the white heading/text stays readable regardless of
@@ -123,7 +128,11 @@ export function HeroSection({ cities, stats }: { cities: HeroCity[]; stats: Hero
           </div>
 
           <form onSubmit={handleSubmit} className="mt-3 flex flex-col gap-3 sm:flex-row">
+            <label htmlFor="hero-city" className="sr-only">
+              City
+            </label>
             <select
+              id="hero-city"
               value={city}
               onChange={(event) => setCity(event.target.value)}
               className="w-full shrink-0 rounded-lg border-[1.5px] border-primary bg-white px-3 py-2.5 text-sm text-black sm:w-36"
