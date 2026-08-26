@@ -8,10 +8,39 @@ import { FORUM_CATEGORIES } from "@/lib/constants/forumCategories";
 
 export const revalidate = 900;
 
-export const metadata: Metadata = {
-  title: "Real Estate Forum Pakistan | ZProperty",
-  description: "Ask questions, share experiences, and get advice on buying, renting, and investing in property in Pakistan.",
-};
+const FORUM_TITLE = "Real Estate Forum Pakistan | ZProperty";
+const FORUM_DESC =
+  "Ask questions, share experiences, and get advice on buying, renting, and investing in property in Pakistan.";
+
+// A city/category filter that matches zero topics renders the exact same
+// empty state (and hence the same title/description/body) as every other
+// empty filter combination — duplicate, near-zero-content pages Google
+// would otherwise index once crawled. noindex only the filtered, empty
+// case (same convention as /buy's searchMeta noIndex) — the base /forum
+// hub page stays indexable regardless of total topic count.
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ category?: string; city?: string }>;
+}): Promise<Metadata> {
+  const { category: categoryFilter, city: cityFilter } = await searchParams;
+
+  if (!categoryFilter && !cityFilter) {
+    return { title: FORUM_TITLE, description: FORUM_DESC };
+  }
+
+  const supabase = createPublicClient();
+  let query = supabase.from("forum_topics").select("id", { count: "exact", head: true });
+  if (categoryFilter) query = query.eq("category", categoryFilter);
+  if (cityFilter) query = query.eq("city_id", cityFilter);
+  const { count } = await query;
+
+  return {
+    title: FORUM_TITLE,
+    description: FORUM_DESC,
+    robots: count === 0 ? { index: false, follow: true } : undefined,
+  };
+}
 
 interface ForumTopicRow {
   id: string;
