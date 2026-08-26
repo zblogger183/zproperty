@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { createPublicClient } from "@/lib/supabase/public";
+import { SITE_URL } from "@/lib/seo/metadata";
 import { ProjectCard, type ProjectListCardData } from "@/components/portal/projects/ProjectCard";
 import { ProjectsFilterBar } from "@/components/portal/projects/ProjectsFilterBar";
 import { ProjectsLinksSidebar } from "@/components/portal/projects/ProjectsLinksSidebar";
@@ -46,7 +47,10 @@ export async function generateMetadata({
     title: page > 1 ? `${baseTitle} — Page ${page}` : baseTitle,
     description: page > 1 ? `${baseDescription} (Page ${page}.)` : baseDescription,
     alternates: {
-      canonical: page > 1 ? `/new-projects/city/${citySlug}?page=${page}` : `/new-projects/city/${citySlug}`,
+      canonical:
+        page > 1
+          ? `${SITE_URL}/new-projects/city/${citySlug}?page=${page}`
+          : `${SITE_URL}/new-projects/city/${citySlug}`,
     },
   };
 }
