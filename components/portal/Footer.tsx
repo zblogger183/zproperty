@@ -23,6 +23,7 @@ const TOOLS_LINKS = [
   { label: "Rent vs Buy", href: "/tools/rent-vs-buy" },
   { label: "Stamp Duty Calculator", href: "/tools/stamp-duty" },
   { label: "Area Guides", href: "/societies" },
+  { label: "Zip Codes", href: "/zip-codes" },
   { label: "Forum", href: "/forum" },
   { label: "Blog", href: "/blog" },
 ];

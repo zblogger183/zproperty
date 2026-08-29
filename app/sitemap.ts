@@ -30,6 +30,11 @@ interface AgentRow {
   updated_at: string;
 }
 
+interface PostalCodeRow {
+  city: { slug: string } | null;
+  area: { slug: string } | null;
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const admin = createAdminClient();
 
@@ -56,6 +61,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     admin.from("agent_profiles").select("profile_slug, updated_at"),
   ]);
 
+  const { data: postalCodes } = await admin
+    .from("postal_codes")
+    .select("city:cities(slug), area:areas(slug)")
+    .eq("is_active", true)
+    .not("area_id", "is", null);
+
   const now = new Date().toISOString();
 
   const staticPages: MetadataRoute.Sitemap = [
@@ -65,6 +76,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/advertise`, changeFrequency: "monthly", priority: 0.4 },
     { url: `${SITE_URL}/agents`, changeFrequency: "daily", priority: 0.7 },
     { url: `${SITE_URL}/new-projects`, changeFrequency: "daily", priority: 0.8 },
+    { url: `${SITE_URL}/zip-codes`, changeFrequency: "monthly", priority: 0.6 },
     { url: `${SITE_URL}/blog`, changeFrequency: "daily", priority: 0.6 },
     { url: `${SITE_URL}/forum`, changeFrequency: "hourly", priority: 0.5 },
     ...["emi-calculator", "construction-cost", "area-converter", "roi-calculator", "rent-vs-buy", "stamp-duty"].map(
@@ -82,7 +94,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/plots/${city.slug}/`, changeFrequency: "hourly" as const, priority: 0.8 },
     { url: `${SITE_URL}/commercial/${city.slug}/`, changeFrequency: "hourly" as const, priority: 0.8 },
     { url: `${SITE_URL}/new-projects/city/${city.slug}/`, changeFrequency: "daily" as const, priority: 0.8 },
+    { url: `${SITE_URL}/zip-codes/city/${city.slug}/`, changeFrequency: "monthly" as const, priority: 0.6 },
   ]);
+
+  const postalCodePages: MetadataRoute.Sitemap = ((postalCodes ?? []) as unknown as PostalCodeRow[])
+    .filter((pc) => pc.city && pc.area)
+    .map((pc) => ({
+      url: `${SITE_URL}/zip-codes/city/${pc.city?.slug}/${pc.area?.slug}/`,
+      changeFrequency: "monthly" as const,
+      priority: 0.5,
+    }));
 
   const areaPages: MetadataRoute.Sitemap = ((areas ?? []) as unknown as AreaRow[])
     .filter((area) => area.city)
@@ -155,6 +176,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...areaPages,
     ...societyPages,
     ...societySearchPages,
+    ...postalCodePages,
     ...listingPages,
     ...projectPages,
     ...blogPages,
