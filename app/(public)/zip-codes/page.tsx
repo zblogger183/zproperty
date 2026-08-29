@@ -42,6 +42,13 @@ export default async function ZipCodesIndexPage() {
       </div>
 
       <div className="mx-auto w-full max-w-5xl px-4 py-10 md:px-6">
+        <p className="mb-8 text-sm leading-relaxed text-black">
+          A postal (zip) code is a 5-digit number assigned by Pakistan Post to identify a specific delivery area --
+          a neighborhood, sector, or institution -- within a city. Postal codes are used for mail delivery, courier
+          and e-commerce shipments, and on official forms that ask for a zip or postal code. Select a province below
+          to browse its cities, then a city to find the exact zip code for any area or neighborhood.
+        </p>
+
         <h2 className="sr-only">Provinces</h2>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {[...byProvince.entries()].map(([province, cityList]) => (
@@ -60,6 +67,33 @@ export default async function ZipCodesIndexPage() {
               </div>
             </div>
           ))}
+        </div>
+
+        <div className="mt-10 rounded-xl border border-primary bg-white p-6">
+          <h2 className="text-lg font-bold text-black">Frequently Asked Questions</h2>
+          <div className="mt-3 space-y-4">
+            <div>
+              <p className="text-sm font-semibold text-black">How many digits are in a Pakistani postal code?</p>
+              <p className="mt-1 text-sm leading-relaxed text-primary-mid">
+                Pakistani postal codes are 5 digits long. The first two digits generally identify the postal circle
+                or region, and the remaining digits narrow it down to a specific city, sector, or delivery office.
+              </p>
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-black">Who assigns postal codes in Pakistan?</p>
+              <p className="mt-1 text-sm leading-relaxed text-primary-mid">
+                Postal codes in Pakistan are assigned and maintained by Pakistan Post, the country&apos;s national
+                postal service.
+              </p>
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-black">Can one area have more than one zip code?</p>
+              <p className="mt-1 text-sm leading-relaxed text-primary-mid">
+                Yes. Larger neighborhoods or sectors are sometimes served by more than one postal code, usually
+                split by the delivery office responsible for that part of the area.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </>

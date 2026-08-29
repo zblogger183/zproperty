@@ -7,6 +7,8 @@ import { SchemaScript, breadcrumbSchema } from "@/lib/seo/schemas";
 
 export const revalidate = 86400;
 
+const NEARBY_LIMIT = 6;
+
 async function getData(citySlug: string, areaSlug: string) {
   const supabase = createPublicClient();
   const { data: city } = await supabase
@@ -32,7 +34,22 @@ async function getData(citySlug: string, areaSlug: string) {
     .eq("is_active", true)
     .order("display_order");
 
-  return { city, area, postalCodes: postalCodes ?? [] };
+  // Sibling localities in the same city, for the "nearby zip codes" internal-linking
+  // block below -- helps both crawlers and buyers who aren't sure of the exact area
+  // name, and gives each locality page enough genuinely different content (not just
+  // the same templated paragraph with the area name swapped) to avoid reading as
+  // pure boilerplate across hundreds of pages.
+  const { data: nearby } = await supabase
+    .from("postal_codes")
+    .select("code, locality_name, area:areas(name, slug)")
+    .eq("city_id", city.id)
+    .not("area_id", "is", null)
+    .neq("area_id", area.id)
+    .eq("is_active", true)
+    .order("display_order")
+    .limit(NEARBY_LIMIT);
+
+  return { city, area, postalCodes: postalCodes ?? [], nearby: nearby ?? [] };
 }
 
 export async function generateMetadata({
@@ -61,22 +78,41 @@ export default async function ZipCodeLocalityPage({
   const data = await getData(citySlug, locality);
   if (!data || data.postalCodes.length === 0) notFound();
 
-  const { city, area, postalCodes } = data;
+  const { city, area, postalCodes, nearby } = data;
   const primaryCode = postalCodes[0].code;
+  const hasMultiple = postalCodes.length > 1;
+
+  const faqs = [
+    {
+      q: `What is the zip code of ${area.name}, ${city.name}?`,
+      a: `The postal (zip) code for ${area.name}, ${city.name}, ${city.province} is ${primaryCode}.`,
+    },
+    {
+      q: "What format do Pakistani postal codes use?",
+      a: "Pakistan Post uses 5-digit numeric postal codes. The first two digits generally identify the postal circle or region, and the remaining digits narrow it down to a specific delivery office or locality.",
+    },
+    {
+      q: `Which city and province is ${area.name} in?`,
+      a: `${area.name} is located in ${city.name}, ${city.province}, Pakistan.`,
+    },
+    ...(hasMultiple
+      ? [
+          {
+            q: `Does ${area.name} have more than one postal code?`,
+            a: `Yes. ${area.name} is served by ${postalCodes.length} postal codes: ${postalCodes.map((p) => p.code).join(", ")}. Larger areas are sometimes split across more than one delivery office.`,
+          },
+        ]
+      : []),
+  ];
 
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: [
-      {
-        "@type": "Question",
-        name: `What is the zip code of ${area.name}, ${city.name}?`,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: `The postal (zip) code for ${area.name}, ${city.name}, ${city.province} is ${primaryCode}.`,
-        },
-      },
-    ],
+    mainEntity: faqs.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
   };
 
   return (
@@ -101,6 +137,13 @@ export default async function ZipCodeLocalityPage({
       <div className="mx-auto w-full max-w-2xl px-4 py-10 md:px-6">
         <div className="rounded-xl border border-primary bg-white p-6">
           <h2 className="text-lg font-bold text-black">Postal Code Details</h2>
+          <p className="mt-3 text-sm leading-relaxed text-black">
+            The zip code for {area.name} in {city.name}, {city.province} is <strong>{primaryCode}</strong>. This
+            5-digit postal code is assigned by Pakistan Post and is used for mail delivery, online orders, courier
+            shipments, and official documents that require a postal or zip code for {area.name}.
+            {hasMultiple &&
+              ` ${area.name} is served by more than one code depending on the exact delivery office -- see the full list below.`}
+          </p>
           <dl className="mt-4 space-y-3 text-sm">
             <div className="flex justify-between border-b border-primary/20 pb-2">
               <dt className="text-primary-mid">Area</dt>
@@ -120,7 +163,7 @@ export default async function ZipCodeLocalityPage({
             </div>
           </dl>
 
-          {postalCodes.length > 1 && (
+          {hasMultiple && (
             <p className="mt-4 text-xs text-primary-mid">
               This area is also served by: {postalCodes.slice(1).map((p) => p.code).join(", ")}
             </p>
@@ -136,6 +179,39 @@ export default async function ZipCodeLocalityPage({
             Browse Listings in {area.name} →
           </Link>
         </div>
+
+        <div className="mt-6 rounded-xl border border-primary bg-white p-6">
+          <h2 className="text-lg font-bold text-black">Frequently Asked Questions</h2>
+          <div className="mt-3 space-y-4">
+            {faqs.map((f) => (
+              <div key={f.q}>
+                <p className="text-sm font-semibold text-black">{f.q}</p>
+                <p className="mt-1 text-sm leading-relaxed text-primary-mid">{f.a}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {nearby.length > 0 && (
+          <div className="mt-6 rounded-xl border border-primary bg-white p-6">
+            <h2 className="text-lg font-bold text-black">Other Zip Codes in {city.name}</h2>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {nearby.map((row) => {
+                const nearbyArea = Array.isArray(row.area) ? row.area[0] : row.area;
+                if (!nearbyArea) return null;
+                return (
+                  <Link
+                    key={nearbyArea.slug}
+                    href={`/zip-codes/city/${citySlug}/${nearbyArea.slug}`}
+                    className="rounded-lg border border-primary px-3 py-1.5 text-sm text-primary hover:bg-primary hover:text-white"
+                  >
+                    {nearbyArea.name} ({row.code})
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         <p className="mt-6 text-center text-sm text-primary-mid">
           <Link href={`/zip-codes/city/${citySlug}`} className="text-primary hover:underline">
