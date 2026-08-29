@@ -47,6 +47,39 @@ export default async function ZipCodesCityPage({ params }: { params: Promise<{ c
     .order("display_order");
 
   const rows = postalCodes ?? [];
+  const linkedCount = rows.filter((r) => r.area).length;
+  const gpoRow = rows.find((r) => /gpo/i.test(r.locality_name));
+
+  const faqs = [
+    {
+      q: `How many postal codes does ${city.name} have?`,
+      a: `${city.name} has ${rows.length} postal codes on file, covering ${linkedCount} named areas and neighborhoods${
+        rows.length > linkedCount ? `, plus ${rows.length - linkedCount} institutional or GPO delivery zones` : ""
+      }.`,
+    },
+    ...(gpoRow
+      ? [
+          {
+            q: `What is ${city.name}'s main GPO postal code?`,
+            a: `${city.name}'s General Post Office (GPO) code is ${gpoRow.code}. Individual neighborhoods and sectors within ${city.name} have their own, more specific postal codes -- see the full list below.`,
+          },
+        ]
+      : []),
+    {
+      q: `Which province is ${city.name} in?`,
+      a: `${city.name} is located in ${city.province}, Pakistan.`,
+    },
+  ];
+
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  };
 
   return (
     <>
@@ -57,6 +90,7 @@ export default async function ZipCodesCityPage({ params }: { params: Promise<{ c
           { name: city.name },
         ])}
       />
+      <SchemaScript schema={faqSchema} />
 
       <div className="bg-primary py-10 text-center">
         <h1 className="text-3xl font-bold text-white">{city.name} Zip Codes</h1>
@@ -65,6 +99,15 @@ export default async function ZipCodesCityPage({ params }: { params: Promise<{ c
       </div>
 
       <div className="mx-auto w-full max-w-4xl px-4 py-10 md:px-6">
+        {rows.length > 0 && (
+          <p className="mb-6 text-sm leading-relaxed text-black">
+            Postal (zip) codes for {city.name}, {city.province} are assigned by Pakistan Post and cover every major
+            neighborhood, sector, and delivery zone across the city. Use the table below to find the exact zip code
+            for a specific area of {city.name} -- click any area name for full details, including nearby codes and
+            property listings in that neighborhood.
+          </p>
+        )}
+
         <h2 className="sr-only">Postal codes in {city.name}</h2>
         {rows.length === 0 ? (
           <div className="py-16 text-center text-primary-mid">No postal codes listed yet for {city.name}.</div>
@@ -98,6 +141,20 @@ export default async function ZipCodesCityPage({ params }: { params: Promise<{ c
                 })}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {rows.length > 0 && (
+          <div className="mt-8 rounded-xl border border-primary bg-white p-6">
+            <h2 className="text-lg font-bold text-black">Frequently Asked Questions</h2>
+            <div className="mt-3 space-y-4">
+              {faqs.map((f) => (
+                <div key={f.q}>
+                  <p className="text-sm font-semibold text-black">{f.q}</p>
+                  <p className="mt-1 text-sm leading-relaxed text-primary-mid">{f.a}</p>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>
