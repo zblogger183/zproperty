@@ -39,7 +39,7 @@ async function getData(citySlug: string, areaSlug: string) {
   // name, and gives each locality page enough genuinely different content (not just
   // the same templated paragraph with the area name swapped) to avoid reading as
   // pure boilerplate across hundreds of pages.
-  const { data: nearby } = await supabase
+  const { data: nearby, error: nearbyError } = await supabase
     .from("postal_codes")
     .select("code, locality_name, area:areas(name, slug)")
     .eq("city_id", city.id)
@@ -48,6 +48,10 @@ async function getData(citySlug: string, areaSlug: string) {
     .eq("is_active", true)
     .order("display_order")
     .limit(NEARBY_LIMIT);
+
+  if (nearbyError) {
+    console.error("zip-codes nearby query failed", { citySlug, areaSlug, error: nearbyError });
+  }
 
   return { city, area, postalCodes: postalCodes ?? [], nearby: nearby ?? [] };
 }
