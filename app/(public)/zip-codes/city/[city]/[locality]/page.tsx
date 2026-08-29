@@ -196,11 +196,6 @@ export default async function ZipCodeLocalityPage({
           </div>
         </div>
 
-        {
-          /* TEMP DEBUG - remove before final ship */
-        }
-        <div style={{ display: "none" }} data-debug={`city=${city.id} area=${area.id} nearbyLen=${nearby.length} nearbyJson=${JSON.stringify(nearby)}`} />
-
         {nearby.length > 0 && (
           <div className="mt-6 rounded-xl border border-primary bg-white p-6">
             <h2 className="text-lg font-bold text-black">Other Zip Codes in {city.name}</h2>
