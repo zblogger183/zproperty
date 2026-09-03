@@ -13,6 +13,8 @@ import { SocietiesSection } from "@/components/portal/home/SocietiesSection";
 import { ToolsBar } from "@/components/portal/home/ToolsBar";
 import { WhyUsSection } from "@/components/portal/home/WhyUsSection";
 import { StatsBar } from "@/components/portal/home/StatsBar";
+import { LatestBlogSection } from "@/components/portal/home/LatestBlogSection";
+import type { BlogCardPost } from "@/components/portal/blog/BlogCard";
 import type { ListingCardData, ProjectCardData, SocietyCardData } from "@/types";
 
 export const revalidate = 3600;
@@ -89,15 +91,30 @@ async function getFeaturedSocieties(supabase: SupabasePublicClient): Promise<Soc
   return data as unknown as SocietyCardData[];
 }
 
+async function getLatestBlogPosts(supabase: SupabasePublicClient): Promise<BlogCardPost[]> {
+  const { data, error } = await supabase
+    .from("blog_posts")
+    .select(
+      "id, title, slug, excerpt, cover_url, og_image_url, published_at, reading_time, views_count, category:blog_categories(name, slug), author:users(name)",
+    )
+    .eq("status", "published")
+    .order("published_at", { ascending: false })
+    .limit(3);
+
+  if (error || !data) return [];
+  return data as unknown as BlogCardPost[];
+}
+
 export default async function HomePage() {
   const supabase = createPublicClient();
 
-  const [cities, listings, rentListings, projects, societies, stats] = await Promise.all([
+  const [cities, listings, rentListings, projects, societies, blogPosts, stats] = await Promise.all([
     getCities(supabase),
     getFeaturedListings(supabase, "buy"),
     getFeaturedListings(supabase, "rent"),
     getFeaturedProjects(supabase),
     getFeaturedSocieties(supabase),
+    getLatestBlogPosts(supabase),
     getHomeStats(),
   ]);
 
@@ -128,6 +145,7 @@ export default async function HomePage() {
       <ToolsBar />
       <WhyUsSection />
       <StatsBar stats={stats} />
+      <LatestBlogSection posts={blogPosts} />
     </>
   );
 }
