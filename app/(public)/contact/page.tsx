@@ -15,7 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 const CONTACT_METHODS = [
   { Icon: Mail, title: "Email", detail: "support@zproperty.pk" },
-  { Icon: MessageCircle, title: "WhatsApp", detail: "+92 300 1234567" },
+  { Icon: MessageCircle, title: "WhatsApp", detail: "+92 304 4619335" },
   { Icon: MapPin, title: "Head Office", detail: "Lahore, Pakistan" },
   { Icon: Clock, title: "Hours", detail: "Mon–Sat, 9am–6pm" },
 ];
