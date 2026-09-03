@@ -108,7 +108,12 @@ export function Footer() {
           </div>
           <div className="mt-4 text-xs text-white/60">
             <p>📧 info@zproperty.pk</p>
-            <p>📞 WhatsApp: +92-300-1234567</p>
+            <p>
+              📞 WhatsApp:{" "}
+              <a href="https://wa.me/923044619335" target="_blank" rel="noopener noreferrer" className="hover:text-white">
+                +92 304 4619335
+              </a>
+            </p>
           </div>
         </div>
 
