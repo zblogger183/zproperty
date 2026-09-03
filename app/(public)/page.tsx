@@ -43,15 +43,19 @@ async function getCities(supabase: SupabasePublicClient): Promise<CitySummary[]>
 // public_agent_profiles view, which embeds reliably) — so this backfills
 // any row where the embed comes back null via backfillAgentContacts, which
 // batches one follow-up query for the whole page instead of one per row.
-async function getFeaturedListings(supabase: SupabasePublicClient): Promise<ListingCardData[]> {
+async function getFeaturedListings(
+  supabase: SupabasePublicClient,
+  purpose: "buy" | "rent",
+): Promise<ListingCardData[]> {
   const { data, error } = await supabase
     .from("listings")
     .select(
-      `id, slug, title, purpose, price, beds, baths, area_marla, primary_image_url, is_featured, is_hot_deal,
+      `id, slug, title, purpose, rental_period, price, beds, baths, area_marla, primary_image_url, is_featured, is_hot_deal,
        agent_id, city:cities(name), area:areas(name), agent:public_agent_contact(${AGENT_CONTACT_COLUMNS})`,
     )
     .eq("status", "active")
     .eq("is_featured", true)
+    .eq("purpose", purpose)
     .order("created_at", { ascending: false })
     .limit(8);
 
@@ -88,9 +92,10 @@ async function getFeaturedSocieties(supabase: SupabasePublicClient): Promise<Soc
 export default async function HomePage() {
   const supabase = createPublicClient();
 
-  const [cities, listings, projects, societies, stats] = await Promise.all([
+  const [cities, listings, rentListings, projects, societies, stats] = await Promise.all([
     getCities(supabase),
-    getFeaturedListings(supabase),
+    getFeaturedListings(supabase, "buy"),
+    getFeaturedListings(supabase, "rent"),
     getFeaturedProjects(supabase),
     getFeaturedSocieties(supabase),
     getHomeStats(),
@@ -112,6 +117,12 @@ export default async function HomePage() {
       <PopularSearches />
       <CitiesSection cities={cities} />
       <FeaturedListings listings={listings} />
+      <FeaturedListings
+        listings={rentListings}
+        title="Featured Properties for Rent"
+        viewAllHref="/rent/lahore"
+        emptyMessage="Featured rental properties will appear here once listings go live."
+      />
       <ProjectsSection projects={projects} />
       <SocietiesSection societies={societies} />
       <ToolsBar />
