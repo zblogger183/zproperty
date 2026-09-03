@@ -158,7 +158,7 @@ export default async function BlogPostPage({
               ...(post.category
                 ? [{ label: post.category.name, href: `/blog/category/${post.category.slug}` }]
                 : []),
-              { label: post.title.slice(0, 40) },
+              { label: post.title.slice(0, 40), href: `/blog/${slug}` },
             ]}
           />
         </div>

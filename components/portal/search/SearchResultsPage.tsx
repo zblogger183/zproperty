@@ -107,13 +107,11 @@ export async function SearchResultsPage({
       <Breadcrumb
         items={[
           { label: "Home", href: "/" },
-          area || society
-            ? { label: city.name, href: `${routeBase}/${city.slug}/` }
-            : { label: city.name },
+          { label: city.name, href: `${routeBase}/${city.slug}/` },
           ...(area
-            ? [society ? { label: area.name, href: `${routeBase}/${city.slug}/${area.slug}/` } : { label: area.name }]
+            ? [{ label: area.name, href: `${routeBase}/${city.slug}/${area.slug}/` }]
             : []),
-          ...(society ? [{ label: society.name }] : []),
+          ...(society ? [{ label: society.name, href: societyBasePath! }] : []),
         ]}
       />
 

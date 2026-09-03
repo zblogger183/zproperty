@@ -153,7 +153,12 @@ export default async function AgentProfilePage({
       <div className="mx-auto max-w-6xl px-4 py-6">
         {/* <Breadcrumb> already emits its own BreadcrumbList JSON-LD — no
             separate breadcrumbSchema() call needed. */}
-        <Breadcrumb items={[{ label: "Agents", href: "/agents" }, { label: displayName }]} />
+        <Breadcrumb
+          items={[
+            { label: "Agents", href: "/agents" },
+            { label: displayName, href: `/agents/${slug}` },
+          ]}
+        />
 
         <div className="mt-4 flex flex-col gap-6 rounded-xl bg-primary p-6 md:flex-row md:items-start">
           <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-full border-4 border-secondary">

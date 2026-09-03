@@ -33,7 +33,7 @@ export default async function ZipCodesIndexPage() {
   return (
     <>
       <SchemaScript
-        schema={breadcrumbSchema([{ name: "Home", href: "/" }, { name: "Zip Codes" }])}
+        schema={breadcrumbSchema([{ name: "Home", href: "/" }, { name: "Zip Codes", href: "/zip-codes" }])}
       />
 
       <div className="bg-primary py-10 text-center">

@@ -126,7 +126,7 @@ export default async function ZipCodeLocalityPage({
           { name: "Home", href: "/" },
           { name: "Zip Codes", href: "/zip-codes" },
           { name: city.name, href: `/zip-codes/city/${citySlug}` },
-          { name: area.name },
+          { name: area.name, href: `/zip-codes/city/${citySlug}/${locality}` },
         ])}
       />
       <SchemaScript schema={faqSchema} />

@@ -109,13 +109,16 @@ export default async function PropertyDetailPage({
     isSaved = !!savedRow;
   }
 
+  const listingRouteBase = listing.purpose === "rent" ? "rent" : "buy";
   const breadcrumbItems = [
     { label: "Home", href: "/" },
-    ...(listing.city ? [{ label: listing.city.name, href: `/buy/${listing.city.slug}/` }] : []),
-    ...(listing.city && listing.area
-      ? [{ label: listing.area.name, href: `/buy/${listing.city.slug}/${listing.area.slug}/` }]
+    ...(listing.city
+      ? [{ label: listing.city.name, href: `/${listingRouteBase}/${listing.city.slug}/` }]
       : []),
-    { label: listing.title.slice(0, 40) },
+    ...(listing.city && listing.area
+      ? [{ label: listing.area.name, href: `/${listingRouteBase}/${listing.city.slug}/${listing.area.slug}/` }]
+      : []),
+    { label: listing.title.slice(0, 40), href: `/listing/${listing.slug}` },
   ];
 
   const listingJsonLd = listingSchema({
@@ -135,9 +138,8 @@ export default async function PropertyDetailPage({
 
       <div className="mx-auto w-full max-w-6xl px-4 py-8">
         {/* <Breadcrumb> already emits its own BreadcrumbList JSON-LD from
-            these items — a second explicit breadcrumbSchema() call here
-            would just duplicate it (with slightly different, absolute-URL
-            `item` values), so this is the only breadcrumb schema on the page. */}
+            these items via the shared breadcrumbSchema() helper — a second
+            explicit call here would just duplicate it. */}
         <Breadcrumb items={breadcrumbItems} />
 
         <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-3">
