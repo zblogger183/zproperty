@@ -48,6 +48,31 @@ export function formatCnic(value: string): string {
   return [digits.slice(0, 5), digits.slice(5, 12), digits.slice(12, 13)].filter(Boolean).join("-");
 }
 
+// Shared WhatsApp message template for "contact about this listing" buttons
+// (ListingCard, AgentCard, SimpleContactCard) -- includes the listing's own
+// title/location/link so the agent knows which property the lead is about
+// without having to ask, since a single WhatsApp number is often shared
+// across many active listings.
+export function buildListingWhatsAppMessage({
+  title,
+  location,
+  link,
+}: {
+  title: string;
+  location?: string | null;
+  link: string;
+}): string {
+  return [
+    "Hello sir, I found your property listing on Zproperty.pk, I am interested in it.",
+    `Property Title: ${title}`,
+    location ? `Location: ${location}` : null,
+    `Link: ${link}`,
+    "Please share more details. Thank you.",
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
+
 export function slugify(input: string): string {
   return input
     .toLowerCase()

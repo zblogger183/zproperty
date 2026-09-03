@@ -7,7 +7,8 @@ import type { ListingDetailData } from "@/types";
 import { createClient } from "@/lib/supabase/server";
 import { formatPrice } from "@/lib/utils/formatPrice";
 import { formatPropertyId } from "@/lib/utils/formatPropertyId";
-import { listingMeta } from "@/lib/seo/metadata";
+import { buildListingWhatsAppMessage } from "@/lib/utils";
+import { listingMeta, SITE_URL } from "@/lib/seo/metadata";
 import { SchemaScript, listingSchema } from "@/lib/seo/schemas";
 import { Breadcrumb } from "@/components/portal/Breadcrumb";
 import { ImageGallery } from "@/components/portal/listing/ImageGallery";
@@ -290,13 +291,19 @@ export default async function PropertyDetailPage({
 function ListingContactCard({ listing }: { listing: ListingDetailData }) {
   const phone = listing.contact_phone || listing.agent?.phone || null;
   const whatsapp = listing.contact_whatsapp || listing.agent?.whatsapp || null;
+  const location = [listing.area?.name, listing.city?.name].filter(Boolean).join(", ");
+  const whatsappMessage = buildListingWhatsAppMessage({
+    title: listing.title,
+    location,
+    link: `${SITE_URL}/listing/${listing.slug}`,
+  });
 
   if (listing.agent) {
     return (
       <AgentCard
         agent={listing.agent}
         listingId={listing.id}
-        listingTitle={listing.title}
+        whatsappMessage={whatsappMessage}
         overridePhone={listing.contact_phone}
         overrideWhatsapp={listing.contact_whatsapp}
       />
@@ -307,7 +314,7 @@ function ListingContactCard({ listing }: { listing: ListingDetailData }) {
     return (
       <SimpleContactCard
         listingId={listing.id}
-        listingTitle={listing.title}
+        whatsappMessage={whatsappMessage}
         phone={phone}
         whatsapp={whatsapp}
       />

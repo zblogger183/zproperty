@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Bath, Bed } from "lucide-react";
 import type { ListingCardData } from "@/types";
-import { formatPkrPrice } from "@/lib/utils";
+import { buildListingWhatsAppMessage, formatPkrPrice } from "@/lib/utils";
+import { SITE_URL } from "@/lib/seo/metadata";
 import { WhatsAppButton } from "./WhatsAppButton";
 import { SaveButton } from "./SaveButton";
 
@@ -121,7 +122,11 @@ export function ListingCard({
       <div className="px-3 pb-3 pt-2">
         <WhatsAppButton
           phone={agent?.whatsapp}
-          message={`Hi, I'm interested in ${listing.title}`}
+          message={buildListingWhatsAppMessage({
+            title: listing.title,
+            location,
+            link: `${SITE_URL}/listing/${listing.slug}`,
+          })}
           className="w-full py-2 text-xs"
         />
       </div>
