@@ -78,6 +78,7 @@ export async function activateBoostAction(listingId: string, packageId: string) 
   revalidatePath("/dashboard/boost");
   revalidatePath("/dashboard/listings");
   revalidatePath("/admin/listings/featured");
+  revalidatePath("/");
 
   return { ok: true, endsAt: endsAt.toISOString() };
 }

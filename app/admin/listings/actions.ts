@@ -216,6 +216,7 @@ export async function unfeatureListingAction(listingId: string) {
 
   revalidatePath("/admin/listings/featured");
   revalidatePath("/admin/listings");
+  revalidatePath("/");
 
   return { ok: true };
 }
@@ -237,6 +238,7 @@ export async function featureListingAction(listingId: string) {
   revalidatePath(`/admin/listings/${listingId}`);
   revalidatePath("/admin/listings");
   revalidatePath("/admin/listings/featured");
+  revalidatePath("/");
 
   return { ok: true };
 }
