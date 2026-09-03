@@ -47,7 +47,11 @@ export function organizationSchema() {
   };
 }
 
-export function breadcrumbSchema(items: Array<{ name: string; href?: string }>) {
+// `href` is required on every entry, including the current/last page --
+// Google's structured data validator flags a ListItem with no `item` as a
+// critical missing-field error, even for the final breadcrumb (its own
+// canonical URL is a valid, expected value there, not just a placeholder).
+export function breadcrumbSchema(items: Array<{ name: string; href: string }>) {
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -55,7 +59,7 @@ export function breadcrumbSchema(items: Array<{ name: string; href?: string }>) 
       "@type": "ListItem",
       position: i + 1,
       name: item.name,
-      ...(item.href ? { item: item.href.startsWith("http") ? item.href : `${SITE_URL}${item.href}` } : {}),
+      item: item.href.startsWith("http") ? item.href : `${SITE_URL}${item.href}`,
     })),
   };
 }
@@ -267,6 +271,14 @@ export function areaGuideSchema(params: { society_name: string; pros?: string[];
   };
 }
 
+// Google requires a Product to carry at least one of offers/review/
+// aggregateRating -- this codebase has no review/rating system, so a
+// project's only route to satisfying that is its price. Many real projects
+// this session catalogued deliberately have no published pricing (nothing
+// to fabricate), so returning the Product schema anyway for those would
+// just be invalid markup GSC flags as a critical error. Returning null and
+// letting SchemaScript no-op (matching the existing areaGuideSchema()
+// pattern) is more correct than emitting a schema Google can't accept.
 export function projectSchema(params: {
   name: string;
   slug: string;
@@ -277,6 +289,8 @@ export function projectSchema(params: {
   og_image_url?: string | null;
   city_name: string;
 }) {
+  if (!params.min_price) return null;
+
   return {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -284,16 +298,12 @@ export function projectSchema(params: {
     description: params.description ?? undefined,
     image: params.og_image_url ?? params.cover_image_url ?? undefined,
     url: `${SITE_URL}/new-projects/${params.slug}`,
-    ...(params.min_price
-      ? {
-          offers: {
-            "@type": "AggregateOffer",
-            priceCurrency: "PKR",
-            lowPrice: params.min_price,
-            highPrice: params.max_price ?? params.min_price,
-            availability: "https://schema.org/InStock",
-          },
-        }
-      : {}),
+    offers: {
+      "@type": "AggregateOffer",
+      priceCurrency: "PKR",
+      lowPrice: params.min_price,
+      highPrice: params.max_price ?? params.min_price,
+      availability: "https://schema.org/InStock",
+    },
   };
 }

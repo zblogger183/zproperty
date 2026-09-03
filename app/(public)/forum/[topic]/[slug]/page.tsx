@@ -110,7 +110,7 @@ export default async function ForumTopicPage({
     { label: "Home", href: "/" },
     { label: "Forum", href: "/forum" },
     { label: typedTopic.category, href: `/forum?category=${typedTopic.category}` },
-    { label: typedTopic.title.slice(0, 40) },
+    { label: typedTopic.title.slice(0, 40), href: `/forum/${topic}/${slug}` },
   ];
 
   return (

@@ -87,7 +87,7 @@ export default async function ZipCodesCityPage({ params }: { params: Promise<{ c
         schema={breadcrumbSchema([
           { name: "Home", href: "/" },
           { name: "Zip Codes", href: "/zip-codes" },
-          { name: city.name },
+          { name: city.name, href: `/zip-codes/city/${citySlug}` },
         ])}
       />
       <SchemaScript schema={faqSchema} />

@@ -206,13 +206,16 @@ export default async function AreaGuidePage({
       <div className="mx-auto max-w-7xl px-4">
         <div className="pt-6">
           {/* <Breadcrumb> already emits its own BreadcrumbList JSON-LD — see
-              the same note on the listing detail page. */}
+              the same note on the listing detail page. There's no dedicated
+              "/area-guide/[city]" index page today, so city.name isn't its
+              own breadcrumb step -- linking it to a URL that doesn't
+              actually represent "area guides in this city" would be
+              inaccurate structured data. */}
           <Breadcrumb
             items={[
               { label: "Home", href: "/" },
               { label: "Area Guides", href: "/societies" },
-              { label: city.name },
-              { label: society.name },
+              { label: society.name, href: `/area-guide/${citySlug}/${societySlug}` },
             ]}
           />
         </div>

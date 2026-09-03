@@ -208,7 +208,7 @@ export default async function ProjectDetailPage({
     { label: "Home", href: "/" },
     { label: "New Projects", href: "/new-projects" },
     ...(project.city ? [{ label: project.city.name, href: `/new-projects/city/${project.city.slug}` }] : []),
-    { label: project.name },
+    { label: project.name, href: `/new-projects/${slug}` },
   ];
 
   const areaRange =
