@@ -15,13 +15,13 @@ type FormStatus = "idle" | "sending" | "success" | "error";
 export function AgentCard({
   agent,
   listingId,
-  listingTitle,
+  whatsappMessage,
   overridePhone,
   overrideWhatsapp,
 }: {
   agent: AgentContact;
   listingId: string;
-  listingTitle: string;
+  whatsappMessage: string;
   // A listing-level contact override (e.g. the actual plot owner's number)
   // takes precedence over the agent's own profile contact when set.
   overridePhone?: string | null;
@@ -143,9 +143,7 @@ export function AgentCard({
 
       {cleanedWhatsapp && (
         <a
-          href={`https://wa.me/92${cleanedWhatsapp}?text=${encodeURIComponent(
-            `Hi, I'm interested in ${listingTitle}`,
-          )}`}
+          href={`https://wa.me/92${cleanedWhatsapp}?text=${encodeURIComponent(whatsappMessage)}`}
           target="_blank"
           rel="noopener noreferrer"
           onClick={() => postLead("whatsapp")}

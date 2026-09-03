@@ -19,12 +19,12 @@ function postLead(listingId: string, type: "whatsapp" | "call") {
 // there's no agent profile to back.
 export function SimpleContactCard({
   listingId,
-  listingTitle,
+  whatsappMessage,
   phone,
   whatsapp,
 }: {
   listingId: string;
-  listingTitle: string;
+  whatsappMessage: string;
   phone: string | null;
   whatsapp: string | null;
 }) {
@@ -37,7 +37,7 @@ export function SimpleContactCard({
 
       {cleanedWhatsapp && (
         <a
-          href={`https://wa.me/92${cleanedWhatsapp}?text=${encodeURIComponent(`Hi, I'm interested in ${listingTitle}`)}`}
+          href={`https://wa.me/92${cleanedWhatsapp}?text=${encodeURIComponent(whatsappMessage)}`}
           target="_blank"
           rel="noopener noreferrer"
           onClick={() => postLead(listingId, "whatsapp")}
