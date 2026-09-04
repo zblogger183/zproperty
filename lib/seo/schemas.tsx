@@ -279,12 +279,20 @@ export function areaGuideSchema(params: { society_name: string; pros?: string[];
 // just be invalid markup GSC flags as a critical error. Returning null and
 // letting SchemaScript no-op (matching the existing areaGuideSchema()
 // pattern) is more correct than emitting a schema Google can't accept.
+//
+// review/aggregateRating stay permanently absent -- there's no review
+// system to source them from honestly, and fabricating ratings just to
+// silence GSC's (non-critical) suggestion would be worse than the warning.
+// offerCount is legitimately fillable, though: it's the number of distinct
+// priced unit types on offer, which is exactly what a project's
+// payment_plans rows already represent.
 export function projectSchema(params: {
   name: string;
   slug: string;
   description?: string | null;
   min_price?: number | null;
   max_price?: number | null;
+  offer_count?: number | null;
   cover_image_url?: string | null;
   og_image_url?: string | null;
   city_name: string;
@@ -304,6 +312,7 @@ export function projectSchema(params: {
       lowPrice: params.min_price,
       highPrice: params.max_price ?? params.min_price,
       availability: "https://schema.org/InStock",
+      ...(params.offer_count ? { offerCount: params.offer_count } : {}),
     },
   };
 }

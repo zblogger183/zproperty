@@ -227,6 +227,7 @@ export default async function ProjectDetailPage({
           description: project.description,
           min_price: project.min_price,
           max_price: project.max_price,
+          offer_count: project.payment_plans.length,
           cover_image_url: project.cover_image_url,
           og_image_url: project.og_image_url,
           city_name: project.city?.name ?? "",
