@@ -81,4 +81,11 @@
   a:hover {
     color: #2a6b5f;
   }
+
+  /* Preflight resets <button> to cursor: default (native browser behavior) —
+     restore the "hand" cursor people expect on clickable controls. */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
 }
