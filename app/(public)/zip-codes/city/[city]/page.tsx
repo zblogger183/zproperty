@@ -1,10 +1,12 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import type { JSONContent } from "@tiptap/react";
 import { notFound } from "next/navigation";
 import { createPublicClient } from "@/lib/supabase/public";
 import { baseMeta, SITE_URL } from "@/lib/seo/metadata";
 import { SchemaScript, breadcrumbSchema } from "@/lib/seo/schemas";
 import { ZipCodesSidebar } from "@/components/portal/zip-codes/ZipCodesSidebar";
+import { TiptapRenderer } from "@/components/portal/blog/TiptapRenderer";
 
 export const revalidate = 86400;
 
@@ -12,10 +14,12 @@ async function getCity(slug: string) {
   const supabase = createPublicClient();
   const { data } = await supabase
     .from("cities")
-    .select("id, name, slug, province")
+    .select("id, name, slug, province, content")
     .eq("slug", slug)
     .maybeSingle();
-  return data;
+  return data as
+    | { id: string; name: string; slug: string; province: string; content: JSONContent | null }
+    | null;
 }
 
 export async function generateMetadata({
@@ -141,6 +145,13 @@ export default async function ZipCodesCityPage({ params }: { params: Promise<{ c
                     New Projects
                   </Link>
                 </div>
+              </div>
+            )}
+
+            {city.content && (
+              <div className="mb-6 rounded-xl border border-primary bg-white p-6">
+                <h2 className="mb-3 text-lg font-bold text-black">About Postal Codes in {city.name}</h2>
+                <TiptapRenderer content={city.content} />
               </div>
             )}
 
