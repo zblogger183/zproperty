@@ -24,7 +24,7 @@ INSERT INTO cities (name, slug, province, display_order, lat, lng) VALUES
   ('Rawalpindi',   'rawalpindi',   'Punjab',         4, 33.5651,  73.0169),
   ('Faisalabad',   'faisalabad',   'Punjab',         5, 31.4504,  73.1350),
   ('Multan',       'multan',       'Punjab',         6, 30.1575,  71.5249),
-  ('Peshawar',     'peshawar',     'KPK',             7, 34.0151,  71.5249),
+  ('Peshawar',     'peshawar',     'Khyber Pakhtunkhwa', 7, 34.0151,  71.5249),
   ('Quetta',       'quetta',       'Balochistan',     8, 30.1798,  66.9750),
   ('Gujranwala',   'gujranwala',   'Punjab',         9, 32.1877,  74.1945),
   ('Sialkot',      'sialkot',      'Punjab',        10, 32.4945,  74.5229);
