@@ -50,6 +50,19 @@ export default async function ZipCodesCityPage({ params }: { params: Promise<{ c
   const linkedCount = rows.filter((r) => r.area).length;
   const gpoRow = rows.find((r) => /gpo/i.test(r.locality_name));
 
+  // Real, already-linked area names for the intro paragraph below -- targets
+  // city-level head terms ("lahore postal code") with genuine local keywords
+  // instead of a generic template, without inventing anything not in the table.
+  const uniqueAreaNames = Array.from(
+    new Set(
+      rows
+        .map((r) => (Array.isArray(r.area) ? r.area[0] : r.area))
+        .filter((a): a is { name: string; slug: string } => Boolean(a))
+        .map((a) => a.name),
+    ),
+  );
+  const namedAreas = uniqueAreaNames.slice(0, 10);
+
   const faqs = [
     {
       q: `How many postal codes does ${city.name} have?`,
@@ -105,6 +118,8 @@ export default async function ZipCodesCityPage({ params }: { params: Promise<{ c
             neighborhood, sector, and delivery zone across the city. Use the table below to find the exact zip code
             for a specific area of {city.name} -- click any area name for full details, including nearby codes and
             property listings in that neighborhood.
+            {namedAreas.length > 0 &&
+              ` Areas covered include ${namedAreas.join(", ")}${uniqueAreaNames.length > namedAreas.length ? " and more" : ""}.`}
           </p>
         )}
 

@@ -53,7 +53,39 @@ async function getData(citySlug: string, areaSlug: string) {
     console.error("zip-codes nearby query failed", { citySlug, areaSlug, error: nearbyError });
   }
 
-  return { city, area, postalCodes: postalCodes ?? [], nearby: nearby ?? [] };
+  // Real societies/projects located in this area, if any -- gives each locality
+  // page genuine, non-templated content specific to that area, and sends link
+  // equity from these high-impression pages toward the area-guide/project pages.
+  const { data: societies, error: societiesError } = await supabase
+    .from("societies")
+    .select("name, slug")
+    .eq("area_id", area.id)
+    .order("name");
+
+  if (societiesError) {
+    console.error("zip-codes societies query failed", { citySlug, areaSlug, error: societiesError });
+  }
+
+  const { data: projects, error: projectsError } = await supabase
+    .from("projects")
+    .select("name, slug")
+    .eq("area_id", area.id)
+    .eq("status_platform", "active")
+    .order("is_featured", { ascending: false })
+    .limit(6);
+
+  if (projectsError) {
+    console.error("zip-codes projects query failed", { citySlug, areaSlug, error: projectsError });
+  }
+
+  return {
+    city,
+    area,
+    postalCodes: postalCodes ?? [],
+    nearby: nearby ?? [],
+    societies: societies ?? [],
+    projects: projects ?? [],
+  };
 }
 
 export async function generateMetadata({
@@ -82,7 +114,7 @@ export default async function ZipCodeLocalityPage({
   const data = await getData(citySlug, locality);
   if (!data || data.postalCodes.length === 0) notFound();
 
-  const { city, area, postalCodes, nearby } = data;
+  const { city, area, postalCodes, nearby, societies, projects } = data;
   const primaryCode = postalCodes[0].code;
   const hasMultiple = postalCodes.length > 1;
 
@@ -104,6 +136,14 @@ export default async function ZipCodeLocalityPage({
           {
             q: `Does ${area.name} have more than one postal code?`,
             a: `Yes. ${area.name} is served by ${postalCodes.length} postal codes: ${postalCodes.map((p) => p.code).join(", ")}. Larger areas are sometimes split across more than one delivery office.`,
+          },
+        ]
+      : []),
+    ...(societies.length > 0
+      ? [
+          {
+            q: `Is ${area.name} home to any housing societies?`,
+            a: `Yes. ${societies.map((s) => s.name).join(", ")} ${societies.length > 1 ? "are" : "is"} located in ${area.name} -- see the area guide${societies.length > 1 ? "s" : ""} below for details.`,
           },
         ]
       : []),
@@ -183,6 +223,40 @@ export default async function ZipCodeLocalityPage({
             Browse Listings in {area.name} →
           </Link>
         </div>
+
+        {societies.length > 0 && (
+          <div className="mt-6 rounded-xl border border-primary bg-white p-6">
+            <h2 className="text-lg font-bold text-black">Housing Societies in {area.name}</h2>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {societies.map((s) => (
+                <Link
+                  key={s.slug}
+                  href={`/area-guide/${citySlug}/${s.slug}`}
+                  className="rounded-lg border border-primary px-3 py-1.5 text-sm text-primary hover:bg-primary hover:text-white"
+                >
+                  {s.name} →
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {projects.length > 0 && (
+          <div className="mt-6 rounded-xl border border-primary bg-white p-6">
+            <h2 className="text-lg font-bold text-black">New Projects in {area.name}</h2>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {projects.map((p) => (
+                <Link
+                  key={p.slug}
+                  href={`/new-projects/${p.slug}`}
+                  className="rounded-lg border border-primary px-3 py-1.5 text-sm text-primary hover:bg-primary hover:text-white"
+                >
+                  {p.name} →
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="mt-6 rounded-xl border border-primary bg-white p-6">
           <h2 className="text-lg font-bold text-black">Frequently Asked Questions</h2>
