@@ -13,10 +13,6 @@ export const metadata: Metadata = baseMeta({
   alternates: { canonical: `${SITE_URL}/tools/stamp-duty` },
 });
 
-// Deliberately no percentage figures in this copy -- the calculator's own rate
-// table needs a pass against current FBR/Finance Act figures first (see the
-// "Rates as of 2025" note in StampDutyCalculator.tsx). Once that's corrected,
-// this FAQ can cite the actual current rates the same way the calculator does.
 const faqs = [
   {
     q: "What is stamp duty on a property purchase in Pakistan?",
@@ -27,12 +23,16 @@ const faqs = [
     a: "CVT (Capital Value Tax) is a separate provincial tax on the property's value, charged alongside stamp duty and registration fees -- together these make up most of a buyer's transfer costs.",
   },
   {
+    q: "How much is withholding tax under Sections 236K and 236C for FY 2026-27?",
+    a: "Following the Finance Act 2026, active tax filers pay 1.25% under Section 236K (buyer) and 2.75% under Section 236C (seller). Non-filers pay substantially more -- 10.5% under 236K and 11.5% under 236C -- and the old 'late filer' middle tier was dropped, so it's now a straight filer-vs-non-filer split.",
+  },
+  {
     q: "Why does my tax filer status matter?",
-    a: "Advance withholding tax under the Income Tax Ordinance is charged at a materially higher rate for non-filers than for active tax filers, on both the buyer's and seller's side of a transaction. Being an active filer (on the FBR Active Taxpayer List) meaningfully reduces the withholding tax due.",
+    a: "Being an active filer on the FBR Active Taxpayer List cuts your withholding tax substantially on both the buyer's and seller's side of a transaction -- the gap between filer and non-filer rates can run into hundreds of thousands of rupees on a mid-sized property.",
   },
   {
     q: "Where can I check the current, official rates?",
-    a: "Tax rates and withholding-tax percentages are revised periodically by the federal and provincial governments. Always verify the exact current figures at fbr.gov.pk or with your provincial excise & taxation / revenue authority before relying on any calculator for an actual transaction.",
+    a: "Tax rates are revised periodically by the federal and provincial governments. Always verify the exact current figures at fbr.gov.pk or with your provincial excise & taxation / revenue authority before relying on any calculator for an actual transaction.",
   },
 ];
 

@@ -15,58 +15,59 @@ interface ProvinceRates {
   sellerWhtNonFilerPct: number;
 }
 
-// Rates as of 2025 — verify current figures with FBR / provincial revenue
-// authority before relying on this for an actual transaction.
+// Withholding tax under Sections 236K (buyer) and 236C (seller) of the Income
+// Tax Ordinance is a federal rate set by the Finance Act, not provincial --
+// it's the same figure regardless of which province the property is in, so
+// it's defined once here rather than repeated (and risking drift) per
+// province below. FY 2026-27 rates per the Finance Act 2026 (effective July 1,
+// 2026), which also dropped the old "late filer" middle tier -- see
+// zproperty.pk/blog/pakistan-property-tax-changes-2026-27.
+const FEDERAL_WHT_FY2026_27 = {
+  buyerWhtFilerPct: 1.25,
+  buyerWhtNonFilerPct: 10.5,
+  sellerWhtFilerPct: 2.75,
+  sellerWhtNonFilerPct: 11.5,
+};
+
+// Stamp duty / CVT / registration fee rates below are provincial and were not
+// re-verified as part of the FY 2026-27 withholding tax update above --
+// confirm current figures with the relevant provincial revenue authority
+// before relying on them for an actual transaction.
 const PROVINCE_RATES: Record<Province, ProvinceRates> = {
   punjab: {
     label: "Punjab",
     stampDutyPct: 3,
     cvtPct: 2,
     registrationPct: 1,
-    buyerWhtFilerPct: 1,
-    buyerWhtNonFilerPct: 2,
-    sellerWhtFilerPct: 1,
-    sellerWhtNonFilerPct: 4,
+    ...FEDERAL_WHT_FY2026_27,
   },
   sindh: {
     label: "Sindh",
     stampDutyPct: 3,
     cvtPct: 0.5,
     registrationPct: 0.5,
-    buyerWhtFilerPct: 1,
-    buyerWhtNonFilerPct: 2,
-    sellerWhtFilerPct: 1,
-    sellerWhtNonFilerPct: 4,
+    ...FEDERAL_WHT_FY2026_27,
   },
   kpk: {
     label: "Khyber Pakhtunkhwa",
     stampDutyPct: 3,
     cvtPct: 2,
     registrationPct: 1,
-    buyerWhtFilerPct: 1,
-    buyerWhtNonFilerPct: 2,
-    sellerWhtFilerPct: 1,
-    sellerWhtNonFilerPct: 4,
+    ...FEDERAL_WHT_FY2026_27,
   },
   balochistan: {
     label: "Balochistan",
     stampDutyPct: 3,
     cvtPct: 2,
     registrationPct: 1,
-    buyerWhtFilerPct: 1,
-    buyerWhtNonFilerPct: 2,
-    sellerWhtFilerPct: 1,
-    sellerWhtNonFilerPct: 4,
+    ...FEDERAL_WHT_FY2026_27,
   },
   islamabad: {
     label: "Islamabad",
     stampDutyPct: 1,
     cvtPct: 2,
     registrationPct: 1,
-    buyerWhtFilerPct: 1,
-    buyerWhtNonFilerPct: 2,
-    sellerWhtFilerPct: 1,
-    sellerWhtNonFilerPct: 4,
+    ...FEDERAL_WHT_FY2026_27,
   },
 };
 
@@ -126,7 +127,8 @@ export function StampDutyCalculator() {
           ))}
         </select>
         <p className="mt-1 text-xs text-primary-mid">
-          Tax rates as of 2025. Verify with FBR and provincial authority before transaction.
+          Withholding tax rates for FY 2026-27 per the Finance Act 2026. Stamp duty, CVT, and registration fee
+          rates are indicative -- verify all figures with FBR and your provincial authority before a transaction.
         </p>
       </div>
 
