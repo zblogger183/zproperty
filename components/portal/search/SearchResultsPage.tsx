@@ -264,7 +264,7 @@ export async function SearchResultsPage({
           </Suspense>
 
           <div className="mt-4 hidden lg:block">
-            <LinksSidebar cityName={city.name} citySlug={city.slug} purpose={purpose} />
+            <LinksSidebar cityName={city.name} citySlug={city.slug} purpose={purpose} basePath={routeBase} />
           </div>
         </div>
       </div>

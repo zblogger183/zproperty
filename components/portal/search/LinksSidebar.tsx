@@ -1,30 +1,7 @@
 import Link from "next/link";
+import { createPublicClient } from "@/lib/supabase/public";
 
-const AREA_LINKS: Record<string, { label: string; slug: string }[]> = {
-  lahore: [
-    { label: "DHA", slug: "dha" },
-    { label: "Bahria Town", slug: "bahria-town" },
-    { label: "Gulberg", slug: "gulberg" },
-    { label: "Model Town", slug: "model-town" },
-    { label: "Johar Town", slug: "johar-town" },
-    { label: "Garden Town", slug: "garden-town" },
-    { label: "Cantt", slug: "cantt" },
-  ],
-  karachi: [
-    { label: "DHA", slug: "dha" },
-    { label: "Clifton", slug: "clifton" },
-    { label: "PECHS", slug: "pechs" },
-    { label: "Gulshan-e-Iqbal", slug: "gulshan-iqbal" },
-    { label: "Bahria Town", slug: "bahria-town" },
-  ],
-  islamabad: [
-    { label: "F-7", slug: "f-7" },
-    { label: "F-10", slug: "f-10" },
-    { label: "F-11", slug: "f-11" },
-    { label: "E-11", slug: "e-11" },
-    { label: "DHA", slug: "dha" },
-  ],
-};
+const AREA_LINKS_LIMIT = 24;
 
 const TOOL_LINKS = [
   { emoji: "🧮", label: "EMI Calculator", href: "/tools/emi-calculator" },
@@ -35,16 +12,44 @@ const TOOL_LINKS = [
   { emoji: "🧾", label: "Stamp Duty", href: "/tools/stamp-duty" },
 ];
 
-export function LinksSidebar({
+export async function LinksSidebar({
   cityName,
   citySlug,
   purpose,
+  basePath,
 }: {
   cityName: string;
   citySlug: string;
   purpose: "buy" | "rent";
+  // Overrides the default /${purpose}/${citySlug} base for routes that
+  // don't map onto a plain buy/rent split (/commercial, /plots) -- see
+  // SearchResultsPage's own routeBase, which this mirrors. Without this,
+  // every link here pointed at /buy/... even when rendered on a /rent or
+  // /commercial page.
+  basePath?: string;
 }) {
-  const base = `/${purpose}/${citySlug}`;
+  const base = basePath ?? `/${purpose}/${citySlug}`;
+
+  // Real, DB-backed area links (not a 3-city hardcoded list) -- this is the
+  // only place in the app that renders a crawlable <a> to a /buy|rent/[city]/
+  // [area] page; FilterSidebar's equivalent area picker is a JS <select>
+  // that Googlebot's crawler doesn't interact with, so without a real link
+  // here, every one of these area pages exists to Google only as a bare
+  // sitemap entry with no internal link signal -- which is exactly why GSC's
+  // Indexing report showed hundreds of them "Discovered - currently not
+  // indexed" and never crawled at all.
+  const supabase = createPublicClient();
+  const { data: city } = await supabase.from("cities").select("id").eq("slug", citySlug).maybeSingle();
+  const { data: areaRows } = city
+    ? await supabase
+        .from("areas")
+        .select("name, slug")
+        .eq("city_id", city.id)
+        .eq("is_active", true)
+        .order("display_order")
+        .limit(AREA_LINKS_LIMIT)
+    : { data: null };
+  const areas = areaRows ?? [];
   // Each size label gets its own real area_marla range (±0.5 marla, same
   // convention as FilterSidebar's marla buttons) — these used to all point
   // at the same unfiltered ?type=house regardless of the size in the label.
@@ -71,8 +76,6 @@ export function LinksSidebar({
           { label: "Commercial Property", href: `/commercial/${citySlug}` },
         ];
 
-  const areas = AREA_LINKS[citySlug] ?? [];
-
   return (
     <div>
       <div className="rounded-xl border border-primary bg-white p-4">
@@ -94,10 +97,10 @@ export function LinksSidebar({
           {areas.map((area) => (
             <Link
               key={area.slug}
-              href={`/buy/${citySlug}/${area.slug}`}
+              href={`${base}/${area.slug}`}
               className="block border-b border-primary/20 py-1 text-xs text-primary last:border-b-0 hover:text-primary-mid"
             >
-              {area.label}
+              {area.name}
             </Link>
           ))}
         </div>
