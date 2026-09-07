@@ -70,6 +70,10 @@ export async function saveBlogPostAction(input: SaveBlogPostInput) {
   revalidatePath("/admin/content/blog");
   revalidatePath("/blog");
   revalidatePath(`/blog/${slug}`);
+  // Homepage renders a "Latest from the Blog" section off the same rows
+  // (title, cover_url, excerpt) -- without this it keeps serving its
+  // hour-long ISR cache after a post/cover edit.
+  revalidatePath("/");
 
   return { id: id!, slug };
 }
@@ -83,6 +87,7 @@ export async function deleteBlogPostAction(id: string) {
 
   revalidatePath("/admin/content/blog");
   revalidatePath("/blog");
+  revalidatePath("/");
 
   return { ok: true };
 }
