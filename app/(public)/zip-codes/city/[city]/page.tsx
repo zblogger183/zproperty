@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { createPublicClient } from "@/lib/supabase/public";
 import { baseMeta, SITE_URL } from "@/lib/seo/metadata";
 import { SchemaScript, breadcrumbSchema } from "@/lib/seo/schemas";
+import { ZipCodesSidebar } from "@/components/portal/zip-codes/ZipCodesSidebar";
 
 export const revalidate = 86400;
 
@@ -44,6 +45,15 @@ export default async function ZipCodesCityPage({ params }: { params: Promise<{ c
     .select("code, locality_name, area:areas(name, slug)")
     .eq("city_id", city.id)
     .eq("is_active", true)
+    .order("display_order");
+
+  // For the sidebar's cross-city links and the "Other Cities" block below --
+  // keeps this page from being a dead end that only points at itself.
+  const { data: otherCities } = await supabase
+    .from("cities")
+    .select("name, slug")
+    .eq("is_active", true)
+    .neq("id", city.id)
     .order("display_order");
 
   const rows = postalCodes ?? [];
@@ -98,65 +108,123 @@ export default async function ZipCodesCityPage({ params }: { params: Promise<{ c
         <p className="mt-3 text-sm font-bold text-secondary">{rows.length} postal codes</p>
       </div>
 
-      <div className="mx-auto w-full max-w-4xl px-4 py-10 md:px-6">
-        {rows.length > 0 && (
-          <p className="mb-6 text-sm leading-relaxed text-black">
-            Postal (zip) codes for {city.name}, {city.province} are assigned by Pakistan Post and cover every major
-            neighborhood, sector, and delivery zone across the city. Use the table below to find the exact zip code
-            for a specific area of {city.name} -- click any area name for full details, including nearby codes and
-            property listings in that neighborhood.
-          </p>
-        )}
+      <div className="mx-auto w-full max-w-5xl px-4 py-10 md:px-6">
+        <div className="flex flex-col gap-6 md:flex-row">
+          <div className="min-w-0 flex-1">
+            {rows.length > 0 && (
+              <p className="mb-6 text-sm leading-relaxed text-black">
+                Postal (zip) codes for {city.name}, {city.province} are assigned by Pakistan Post and cover every
+                major neighborhood, sector, and delivery zone across the city. Use the table below to find the exact
+                zip code for a specific area of {city.name} -- click any area name for full details, including
+                nearby codes and{" "}
+                <Link href={`/buy/${citySlug}`} className="text-primary underline hover:text-primary-mid">
+                  property listings
+                </Link>{" "}
+                in that neighborhood.
+              </p>
+            )}
 
-        <h2 className="sr-only">Postal codes in {city.name}</h2>
-        {rows.length === 0 ? (
-          <div className="py-16 text-center text-primary-mid">No postal codes listed yet for {city.name}.</div>
-        ) : (
-          <div className="overflow-hidden rounded-xl border border-primary">
-            <table className="w-full text-left text-sm">
-              <thead className="bg-primary text-white">
-                <tr>
-                  <th className="px-4 py-3 font-semibold">Area / Locality</th>
-                  <th className="px-4 py-3 font-semibold">Zip Code</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((row, i) => {
-                  const area = Array.isArray(row.area) ? row.area[0] : row.area;
-                  const href = area ? `/zip-codes/city/${citySlug}/${area.slug}` : null;
-                  return (
-                    <tr key={`${row.code}-${row.locality_name}`} className={i % 2 === 0 ? "bg-white" : "bg-primary/5"}>
-                      <td className="px-4 py-3 text-black">
-                        {href ? (
-                          <Link href={href} className="text-primary hover:underline">
-                            {row.locality_name}
-                          </Link>
-                        ) : (
-                          row.locality_name
-                        )}
-                      </td>
-                      <td className="px-4 py-3 font-mono text-black">{row.code}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        {rows.length > 0 && (
-          <div className="mt-8 rounded-xl border border-primary bg-white p-6">
-            <h2 className="text-lg font-bold text-black">Frequently Asked Questions</h2>
-            <div className="mt-3 space-y-4">
-              {faqs.map((f) => (
-                <div key={f.q}>
-                  <p className="text-sm font-semibold text-black">{f.q}</p>
-                  <p className="mt-1 text-sm leading-relaxed text-primary-mid">{f.a}</p>
+            {rows.length > 0 && (
+              <div className="mb-6 flex flex-col gap-3 rounded-xl border border-secondary bg-white p-5 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-sm font-semibold text-black">Looking for property in {city.name}?</p>
+                <div className="flex gap-2">
+                  <Link
+                    href={`/buy/${citySlug}`}
+                    className="rounded-lg bg-secondary px-4 py-2 text-sm font-bold text-primary hover:bg-secondary-dark"
+                  >
+                    Browse Listings
+                  </Link>
+                  <Link
+                    href={`/new-projects/city/${citySlug}`}
+                    className="rounded-lg border border-primary px-4 py-2 text-sm font-bold text-primary hover:bg-primary hover:text-white"
+                  >
+                    New Projects
+                  </Link>
                 </div>
-              ))}
-            </div>
+              </div>
+            )}
+
+            <h2 className="sr-only">Postal codes in {city.name}</h2>
+            {rows.length === 0 ? (
+              <div className="py-16 text-center text-primary-mid">No postal codes listed yet for {city.name}.</div>
+            ) : (
+              <div className="overflow-hidden rounded-xl border border-primary">
+                <table className="w-full text-left text-sm">
+                  <thead className="bg-primary text-white">
+                    <tr>
+                      <th className="px-4 py-3 font-semibold">Area / Locality</th>
+                      <th className="px-4 py-3 font-semibold">Zip Code</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rows.map((row, i) => {
+                      const area = Array.isArray(row.area) ? row.area[0] : row.area;
+                      const href = area ? `/zip-codes/city/${citySlug}/${area.slug}` : null;
+                      return (
+                        <tr
+                          key={`${row.code}-${row.locality_name}`}
+                          className={i % 2 === 0 ? "bg-white" : "bg-primary/5"}
+                        >
+                          <td className="px-4 py-3 text-black">
+                            {href ? (
+                              <Link href={href} className="text-primary hover:underline">
+                                {row.locality_name}
+                              </Link>
+                            ) : (
+                              row.locality_name
+                            )}
+                          </td>
+                          <td className="px-4 py-3 font-mono text-black">{row.code}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {rows.length > 0 && (
+              <div className="mt-8 rounded-xl border border-primary bg-white p-6">
+                <h2 className="text-lg font-bold text-black">Frequently Asked Questions</h2>
+                <div className="mt-3 space-y-4">
+                  {faqs.map((f) => (
+                    <div key={f.q}>
+                      <p className="text-sm font-semibold text-black">{f.q}</p>
+                      <p className="mt-1 text-sm leading-relaxed text-primary-mid">{f.a}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {(otherCities ?? []).length > 0 && (
+              <div className="mt-8 rounded-xl border border-primary bg-white p-6">
+                <h2 className="text-lg font-bold text-black">Zip Codes in Other Cities</h2>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {(otherCities ?? []).map((other) => (
+                    <Link
+                      key={other.slug}
+                      href={`/zip-codes/city/${other.slug}`}
+                      className="rounded-lg border border-primary px-3 py-1.5 text-sm text-primary hover:bg-primary hover:text-white"
+                    >
+                      {other.name}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <p className="mt-6 text-sm text-primary-mid">
+              <Link href="/zip-codes" className="text-primary hover:underline">
+                ← All Pakistan zip codes
+              </Link>
+            </p>
           </div>
-        )}
+
+          <div className="md:w-64 md:shrink-0">
+            <ZipCodesSidebar cities={otherCities ?? []} currentCitySlug={citySlug} cityName={city.name} />
+          </div>
+        </div>
       </div>
     </>
   );
