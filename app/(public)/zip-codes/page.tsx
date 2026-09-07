@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { createPublicClient } from "@/lib/supabase/public";
 import { baseMeta, SITE_URL } from "@/lib/seo/metadata";
 import { SchemaScript, breadcrumbSchema } from "@/lib/seo/schemas";
+import { ZipCodesSidebar } from "@/components/portal/zip-codes/ZipCodesSidebar";
 
 export const revalidate = 86400;
 
@@ -29,6 +30,8 @@ export default async function ZipCodesIndexPage() {
     list.push({ name: city.name, slug: city.slug });
     byProvince.set(city.province, list);
   }
+  const allCities = (cities ?? []).map((c) => ({ name: c.name, slug: c.slug }));
+  const popularCities = allCities.slice(0, 8);
 
   return (
     <>
@@ -41,58 +44,93 @@ export default async function ZipCodesIndexPage() {
         <p className="mt-2 text-base text-white/70">Postal codes by province, city, and area</p>
       </div>
 
-      <div className="mx-auto w-full max-w-5xl px-4 py-10 md:px-6">
-        <p className="mb-8 text-sm leading-relaxed text-black">
-          A postal (zip) code is a 5-digit number assigned by Pakistan Post to identify a specific delivery area --
-          a neighborhood, sector, or institution -- within a city. Postal codes are used for mail delivery, courier
-          and e-commerce shipments, and on official forms that ask for a zip or postal code. Select a province below
-          to browse its cities, then a city to find the exact zip code for any area or neighborhood.
-        </p>
+      <div className="mx-auto w-full max-w-6xl px-4 py-10 md:px-6">
+        <div className="flex flex-col gap-6 md:flex-row">
+          <div className="min-w-0 flex-1">
+            <p className="mb-6 text-sm leading-relaxed text-black">
+              A postal (zip) code is a 5-digit number assigned by Pakistan Post to identify a specific delivery area
+              -- a neighborhood, sector, or institution -- within a city. Postal codes are used for mail delivery,
+              courier and e-commerce shipments, and on official forms that ask for a zip or postal code. Select a
+              province below to browse its cities, then a city to find the exact zip code for any area or
+              neighborhood -- or jump straight to{" "}
+              <Link href="/buy/lahore" className="text-primary underline hover:text-primary-mid">
+                property listings
+              </Link>{" "}
+              and{" "}
+              <Link href="/new-projects" className="text-primary underline hover:text-primary-mid">
+                new projects
+              </Link>{" "}
+              in that city.
+            </p>
 
-        <h2 className="sr-only">Provinces</h2>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          {[...byProvince.entries()].map(([province, cityList]) => (
-            <div key={province} className="rounded-xl border border-primary bg-white p-5">
-              <h3 className="text-lg font-bold text-black">{province}</h3>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {cityList.map((city) => (
-                  <Link
-                    key={city.slug}
-                    href={`/zip-codes/city/${city.slug}`}
-                    className="rounded-lg border border-primary px-3 py-1.5 text-sm text-primary hover:bg-primary hover:text-white"
-                  >
-                    {city.name}
-                  </Link>
-                ))}
+            {popularCities.length > 0 && (
+              <div className="mb-8 rounded-xl border border-primary bg-white p-5">
+                <h2 className="text-sm font-bold text-black">Popular Cities</h2>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {popularCities.map((city) => (
+                    <Link
+                      key={city.slug}
+                      href={`/zip-codes/city/${city.slug}`}
+                      className="rounded-lg bg-primary/5 px-3 py-1.5 text-sm font-semibold text-primary hover:bg-primary hover:text-white"
+                    >
+                      {city.name}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <h2 className="sr-only">Provinces</h2>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              {[...byProvince.entries()].map(([province, cityList]) => (
+                <div key={province} className="rounded-xl border border-primary bg-white p-5">
+                  <h3 className="text-lg font-bold text-black">{province}</h3>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {cityList.map((city) => (
+                      <Link
+                        key={city.slug}
+                        href={`/zip-codes/city/${city.slug}`}
+                        className="rounded-lg border border-primary px-3 py-1.5 text-sm text-primary hover:bg-primary hover:text-white"
+                      >
+                        {city.name}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-10 rounded-xl border border-primary bg-white p-6">
+              <h2 className="text-lg font-bold text-black">Frequently Asked Questions</h2>
+              <div className="mt-3 space-y-4">
+                <div>
+                  <p className="text-sm font-semibold text-black">How many digits are in a Pakistani postal code?</p>
+                  <p className="mt-1 text-sm leading-relaxed text-primary-mid">
+                    Pakistani postal codes are 5 digits long. The first two digits generally identify the postal
+                    circle or region, and the remaining digits narrow it down to a specific city, sector, or
+                    delivery office.
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-black">Who assigns postal codes in Pakistan?</p>
+                  <p className="mt-1 text-sm leading-relaxed text-primary-mid">
+                    Postal codes in Pakistan are assigned and maintained by Pakistan Post, the country&apos;s
+                    national postal service.
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-black">Can one area have more than one zip code?</p>
+                  <p className="mt-1 text-sm leading-relaxed text-primary-mid">
+                    Yes. Larger neighborhoods or sectors are sometimes served by more than one postal code, usually
+                    split by the delivery office responsible for that part of the area.
+                  </p>
+                </div>
               </div>
             </div>
-          ))}
-        </div>
+          </div>
 
-        <div className="mt-10 rounded-xl border border-primary bg-white p-6">
-          <h2 className="text-lg font-bold text-black">Frequently Asked Questions</h2>
-          <div className="mt-3 space-y-4">
-            <div>
-              <p className="text-sm font-semibold text-black">How many digits are in a Pakistani postal code?</p>
-              <p className="mt-1 text-sm leading-relaxed text-primary-mid">
-                Pakistani postal codes are 5 digits long. The first two digits generally identify the postal circle
-                or region, and the remaining digits narrow it down to a specific city, sector, or delivery office.
-              </p>
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-black">Who assigns postal codes in Pakistan?</p>
-              <p className="mt-1 text-sm leading-relaxed text-primary-mid">
-                Postal codes in Pakistan are assigned and maintained by Pakistan Post, the country&apos;s national
-                postal service.
-              </p>
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-black">Can one area have more than one zip code?</p>
-              <p className="mt-1 text-sm leading-relaxed text-primary-mid">
-                Yes. Larger neighborhoods or sectors are sometimes served by more than one postal code, usually
-                split by the delivery office responsible for that part of the area.
-              </p>
-            </div>
+          <div className="md:w-64 md:shrink-0">
+            <ZipCodesSidebar cities={allCities} />
           </div>
         </div>
       </div>

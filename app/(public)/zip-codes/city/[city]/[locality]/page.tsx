@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { createPublicClient } from "@/lib/supabase/public";
 import { baseMeta, SITE_URL } from "@/lib/seo/metadata";
 import { SchemaScript, breadcrumbSchema } from "@/lib/seo/schemas";
+import { ZipCodesSidebar } from "@/components/portal/zip-codes/ZipCodesSidebar";
 
 export const revalidate = 86400;
 
@@ -53,7 +54,33 @@ async function getData(citySlug: string, areaSlug: string) {
     console.error("zip-codes nearby query failed", { citySlug, areaSlug, error: nearbyError });
   }
 
-  return { city, area, postalCodes: postalCodes ?? [], nearby: nearby ?? [] };
+  // If a master-planned society sits in this exact area, cross-link to its area
+  // guide -- e.g. Bahria Town/DHA-style pages carry real content (developer,
+  // amenities, payment plans) that a buyer landing on a bare zip code page would
+  // otherwise never discover.
+  const { data: society } = await supabase
+    .from("societies")
+    .select("name, slug")
+    .eq("area_id", area.id)
+    .eq("is_active", true)
+    .limit(1)
+    .maybeSingle();
+
+  const { data: otherCities } = await supabase
+    .from("cities")
+    .select("name, slug")
+    .eq("is_active", true)
+    .neq("id", city.id)
+    .order("display_order");
+
+  return {
+    city,
+    area,
+    postalCodes: postalCodes ?? [],
+    nearby: nearby ?? [],
+    society: society ?? null,
+    otherCities: otherCities ?? [],
+  };
 }
 
 export async function generateMetadata({
@@ -82,7 +109,7 @@ export default async function ZipCodeLocalityPage({
   const data = await getData(citySlug, locality);
   if (!data || data.postalCodes.length === 0) notFound();
 
-  const { city, area, postalCodes, nearby } = data;
+  const { city, area, postalCodes, nearby, society, otherCities } = data;
   const primaryCode = postalCodes[0].code;
   const hasMultiple = postalCodes.length > 1;
 
@@ -138,90 +165,105 @@ export default async function ZipCodeLocalityPage({
         <p className="mt-3 text-4xl font-bold text-secondary">{primaryCode}</p>
       </div>
 
-      <div className="mx-auto w-full max-w-2xl px-4 py-10 md:px-6">
-        <div className="rounded-xl border border-primary bg-white p-6">
-          <h2 className="text-lg font-bold text-black">Postal Code Details</h2>
-          <p className="mt-3 text-sm leading-relaxed text-black">
-            The zip code for {area.name} in {city.name}, {city.province} is <strong>{primaryCode}</strong>. This
-            5-digit postal code is assigned by Pakistan Post and is used for mail delivery, online orders, courier
-            shipments, and official documents that require a postal or zip code for {area.name}.
-            {hasMultiple &&
-              ` ${area.name} is served by more than one code depending on the exact delivery office -- see the full list below.`}
-          </p>
-          <dl className="mt-4 space-y-3 text-sm">
-            <div className="flex justify-between border-b border-primary/20 pb-2">
-              <dt className="text-primary-mid">Area</dt>
-              <dd className="font-semibold text-black">{area.name}</dd>
-            </div>
-            <div className="flex justify-between border-b border-primary/20 pb-2">
-              <dt className="text-primary-mid">City</dt>
-              <dd className="font-semibold text-black">{city.name}</dd>
-            </div>
-            <div className="flex justify-between border-b border-primary/20 pb-2">
-              <dt className="text-primary-mid">Province</dt>
-              <dd className="font-semibold text-black">{city.province}</dd>
-            </div>
-            <div className="flex justify-between">
-              <dt className="text-primary-mid">Zip / Postal Code</dt>
-              <dd className="font-mono font-bold text-black">{primaryCode}</dd>
-            </div>
-          </dl>
+      <div className="mx-auto w-full max-w-5xl px-4 py-10 md:px-6">
+        <div className="flex flex-col gap-6 md:flex-row">
+          <div className="min-w-0 flex-1">
+            <div className="rounded-xl border border-primary bg-white p-6">
+              <h2 className="text-lg font-bold text-black">Postal Code Details</h2>
+              <p className="mt-3 text-sm leading-relaxed text-black">
+                The zip code for {area.name} in {city.name}, {city.province} is <strong>{primaryCode}</strong>. This
+                5-digit postal code is assigned by Pakistan Post and is used for mail delivery, online orders,
+                courier shipments, and official documents that require a postal or zip code for {area.name}.
+                {hasMultiple &&
+                  ` ${area.name} is served by more than one code depending on the exact delivery office -- see the full list below.`}
+              </p>
+              <dl className="mt-4 space-y-3 text-sm">
+                <div className="flex justify-between border-b border-primary/20 pb-2">
+                  <dt className="text-primary-mid">Area</dt>
+                  <dd className="font-semibold text-black">{area.name}</dd>
+                </div>
+                <div className="flex justify-between border-b border-primary/20 pb-2">
+                  <dt className="text-primary-mid">City</dt>
+                  <dd className="font-semibold text-black">{city.name}</dd>
+                </div>
+                <div className="flex justify-between border-b border-primary/20 pb-2">
+                  <dt className="text-primary-mid">Province</dt>
+                  <dd className="font-semibold text-black">{city.province}</dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="text-primary-mid">Zip / Postal Code</dt>
+                  <dd className="font-mono font-bold text-black">{primaryCode}</dd>
+                </div>
+              </dl>
 
-          {hasMultiple && (
-            <p className="mt-4 text-xs text-primary-mid">
-              This area is also served by: {postalCodes.slice(1).map((p) => p.code).join(", ")}
-            </p>
-          )}
-        </div>
+              {hasMultiple && (
+                <p className="mt-4 text-xs text-primary-mid">
+                  This area is also served by: {postalCodes.slice(1).map((p) => p.code).join(", ")}
+                </p>
+              )}
+            </div>
 
-        <div className="mt-6 rounded-xl border border-secondary bg-white p-6 text-center">
-          <p className="text-base font-semibold text-black">Looking for property in {area.name}?</p>
-          <Link
-            href={`/buy/${citySlug}/${area.slug}`}
-            className="mt-3 inline-block rounded-lg bg-secondary px-5 py-2.5 text-sm font-bold text-primary transition hover:bg-secondary-dark"
-          >
-            Browse Listings in {area.name} →
-          </Link>
-        </div>
+            <div className="mt-6 flex flex-col gap-3 rounded-xl border border-secondary bg-white p-6 text-center sm:flex-row sm:justify-center">
+              <Link
+                href={`/buy/${citySlug}/${area.slug}`}
+                className="inline-block rounded-lg bg-secondary px-5 py-2.5 text-sm font-bold text-primary transition hover:bg-secondary-dark"
+              >
+                Browse Listings in {area.name} →
+              </Link>
+              {society && (
+                <Link
+                  href={`/area-guide/${citySlug}/${society.slug}`}
+                  className="inline-block rounded-lg border border-primary px-5 py-2.5 text-sm font-bold text-primary transition hover:bg-primary hover:text-white"
+                >
+                  {society.name} Area Guide →
+                </Link>
+              )}
+            </div>
 
-        <div className="mt-6 rounded-xl border border-primary bg-white p-6">
-          <h2 className="text-lg font-bold text-black">Frequently Asked Questions</h2>
-          <div className="mt-3 space-y-4">
-            {faqs.map((f) => (
-              <div key={f.q}>
-                <p className="text-sm font-semibold text-black">{f.q}</p>
-                <p className="mt-1 text-sm leading-relaxed text-primary-mid">{f.a}</p>
+            <div className="mt-6 rounded-xl border border-primary bg-white p-6">
+              <h2 className="text-lg font-bold text-black">Frequently Asked Questions</h2>
+              <div className="mt-3 space-y-4">
+                {faqs.map((f) => (
+                  <div key={f.q}>
+                    <p className="text-sm font-semibold text-black">{f.q}</p>
+                    <p className="mt-1 text-sm leading-relaxed text-primary-mid">{f.a}</p>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+
+            {nearby.length > 0 && (
+              <div className="mt-6 rounded-xl border border-primary bg-white p-6">
+                <h2 className="text-lg font-bold text-black">Other Zip Codes in {city.name}</h2>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {nearby.map((row) => {
+                    const nearbyArea = Array.isArray(row.area) ? row.area[0] : row.area;
+                    if (!nearbyArea) return null;
+                    return (
+                      <Link
+                        key={nearbyArea.slug}
+                        href={`/zip-codes/city/${citySlug}/${nearbyArea.slug}`}
+                        className="rounded-lg border border-primary px-3 py-1.5 text-sm text-primary hover:bg-primary hover:text-white"
+                      >
+                        {nearbyArea.name} ({row.code})
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            <p className="mt-6 text-sm text-primary-mid">
+              <Link href={`/zip-codes/city/${citySlug}`} className="text-primary hover:underline">
+                ← All {city.name} zip codes
+              </Link>
+            </p>
+          </div>
+
+          <div className="md:w-64 md:shrink-0">
+            <ZipCodesSidebar cities={otherCities} currentCitySlug={citySlug} cityName={city.name} />
           </div>
         </div>
-
-        {nearby.length > 0 && (
-          <div className="mt-6 rounded-xl border border-primary bg-white p-6">
-            <h2 className="text-lg font-bold text-black">Other Zip Codes in {city.name}</h2>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {nearby.map((row) => {
-                const nearbyArea = Array.isArray(row.area) ? row.area[0] : row.area;
-                if (!nearbyArea) return null;
-                return (
-                  <Link
-                    key={nearbyArea.slug}
-                    href={`/zip-codes/city/${citySlug}/${nearbyArea.slug}`}
-                    className="rounded-lg border border-primary px-3 py-1.5 text-sm text-primary hover:bg-primary hover:text-white"
-                  >
-                    {nearbyArea.name} ({row.code})
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        <p className="mt-6 text-center text-sm text-primary-mid">
-          <Link href={`/zip-codes/city/${citySlug}`} className="text-primary hover:underline">
-            ← All {city.name} zip codes
-          </Link>
-        </p>
       </div>
     </>
   );
