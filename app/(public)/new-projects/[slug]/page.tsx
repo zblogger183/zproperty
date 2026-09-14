@@ -5,7 +5,8 @@ import Link from "next/link";
 import { createPublicClient } from "@/lib/supabase/public";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatPrice } from "@/lib/utils/formatPrice";
-import { projectMeta } from "@/lib/seo/metadata";
+import { buildProjectWhatsAppMessage } from "@/lib/utils";
+import { projectMeta, SITE_URL } from "@/lib/seo/metadata";
 import { SchemaScript, projectSchema } from "@/lib/seo/schemas";
 import { Breadcrumb } from "@/components/portal/Breadcrumb";
 import { ImageGallery, type GalleryImage } from "@/components/portal/listing/ImageGallery";
@@ -381,6 +382,12 @@ export default async function ProjectDetailPage({
               projectName={project.name}
               developerName={developer?.name ?? null}
               developerWhatsapp={developer?.phone ?? null}
+              whatsappMessage={buildProjectWhatsAppMessage({
+                projectName: project.name,
+                developerName: developer?.name ?? null,
+                location: [project.area?.name, project.city?.name].filter(Boolean).join(", "),
+                link: `${SITE_URL}/new-projects/${project.slug}`,
+              })}
             />
 
             <div className="mt-4 space-y-2 rounded-xl border border-primary bg-white p-5">

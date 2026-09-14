@@ -73,6 +73,33 @@ export function buildListingWhatsAppMessage({
     .join("\n");
 }
 
+// Same purpose as buildListingWhatsAppMessage above, for a developer project
+// (components/portal/projects/ProjectEnquiryCard.tsx) -- also carries the
+// developer's name, since one developer's WhatsApp is typically shared
+// across all of their active projects.
+export function buildProjectWhatsAppMessage({
+  projectName,
+  developerName,
+  location,
+  link,
+}: {
+  projectName: string;
+  developerName?: string | null;
+  location?: string | null;
+  link: string;
+}): string {
+  return [
+    "Hello sir, I found your project listing on Zproperty.pk, I am interested in it.",
+    `Project Name: ${projectName}`,
+    developerName ? `Developer: ${developerName}` : null,
+    location ? `Location: ${location}` : null,
+    `Link: ${link}`,
+    "Please share more details. Thank you.",
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
+
 export function slugify(input: string): string {
   return input
     .toLowerCase()

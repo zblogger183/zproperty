@@ -13,11 +13,13 @@ export function ProjectEnquiryCard({
   projectName,
   developerName,
   developerWhatsapp,
+  whatsappMessage,
 }: {
   projectId: string;
   projectName: string;
   developerName: string | null;
   developerWhatsapp: string | null;
+  whatsappMessage: string;
 }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -87,7 +89,7 @@ export function ProjectEnquiryCard({
 
       {cleanedWhatsapp && (
         <a
-          href={`https://wa.me/92${cleanedWhatsapp}?text=${encodeURIComponent(`Hi, I'm interested in ${projectName}`)}`}
+          href={`https://wa.me/92${cleanedWhatsapp}?text=${encodeURIComponent(whatsappMessage)}`}
           target="_blank"
           rel="noopener noreferrer"
           className="mt-3 block w-full rounded-lg bg-secondary py-3 text-center text-sm font-bold text-primary"
