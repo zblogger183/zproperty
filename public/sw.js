@@ -1,4 +1,4 @@
-const CACHE_NAME = "zproperty-v1";
+const CACHE_NAME = "zproperty-v2";
 const OFFLINE_URL = "/offline.html";
 
 const STATIC_EXTENSIONS = [
@@ -14,7 +14,24 @@ const STATIC_EXTENSIONS = [
   ".woff2",
 ];
 
-const NETWORK_ONLY_PREFIXES = ["/api/", "/admin", "/dashboard", "/buyer", "/callback", "/auth"];
+// "/auth" was meant to cover the (auth) route group (login/register/etc.),
+// but Next.js route groups are stripped from the URL, so that prefix never
+// actually matched anything -- these pages were silently falling through to
+// the stale-while-revalidate HTML handler below instead of network-only,
+// which could serve a cached HTML shell referencing JS chunks from an
+// already-superseded deploy. List the real paths explicitly instead.
+const NETWORK_ONLY_PREFIXES = [
+  "/api/",
+  "/admin",
+  "/dashboard",
+  "/buyer",
+  "/callback",
+  "/login",
+  "/register",
+  "/forgot-password",
+  "/reset-password",
+  "/verify-otp",
+];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
