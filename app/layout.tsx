@@ -28,6 +28,22 @@ export default function RootLayout({
       <body className={`${inter.className} min-h-full flex flex-col`}>
         {children}
         <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-V11BCC3XGZ"
+          strategy="afterInteractive"
+        />
+        <Script
+          id="google-analytics"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-V11BCC3XGZ');
+            `,
+          }}
+        />
+        <Script
           id="sw-register"
           strategy="afterInteractive"
           dangerouslySetInnerHTML={{
