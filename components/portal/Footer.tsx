@@ -110,7 +110,12 @@ export function Footer() {
             <p>📧 info@zproperty.pk</p>
             <p>
               📞 WhatsApp:{" "}
-              <a href="https://wa.me/923044619335" target="_blank" rel="noopener noreferrer" className="hover:text-white">
+              <a
+                href="https://wa.me/923044619335"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-secondary hover:text-white"
+              >
                 +92 304 4619335
               </a>
             </p>
@@ -167,14 +172,14 @@ export function Footer() {
             © {new Date().getFullYear()} ZProperty.pk — All rights reserved
           </p>
           <p className="text-xs text-white/60">Pakistan&apos;s trusted real estate marketplace</p>
-          <div className="flex gap-4 text-xs text-secondary">
-            <Link href="/privacy-policy" className="hover:text-white">
+          <div className="flex gap-4 text-xs">
+            <Link href="/privacy-policy" className="text-secondary hover:text-white">
               Privacy Policy
             </Link>
-            <Link href="/terms" className="hover:text-white">
+            <Link href="/terms" className="text-secondary hover:text-white">
               Terms
             </Link>
-            <Link href="/contact" className="hover:text-white">
+            <Link href="/contact" className="text-secondary hover:text-white">
               Contact
             </Link>
           </div>
