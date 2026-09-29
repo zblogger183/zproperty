@@ -130,6 +130,12 @@ export async function approveListingAction(listingId: string) {
   revalidatePath("/admin/listings/pending");
   revalidatePath("/admin");
   revalidatePath(`/listing/${listing.slug}`);
+  // The homepage's "Browse by City" counts (getCities() in
+  // app/(public)/page.tsx) are cached for an hour (revalidate = 3600) —
+  // without this, a newly-approved listing doesn't show up there until
+  // that window naturally elapses, same stale-ISR-cache pattern already
+  // fixed once for blog cover images this session.
+  revalidatePath("/");
 
   return { ok: true };
 }
@@ -205,6 +211,9 @@ export async function deactivateListingAction(listingId: string, newStatus: "pau
 
   revalidatePath("/admin/listings");
   revalidatePath("/admin");
+  // See the matching note in approveListingAction — deactivating a
+  // previously-active listing changes the homepage's cached city counts too.
+  if (listing.status === "active") revalidatePath("/");
 
   return { ok: true };
 }
