@@ -28,7 +28,7 @@ export function CitiesSection({ cities }: { cities: CitySummary[] }) {
                 <Link href={`/buy/${city.slug}`} className="flex flex-col gap-2">
                   <span className="text-lg font-bold text-black">{city.name}</span>
                   <span className="text-sm text-primary-mid">
-                    {city.listing_count.toLocaleString()} for sale
+                    {city.listing_count.toLocaleString()} Properties
                   </span>
                 </Link>
                 <div className="flex items-center justify-between">

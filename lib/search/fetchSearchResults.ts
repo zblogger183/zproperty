@@ -138,6 +138,16 @@ export async function fetchSearchResults(params: {
   // building listings, while a visitor can still narrow to just "Shop"
   // within that set via the normal type checkboxes.
   baseTypes?: string[];
+  // /buy/[city] (and its area/society sub-routes) are the site's general
+  // "properties in this city" pages — at the user's request they show every
+  // active listing regardless of purpose, with ListingCard's own Buy/Rent
+  // badge providing the per-card distinction, rather than being a buy-only
+  // view. `purpose` still selects the URL base (/buy/...) and default UI
+  // copy; this just widens the underlying query. /rent/[city] stays
+  // rent-only (no equivalent flag passed there), and /commercial + /plots
+  // are left buy-only too since they're distinct property-type sections,
+  // not general city pages.
+  allPurposes?: boolean;
 }): Promise<SearchResults | null> {
   const supabase = createPublicClient();
 
@@ -196,8 +206,8 @@ export async function fetchSearchResults(params: {
     .from("listings")
     .select(LISTING_SELECT, { count: "exact" })
     .eq("status", "active")
-    .eq("city_id", city.id)
-    .eq("purpose", params.purpose);
+    .eq("city_id", city.id);
+  if (!params.allPurposes) listingsQuery = listingsQuery.eq("purpose", params.purpose);
 
   if (area) listingsQuery = listingsQuery.eq("area_id", area.id);
   if (society) listingsQuery = listingsQuery.eq("society_id", society.id);
@@ -269,8 +279,8 @@ export async function fetchSearchResults(params: {
     .select("type")
     .eq("status", "active")
     .eq("city_id", city.id)
-    .eq("purpose", params.purpose)
     .limit(5000);
+  if (!params.allPurposes) typeCountQuery = typeCountQuery.eq("purpose", params.purpose);
   if (area) typeCountQuery = typeCountQuery.eq("area_id", area.id);
   if (society) typeCountQuery = typeCountQuery.eq("society_id", society.id);
   if (phase) typeCountQuery = typeCountQuery.eq("phase_id", phase.id);
@@ -328,6 +338,7 @@ export async function buildSearchMetadata(params: {
   searchParams: RawSearchParams;
   baseTypes?: string[];
   basePath?: string;
+  allPurposes?: boolean;
   // See SearchResultsPage's own typeLabelOverride — without this, sections
   // like /plots and /commercial that span several `type` values with no
   // single one ever "active" fell back to a generic "Properties for Sale"
@@ -379,6 +390,7 @@ export async function buildSearchMetadata(params: {
 
   return searchMeta({
     purpose: params.purpose,
+    allPurposes: params.allPurposes,
     type: results.filters.type,
     type_label_override: params.typeLabelOverride,
     area_name: results.area?.name,

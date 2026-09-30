@@ -35,6 +35,7 @@ export async function SearchResultsPage({
   baseTypes,
   basePath: basePathProp,
   typeLabelOverride,
+  allPurposes,
 }: {
   purpose: "buy" | "rent";
   citySlug: string;
@@ -47,8 +48,20 @@ export async function SearchResultsPage({
   baseTypes?: string[];
   basePath?: string;
   typeLabelOverride?: string;
+  // See fetchSearchResults' allPurposes doc — /buy/[city] passes this so the
+  // page shows every active listing for the city/area/society, not just
+  // purpose="buy" ones.
+  allPurposes?: boolean;
 }) {
-  const results = await fetchSearchResults({ purpose, citySlug, areaSlug, societySlug, searchParams, baseTypes });
+  const results = await fetchSearchResults({
+    purpose,
+    citySlug,
+    areaSlug,
+    societySlug,
+    searchParams,
+    baseTypes,
+    allPurposes,
+  });
 
   if (!results) {
     notFound();
@@ -58,7 +71,7 @@ export async function SearchResultsPage({
     results;
 
   const routeBase = basePathProp ?? `/${purpose}`;
-  const purposeLabel = purpose === "buy" ? "Sale" : "Rent";
+  const purposeLabel = allPurposes ? "Sale & Rent" : purpose === "buy" ? "Sale" : "Rent";
   const typeOption = TYPE_OPTIONS.find((option) => option.value === filters.type);
   const typeLabelBase = typeOption ? typeOption.label : (typeLabelOverride ?? "Property");
   const typeLabelPlural = typeLabelBase.endsWith("y")

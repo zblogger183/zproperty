@@ -12,11 +12,15 @@ type PageParams = { params: Promise<{ city: string }>; searchParams: Promise<Rec
 export async function generateMetadata({ params, searchParams }: PageParams): Promise<Metadata> {
   const { city } = await params;
   const sp = await searchParams;
-  return buildSearchMetadata({ purpose: "buy", citySlug: city, searchParams: sp });
+  return buildSearchMetadata({ purpose: "buy", citySlug: city, searchParams: sp, allPurposes: true });
 }
 
+// /buy/[city] is the site's general "properties in this city" page — it
+// shows every active listing (buy and rent alike), with each ListingCard's
+// own Buy/Rent badge giving the per-listing distinction. /rent/[city]
+// remains the dedicated rent-only view.
 export default async function CityListingsBuyPage({ params, searchParams }: PageParams) {
   const { city } = await params;
   const sp = await searchParams;
-  return <SearchResultsPage purpose="buy" citySlug={city} searchParams={sp} />;
+  return <SearchResultsPage purpose="buy" citySlug={city} searchParams={sp} allPurposes />;
 }

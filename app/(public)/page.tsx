@@ -33,14 +33,14 @@ async function getCities(supabase: SupabasePublicClient): Promise<CitySummary[]>
 
   if (error || !cities) return [];
 
-  // cities.listing_count (kept fresh by a DB trigger) counts every active
-  // listing regardless of purpose, but this section's cards link to
-  // /buy/[city] — showing that combined count next to a buy-only link
-  // overstates what the linked page actually has whenever a city carries
-  // rent listings too (e.g. a city with 2 buy + 6 rent showed "8
-  // properties" leading to a page with only 2). Counted live here instead,
-  // split by purpose, so the "for sale" figure matches /buy/[city] and the
-  // new "for rent" figure matches /rent/[city] exactly.
+  // /buy/[city] now shows every active listing for the city regardless of
+  // purpose (buy and rent alike, distinguished per-card by ListingCard's
+  // own badge — see fetchSearchResults' allPurposes doc), so this section's
+  // primary count/link can go back to the combined total. rent_count is
+  // still broken out separately for the smaller "N for rent" link to the
+  // dedicated /rent/[city] view. Counted live (rather than trusting
+  // cities.listing_count directly) so both numbers come from one consistent
+  // snapshot.
   const cityIds = cities.map((c) => c.id);
   const { data: activeListings } = await supabase
     .from("listings")
@@ -48,16 +48,16 @@ async function getCities(supabase: SupabasePublicClient): Promise<CitySummary[]>
     .eq("status", "active")
     .in("city_id", cityIds);
 
-  const buyCounts = new Map<string, number>();
+  const totalCounts = new Map<string, number>();
   const rentCounts = new Map<string, number>();
   for (const row of (activeListings ?? []) as { city_id: string; purpose: "buy" | "rent" }[]) {
-    const counts = row.purpose === "rent" ? rentCounts : buyCounts;
-    counts.set(row.city_id, (counts.get(row.city_id) ?? 0) + 1);
+    totalCounts.set(row.city_id, (totalCounts.get(row.city_id) ?? 0) + 1);
+    if (row.purpose === "rent") rentCounts.set(row.city_id, (rentCounts.get(row.city_id) ?? 0) + 1);
   }
 
   return cities.map((c) => ({
     ...c,
-    listing_count: buyCounts.get(c.id) ?? 0,
+    listing_count: totalCounts.get(c.id) ?? 0,
     rent_count: rentCounts.get(c.id) ?? 0,
   }));
 }

@@ -77,21 +77,14 @@ const getCityAndSociety = cache(async (citySlug: string, societySlug: string) =>
     .eq("city_id", city.id)
     .maybeSingle();
 
-  if (society) {
-    // societies.listing_count counts every active listing for this society
-    // regardless of purpose, but the "Browse N Listings" button below always
-    // links to /buy/... — same mismatch as the homepage's city cards (see
-    // getCities() in app/(public)/page.tsx). Overridden here with a live
-    // count scoped to purpose="buy" so the number matches what clicking
-    // through actually shows.
-    const { count: buyCount } = await supabase
-      .from("listings")
-      .select("id", { count: "exact", head: true })
-      .eq("society_id", society.id)
-      .eq("status", "active")
-      .eq("purpose", "buy");
-    (society as unknown as SocietyRow).listing_count = buyCount ?? 0;
-  }
+  // society.listing_count (kept fresh by a DB trigger, counts every active
+  // listing regardless of purpose) is used as-is below — the "Browse N
+  // Listings" button links to /buy/..., which now shows every active
+  // listing for the society (buy and rent alike, distinguished per-card by
+  // ListingCard's own badge — see fetchSearchResults' allPurposes doc), so
+  // the combined count is the correct one to display again. An earlier
+  // version of this override scoped it to purpose="buy" only, back when
+  // /buy/... was itself buy-only.
 
   return { city: city as CityRow, society: society as unknown as SocietyRow | null };
 });
