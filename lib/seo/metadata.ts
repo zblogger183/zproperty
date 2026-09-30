@@ -129,6 +129,11 @@ const FLOORS_LABEL: Record<number, string> = { 1: "Single Story", 2: "Double Sto
 
 export function searchMeta(params: {
   purpose: "buy" | "rent";
+  // /buy/[city] (and its area/society sub-routes) now list every active
+  // listing regardless of purpose — see fetchSearchResults' allPurposes doc.
+  // "for Sale" alone would misdescribe a result set that includes rentals,
+  // so this swaps in "Sale & Rent" for both the indexed title and description.
+  allPurposes?: boolean;
   type?: string | null;
   // Used only when `type` isn't set — a section like /plots or /commercial
   // spans several `type` values with none singularly "active", so without
@@ -151,7 +156,7 @@ export function searchMeta(params: {
   // still set so link equity flows through; only the page itself is excluded.
   noIndex?: boolean;
 }): Metadata {
-  const purposeStr = params.purpose === "buy" ? "Sale" : "Rent";
+  const purposeStr = params.allPurposes ? "Sale & Rent" : params.purpose === "buy" ? "Sale" : "Rent";
   // Was `params.type.replace(/_/g, " ") + "s"` — lowercase and grammatically
   // wrong for a count of 1 (e.g. "1 residential plots for Sale"). Title-cases
   // the type and only pluralizes when the count actually calls for it.

@@ -12,11 +12,13 @@ type PageParams = {
 export async function generateMetadata({ params, searchParams }: PageParams): Promise<Metadata> {
   const { city, area } = await params;
   const sp = await searchParams;
-  return buildSearchMetadata({ purpose: "buy", citySlug: city, areaSlug: area, searchParams: sp });
+  return buildSearchMetadata({ purpose: "buy", citySlug: city, areaSlug: area, searchParams: sp, allPurposes: true });
 }
 
+// See CityListingsBuyPage's comment — same "all purposes" behavior applies
+// one level down, scoped to this area.
 export default async function AreaListingsBuyPage({ params, searchParams }: PageParams) {
   const { city, area } = await params;
   const sp = await searchParams;
-  return <SearchResultsPage purpose="buy" citySlug={city} areaSlug={area} searchParams={sp} />;
+  return <SearchResultsPage purpose="buy" citySlug={city} areaSlug={area} searchParams={sp} allPurposes />;
 }

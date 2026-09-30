@@ -33,28 +33,33 @@ async function getCities(supabase: SupabasePublicClient): Promise<CitySummary[]>
 
   if (error || !cities) return [];
 
-  // cities.listing_count (kept fresh by a DB trigger) counts every active
-  // listing regardless of purpose, but this section's cards link to
-  // /buy/[city] — showing that combined count next to a buy-only link
-  // overstates what the linked page actually has whenever a city carries
-  // rent listings too (e.g. a city with 2 buy + 6 rent showed "8
-  // properties" leading to a page with only 2). Counted live here, scoped
-  // to the same purpose="buy" + status="active" filter /buy/[city] itself
-  // uses, so the number always matches what clicking through shows.
+  // /buy/[city] now shows every active listing for the city regardless of
+  // purpose (buy and rent alike, distinguished per-card by ListingCard's
+  // own badge — see fetchSearchResults' allPurposes doc), so this section's
+  // primary count/link can go back to the combined total. rent_count is
+  // still broken out separately for the smaller "N for rent" link to the
+  // dedicated /rent/[city] view. Counted live (rather than trusting
+  // cities.listing_count directly) so both numbers come from one consistent
+  // snapshot.
   const cityIds = cities.map((c) => c.id);
-  const { data: buyListings } = await supabase
+  const { data: activeListings } = await supabase
     .from("listings")
-    .select("city_id")
+    .select("city_id, purpose")
     .eq("status", "active")
-    .eq("purpose", "buy")
     .in("city_id", cityIds);
 
-  const buyCounts = new Map<string, number>();
-  for (const row of (buyListings ?? []) as { city_id: string }[]) {
-    buyCounts.set(row.city_id, (buyCounts.get(row.city_id) ?? 0) + 1);
+  const totalCounts = new Map<string, number>();
+  const rentCounts = new Map<string, number>();
+  for (const row of (activeListings ?? []) as { city_id: string; purpose: "buy" | "rent" }[]) {
+    totalCounts.set(row.city_id, (totalCounts.get(row.city_id) ?? 0) + 1);
+    if (row.purpose === "rent") rentCounts.set(row.city_id, (rentCounts.get(row.city_id) ?? 0) + 1);
   }
 
-  return cities.map((c) => ({ ...c, listing_count: buyCounts.get(c.id) ?? 0 }));
+  return cities.map((c) => ({
+    ...c,
+    listing_count: totalCounts.get(c.id) ?? 0,
+    rent_count: rentCounts.get(c.id) ?? 0,
+  }));
 }
 
 // Agent contact comes from the public_agent_contact view (supabase/
