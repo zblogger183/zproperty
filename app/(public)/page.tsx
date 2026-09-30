@@ -38,23 +38,28 @@ async function getCities(supabase: SupabasePublicClient): Promise<CitySummary[]>
   // /buy/[city] — showing that combined count next to a buy-only link
   // overstates what the linked page actually has whenever a city carries
   // rent listings too (e.g. a city with 2 buy + 6 rent showed "8
-  // properties" leading to a page with only 2). Counted live here, scoped
-  // to the same purpose="buy" + status="active" filter /buy/[city] itself
-  // uses, so the number always matches what clicking through shows.
+  // properties" leading to a page with only 2). Counted live here instead,
+  // split by purpose, so the "for sale" figure matches /buy/[city] and the
+  // new "for rent" figure matches /rent/[city] exactly.
   const cityIds = cities.map((c) => c.id);
-  const { data: buyListings } = await supabase
+  const { data: activeListings } = await supabase
     .from("listings")
-    .select("city_id")
+    .select("city_id, purpose")
     .eq("status", "active")
-    .eq("purpose", "buy")
     .in("city_id", cityIds);
 
   const buyCounts = new Map<string, number>();
-  for (const row of (buyListings ?? []) as { city_id: string }[]) {
-    buyCounts.set(row.city_id, (buyCounts.get(row.city_id) ?? 0) + 1);
+  const rentCounts = new Map<string, number>();
+  for (const row of (activeListings ?? []) as { city_id: string; purpose: "buy" | "rent" }[]) {
+    const counts = row.purpose === "rent" ? rentCounts : buyCounts;
+    counts.set(row.city_id, (counts.get(row.city_id) ?? 0) + 1);
   }
 
-  return cities.map((c) => ({ ...c, listing_count: buyCounts.get(c.id) ?? 0 }));
+  return cities.map((c) => ({
+    ...c,
+    listing_count: buyCounts.get(c.id) ?? 0,
+    rent_count: rentCounts.get(c.id) ?? 0,
+  }));
 }
 
 // Agent contact comes from the public_agent_contact view (supabase/
