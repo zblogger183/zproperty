@@ -21,17 +21,17 @@
 			"service": "zproperty"
 		}
 	],
-	"r2_buckets": [
+	"kv_namespaces": [
 		// ISR cache storage (revalidate = 600/3600/86400 throughout this app).
 		// Without this, each Worker invocation has no persistent cache to read
 		// from, so ISR effectively re-renders on every request instead of
-		// serving a cached page between revalidations. Create the bucket
-		// before the first deploy: `npx wrangler r2 bucket create zproperty-opennext-cache`
-		// (R2's free tier — 10GB storage, no egress fees — comfortably covers
-		// this site's cache size).
+		// serving a cached page between revalidations. Using KV (not R2) here
+		// deliberately — R2 requires a card on file even on its free tier,
+		// while KV's free tier (part of the base Workers Free plan: 100k
+		// reads/day, 1k writes/day) needs none.
 		{
-			"binding": "NEXT_INC_CACHE_R2_BUCKET",
-			"bucket_name": "zproperty-opennext-cache"
+			"binding": "NEXT_INC_CACHE_KV",
+			"id": "3f6a511bbc17437c9f3fad0b19de964a"
 		}
 	]
 	// Deliberately no "images" (IMAGES) binding for now — next.config.ts sets
