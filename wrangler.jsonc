@@ -7,6 +7,27 @@
 	// timingSafeEqual), several routes/actions use node:crypto's randomUUID,
 	// and file uploads build Buffers from request bodies.
 	"compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+	// Non-secret runtime vars, committed here (not the dashboard) so every
+	// deploy has them reliably — none of these are sensitive: NEXT_PUBLIC_*
+	// ships to the browser anyway, and CLOUDINARY_CLOUD_NAME is already
+	// visible in every delivered image URL. The 4 real secrets
+	// (SUPABASE_SERVICE_ROLE_KEY, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET,
+	// CRON_SECRET) must NOT go here — set those via the dashboard's Settings
+	// > Variables and Secrets, as type "Secret". Per Cloudflare's own docs,
+	// a deploy only wipes plain dashboard-set "Variable" values, never true
+	// "Secret" values, so true secrets survive every future deploy without
+	// needing keep_vars below.
+	"vars": {
+		"NEXT_PUBLIC_SUPABASE_URL": "https://oosjzhnzhfctxgzajvxr.supabase.co",
+		"NEXT_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9vc2p6aG56aGZjdHhnemFqdnhyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4MDgzNDAsImV4cCI6MjEwMDM4NDM0MH0.OPz53_W8FD072E6zAH_1JvGCXxRFWZOnKBgR2K89ZkQ",
+		"NEXT_PUBLIC_SITE_URL": "https://zproperty.pk",
+		"CLOUDINARY_CLOUD_NAME": "mpes8dph"
+	},
+	// Defense in depth: even if a secret ever ends up mis-set as a plain
+	// Variable in the dashboard instead of Secret type, this stops the next
+	// deploy from silently deleting it (see wrangler's own "source of truth"
+	// docs — without this, every deploy wipes dashboard-set plain vars).
+	"keep_vars": true,
 	"assets": {
 		"directory": ".open-next/assets",
 		"binding": "ASSETS"
