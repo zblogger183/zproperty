@@ -1,0 +1,13 @@
+diff --git a/node_modules/@opennextjs/cloudflare/dist/cli/build/patches/plugins/turbopack.js b/node_modules/@opennextjs/cloudflare/dist/cli/build/patches/plugins/turbopack.js
+index e91c64d..7ab40b2 100644
+--- a/node_modules/@opennextjs/cloudflare/dist/cli/build/patches/plugins/turbopack.js
++++ b/node_modules/@opennextjs/cloudflare/dist/cli/build/patches/plugins/turbopack.js
+@@ -171,8 +171,6 @@ function buildExternalImportRule(mappings, tracedFiles, runtimeCode) {
+             cases.push(`case "${moduleName}":\n  $RAW = await import("${importPath}");\n  break;`);
+         }
+     }
+-    // Always include the @vercel/og rewrite
+-    addCase("next/dist/compiled/@vercel/og/index.node.js", "next/dist/compiled/@vercel/og/index.edge.js");
+     // Add case for each discovered external module mapping (bare import)
+     for (const [hashedName, realName] of mappings) {
+         addCase(hashedName, realName);

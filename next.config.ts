@@ -1,4 +1,13 @@
 import type { NextConfig } from "next";
+import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
+
+// Wires `next dev` into the same Cloudflare bindings (R2 cache, env vars via
+// .dev.vars) the deployed Worker uses, via wrangler's local platform proxy —
+// without this, `npx wrangler dev` would still work but `next dev` itself
+// wouldn't see any Cloudflare-specific bindings during local development.
+// No-ops harmlessly on Vercel/any other platform (and in production, where
+// Next doesn't call this file's module-level code path for dev server setup).
+initOpenNextCloudflareForDev();
 
 // script-src/style-src keep 'unsafe-inline' rather than a nonce-based setup:
 // Next.js injects inline hydration/RSC-payload <script> tags and this app
@@ -79,6 +88,22 @@ const nextConfig: NextConfig = {
     ];
   },
   images: {
+    // Cloudflare's own Next.js integration (@opennextjs/cloudflare) can
+    // optimize next/image requests via a Workers "images" binding, but that
+    // uses Cloudflare's Image Transformations product (free up to 5,000
+    // unique transforms/month, then fails closed rather than billing) — an
+    // extra account-level product to enable. Skipped for now since almost
+    // every image this app renders already comes from Cloudinary
+    // (lib/image/cloudinary.ts) pre-sized into thumb/medium/large/og
+    // variants, so Next's own resizing was mostly redundant work on top of
+    // an already-optimized source. `unoptimized: true` makes next/image
+    // render a plain <img src> with no /_next/image hop at all, which is a
+    // better fit for that pattern on a free-tier deploy. The Supabase
+    // Storage images below (the one remaining unoptimized case) lose
+    // automatic resizing/format negotiation as a result — acceptable
+    // tradeoff; revisit by removing this and adding the "images" binding in
+    // wrangler.jsonc if that's ever worth the extra Cloudflare product.
+    unoptimized: true,
     // Next 16 requires an explicit allowlist for any quality value used via
     // the `quality` prop (default-only allowlist is [75]) — 65 is used on
     // homepage card thumbnails, flagged by PageSpeed Insights as having

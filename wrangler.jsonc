@@ -1,0 +1,42 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"main": ".open-next/worker.js",
+	"name": "zproperty",
+	"compatibility_date": "2026-10-01",
+	// nodejs_compat is required: proxy.ts uses node:crypto (createHmac,
+	// timingSafeEqual), several routes/actions use node:crypto's randomUUID,
+	// and file uploads build Buffers from request bodies.
+	"compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+	"assets": {
+		"directory": ".open-next/assets",
+		"binding": "ASSETS"
+	},
+	"services": [
+		{
+			// Self-reference service binding so OpenNext's internal cache-tag
+			// revalidation can call back into this same Worker over `fetch`
+			// instead of a real network hop. The service name must match
+			// "name" above. See https://opennext.js.org/cloudflare/caching
+			"binding": "WORKER_SELF_REFERENCE",
+			"service": "zproperty"
+		}
+	],
+	"r2_buckets": [
+		// ISR cache storage (revalidate = 600/3600/86400 throughout this app).
+		// Without this, each Worker invocation has no persistent cache to read
+		// from, so ISR effectively re-renders on every request instead of
+		// serving a cached page between revalidations. Create the bucket
+		// before the first deploy: `npx wrangler r2 bucket create zproperty-opennext-cache`
+		// (R2's free tier — 10GB storage, no egress fees — comfortably covers
+		// this site's cache size).
+		{
+			"binding": "NEXT_INC_CACHE_R2_BUCKET",
+			"bucket_name": "zproperty-opennext-cache"
+		}
+	]
+	// Deliberately no "images" (IMAGES) binding for now — next.config.ts sets
+	// images.unoptimized = true instead (see that file's comment for why).
+	// Cloudflare's Image Transformations product has a 5,000-transform/month
+	// free allowance (fails safely past that, not billed), so this can be
+	// added later as an enhancement without needing a different plan.
+}

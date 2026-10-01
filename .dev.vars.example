@@ -1,0 +1,30 @@
+# Local-dev secrets for `npx wrangler dev` / `npm run cf:preview`.
+# Copy this file to `.dev.vars` (already gitignored) and fill in real values
+# from your Supabase/Cloudinary dashboards for local Cloudflare testing.
+# These are NOT read from .env.local when running under wrangler — wrangler
+# only reads .dev.vars. In production these are set via `wrangler secret put`
+# (see the deploy guide), not committed anywhere.
+
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+CRON_SECRET=
+
+# Not yet configured in production (payments/notifications features are
+# currently inert without these — see the deploy guide). Add if/when those
+# go live.
+# STRIPE_SECRET_KEY=
+# STRIPE_WEBHOOK_SECRET=
+# RESEND_API_KEY=
+# WA_PHONE_ID=
+# WA_ACCESS_TOKEN=
+# JAZZCASH_MERCHANT_ID=
+# JAZZCASH_PASSWORD=
+# JAZZCASH_INTEGRITY_KEY=
+# JAZZCASH_SANDBOX=
+# EASYPAISA_API_KEY=
+# EASYPAISA_STORE_ID=

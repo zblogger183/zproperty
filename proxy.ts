@@ -1,4 +1,3 @@
-import { createHmac, timingSafeEqual } from "node:crypto";
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -43,27 +42,59 @@ function getSection(pathname: string): Section | null {
 // this cookie says. It's still HMAC-signed (keyed off the service-role
 // secret, server-only) so a tampered value is rejected rather than trusted,
 // instead of caching the role as plain, forgeable text.
-function signRole(userId: string, role: string): string {
+//
+// Uses Web Crypto (`crypto.subtle`) rather than `node:crypto` deliberately —
+// this file is Next's "proxy" (middleware), and on Cloudflare any Node-API
+// usage here forces an experimental, explicitly "not officially maintained"
+// Node-middleware bundling mode that also pulls Next's unrelated built-in
+// `next/og` image renderer (and its ~1.4MB resvg.wasm) into the bundle even
+// though this app never uses it. `crypto.subtle` is a standard Web API
+// available in Node, Workers, and every other modern runtime, so this keeps
+// proxy.ts on the regular (non-experimental) middleware path everywhere.
+async function signRole(userId: string, role: string): Promise<string> {
   const secret = process.env.SUPABASE_SERVICE_ROLE_KEY ?? "";
-  return createHmac("sha256", secret).update(`${userId}:${role}`).digest("hex");
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  const signature = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(`${userId}:${role}`));
+  return Array.from(new Uint8Array(signature))
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
 }
 
-function readCachedRole(request: NextRequest, userId: string): string | null {
+// `node:crypto`'s timingSafeEqual requires equal-length buffers up front
+// (hence the length check staying a separate, non-constant-time step here
+// too, same as the original) — this reimplements just the constant-time
+// byte comparison itself without the Node import, XOR-accumulating over
+// every character so no early return leaks which byte first differed.
+function timingSafeEqualHex(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) {
+    diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return diff === 0;
+}
+
+async function readCachedRole(request: NextRequest, userId: string): Promise<string | null> {
   const raw = request.cookies.get(ROLE_COOKIE_NAME)?.value;
   if (!raw) return null;
 
   const [cachedUserId, role, signature] = raw.split(":");
   if (!cachedUserId || !role || !signature || cachedUserId !== userId) return null;
 
-  const expected = Buffer.from(signRole(cachedUserId, role));
-  const actual = Buffer.from(signature);
-  if (expected.length !== actual.length || !timingSafeEqual(expected, actual)) return null;
+  const expected = await signRole(cachedUserId, role);
+  if (!timingSafeEqualHex(expected, signature)) return null;
 
   return role;
 }
 
-function writeCachedRole(response: NextResponse, userId: string, role: string) {
-  response.cookies.set(ROLE_COOKIE_NAME, `${userId}:${role}:${signRole(userId, role)}`, {
+async function writeCachedRole(response: NextResponse, userId: string, role: string) {
+  response.cookies.set(ROLE_COOKIE_NAME, `${userId}:${role}:${await signRole(userId, role)}`, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
@@ -192,7 +223,7 @@ export async function proxy(request: NextRequest) {
     return redirectPreservingCookies(loginUrl, response);
   }
 
-  let role = readCachedRole(request, user.id);
+  let role = await readCachedRole(request, user.id);
 
   if (!role) {
     role = await fetchRoleFromDb(supabase, user.id);
@@ -203,7 +234,7 @@ export async function proxy(request: NextRequest) {
       return redirectPreservingCookies(loginUrl, response);
     }
 
-    writeCachedRole(response, user.id, role);
+    await writeCachedRole(response, user.id, role);
   }
 
   const { allowedRoles, fallback } = SECTION_RULES[section];
@@ -220,7 +251,7 @@ export async function proxy(request: NextRequest) {
 
     if (freshRole && freshRole !== role) {
       role = freshRole;
-      writeCachedRole(response, user.id, role);
+      await writeCachedRole(response, user.id, role);
     }
   }
 
