@@ -66,7 +66,13 @@ export async function POST(request: NextRequest) {
       result = await uploadImageToCloudinary(buffer, folder, fileId);
     } catch (uploadError) {
       console.error("[upload/image] Cloudinary upload failed:", uploadError);
-      return NextResponse.json({ error: "Could not process image." }, { status: 400 });
+      // Temporarily includes the real failure reason in the user-visible
+      // error (Cloudinary's own error text, e.g. "Invalid Signature" —
+      // never a secret value) to diagnose a live Workers-only failure that
+      // doesn't reproduce in isolated testing. Revert to a plain generic
+      // message once the cause is confirmed fixed.
+      const detail = uploadError instanceof Error ? uploadError.message : String(uploadError);
+      return NextResponse.json({ error: `Could not process image: ${detail}` }, { status: 400 });
     }
 
     const admin = createAdminClient();
