@@ -23,11 +23,15 @@ export function ListingStatusActions({ listingId, status }: { listingId: string;
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function run(action: () => Promise<unknown>) {
+  async function run(action: () => Promise<{ ok: boolean; error?: string }>) {
     setIsPending(true);
     setError(null);
     try {
-      await action();
+      const result = await action();
+      if (!result.ok) {
+        setError(result.error ?? "Action failed.");
+        return;
+      }
       router.refresh();
       setIsRejecting(false);
     } catch (actionError) {

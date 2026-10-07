@@ -84,7 +84,12 @@ export function PendingListingCard({
     setIsSubmitting(true);
     setError(null);
     try {
-      await approveListingAction(listing.id);
+      const result = await approveListingAction(listing.id);
+      if (!result.ok) {
+        setError(result.error ?? "Could not approve listing.");
+        setIsSubmitting(false);
+        return;
+      }
       onAction();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not approve listing.");
@@ -96,7 +101,12 @@ export function PendingListingCard({
     setIsSubmitting(true);
     setError(null);
     try {
-      await rejectListingAction(listing.id, reason, note || undefined);
+      const result = await rejectListingAction(listing.id, reason, note || undefined);
+      if (!result.ok) {
+        setError(result.error ?? "Could not reject listing.");
+        setIsSubmitting(false);
+        return;
+      }
       onAction();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not reject listing.");
