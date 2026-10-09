@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { OTPInput } from "@/components/auth/OTPInput";
 import { FormError } from "@/components/auth/FormError";
@@ -15,6 +16,7 @@ export function VerifyOtpForm({
   identifier: string;
   purpose: "login" | "signup";
 }) {
+  const router = useRouter();
   const [code, setCode] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -30,7 +32,11 @@ export function VerifyOtpForm({
     setFormError(null);
     startTransition(async () => {
       const result = await verifyOtpAction({ identifier, code: value, purpose });
-      if (result?.error) setFormError(result.error);
+      if ("error" in result) {
+        setFormError(result.error);
+      } else {
+        router.push(result.redirectTo);
+      }
     });
   }
 

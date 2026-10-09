@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
@@ -14,6 +15,7 @@ import { loginWithPasswordAction, sendLoginOtpAction, signInWithGoogleAction } f
 type Mode = "password" | "otp";
 
 export function LoginForm() {
+  const router = useRouter();
   const [mode, setMode] = useState<Mode>("password");
   const [formError, setFormError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -33,7 +35,11 @@ export function LoginForm() {
     setFormError(null);
     startTransition(async () => {
       const result = await loginWithPasswordAction(values);
-      if (result?.error) setFormError(result.error);
+      if ("error" in result) {
+        setFormError(result.error);
+      } else {
+        router.push(result.redirectTo);
+      }
     });
   }
 
@@ -49,7 +55,11 @@ export function LoginForm() {
 
     startTransition(async () => {
       const result = await sendLoginOtpAction({ identifier });
-      if (result?.error) setFormError(result.error);
+      if ("error" in result) {
+        setFormError(result.error);
+      } else {
+        router.push(result.redirectTo);
+      }
     });
   }
 
@@ -128,15 +138,24 @@ export function LoginForm() {
         <span className="h-px flex-1 bg-primary/30" />
       </div>
 
-      <form action={signInWithGoogleAction}>
-        <button
-          type="submit"
-          className="flex w-full items-center justify-center gap-2 rounded-lg border-[1.5px] border-primary bg-white px-4 py-2.5 text-sm text-black transition hover:border-primary-mid"
-        >
-          <GoogleIcon />
-          Continue with Google
-        </button>
-      </form>
+      <button
+        type="button"
+        disabled={isPending}
+        onClick={() => {
+          setFormError(null);
+          startTransition(async () => {
+            const result = await signInWithGoogleAction();
+            // Always an external URL (Supabase's own consent page) or an
+            // internal error-query route -- window.location handles both,
+            // unlike router.push which only understands internal routes.
+            window.location.href = result.redirectTo;
+          });
+        }}
+        className="flex w-full items-center justify-center gap-2 rounded-lg border-[1.5px] border-primary bg-white px-4 py-2.5 text-sm text-black transition hover:border-primary-mid disabled:opacity-70"
+      >
+        <GoogleIcon />
+        Continue with Google
+      </button>
 
       <p className="text-center text-[13px] text-black">
         Don&apos;t have an account?{" "}

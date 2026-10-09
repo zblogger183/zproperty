@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Building2, Check, Home, KeyRound, Loader2, type LucideIcon } from "lucide-react";
@@ -54,6 +55,7 @@ function formatCnic(value: string): string {
 }
 
 export function RegisterWizard({ cities }: { cities: City[] }) {
+  const router = useRouter();
   const [step, setStep] = useState<Step>(1);
   const [role, setRole] = useState<RegisterRole | null>(null);
   const [step1Data, setStep1Data] = useState<RegisterStep1Input | null>(null);
@@ -94,9 +96,11 @@ export function RegisterWizard({ cities }: { cities: City[] }) {
     if (!step1Data) return;
     startTransition(async () => {
       const result = await registerAction({ ...step1Data, role: "buyer" });
-      if (result?.error) {
+      if ("error" in result) {
         setFormError(result.error);
         setStep(2);
+      } else {
+        router.push(result.redirectTo);
       }
     });
   }
@@ -115,7 +119,11 @@ export function RegisterWizard({ cities }: { cities: City[] }) {
     setFormError(null);
     startTransition(async () => {
       const result = await registerAction({ ...step1Data, role: "agent", agent: values });
-      if (result?.error) setFormError(result.error);
+      if ("error" in result) {
+        setFormError(result.error);
+      } else {
+        router.push(result.redirectTo);
+      }
     });
   }
 
@@ -124,7 +132,11 @@ export function RegisterWizard({ cities }: { cities: City[] }) {
     setFormError(null);
     startTransition(async () => {
       const result = await registerAction({ ...step1Data, role: "developer", developer: values });
-      if (result?.error) setFormError(result.error);
+      if ("error" in result) {
+        setFormError(result.error);
+      } else {
+        router.push(result.redirectTo);
+      }
     });
   }
 

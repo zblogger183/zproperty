@@ -1,7 +1,6 @@
 "use server";
 
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getRoleRedirectPath } from "@/lib/auth/redirect";
@@ -21,7 +20,21 @@ import {
   type RegisterRole,
 } from "./schemas";
 
-type ActionResult = { error: string } | void;
+type ActionResult = { error: string } | { redirectTo: string };
+
+// Every one of these Server Actions used to call next/navigation's
+// redirect() to send the browser on after a successful login/OTP/register
+// step. redirect() works by throwing a special digest-tagged error that
+// Next.js's own framework code is supposed to catch and translate into a
+// redirect instruction for the client -- but on this Cloudflare
+// Workers/OpenNext deployment, that throw-based signal doesn't transport
+// reliably (the same underlying issue already found and fixed for the admin
+// listing actions: a Server Action that throws, for any reason including
+// redirect()'s internal throw, can fail to reach the client as a usable
+// response). The symptom here was a blank post-login page showing only the
+// footer, instead of either an error or an actual navigation. Every action
+// below now returns the destination as plain data instead, and the calling
+// client component navigates itself with router.push()/window.location.
 
 async function getSiteOrigin() {
   if (process.env.NEXT_PUBLIC_SITE_URL) {
@@ -105,7 +118,7 @@ export async function loginWithPasswordAction(values: {
   }
 
   const role = await fetchRoleForUser(data.user.id);
-  redirect(getRoleRedirectPath(role));
+  return { redirectTo: getRoleRedirectPath(role) };
 }
 
 export async function sendLoginOtpAction(values: { identifier: string }): Promise<ActionResult> {
@@ -129,10 +142,10 @@ export async function sendLoginOtpAction(values: { identifier: string }): Promis
     return { error: "Could not send a code right now. Please try again." };
   }
 
-  redirect(`/verify-otp?identifier=${encodeURIComponent(email ?? phone!)}&purpose=login`);
+  return { redirectTo: `/verify-otp?identifier=${encodeURIComponent(email ?? phone!)}&purpose=login` };
 }
 
-export async function signInWithGoogleAction(): Promise<void> {
+export async function signInWithGoogleAction(): Promise<{ redirectTo: string }> {
   const supabase = await createClient();
   const origin = await getSiteOrigin();
 
@@ -142,10 +155,13 @@ export async function signInWithGoogleAction(): Promise<void> {
   });
 
   if (error || !data.url) {
-    redirect("/login?error=oauth_unavailable");
+    return { redirectTo: "/login?error=oauth_unavailable" };
   }
 
-  redirect(data.url);
+  // An external URL (Supabase's own OAuth consent page) -- the caller must
+  // navigate with window.location, not router.push (which only handles
+  // internal routes).
+  return { redirectTo: data.url };
 }
 
 // ---------------------------------------------------------------------------
@@ -182,13 +198,13 @@ export async function verifyOtpAction(values: {
   }
 
   const role = await fetchRoleForUser(data.user.id);
-  redirect(getRoleRedirectPath(role));
+  return { redirectTo: getRoleRedirectPath(role) };
 }
 
 export async function resendOtpAction(values: {
   identifier: string;
   purpose: "login" | "signup";
-}): Promise<ActionResult> {
+}): Promise<{ error: string } | undefined> {
   const supabase = await createClient();
   const { email, phone } = normalizeIdentifier(values.identifier);
 
@@ -385,10 +401,10 @@ export async function registerAction(input: RegisterInput): Promise<ActionResult
   // sending domain is set up) automatically restores the OTP step with no
   // further code change.
   if (data.session) {
-    redirect(getRoleRedirectPath(role.data));
+    return { redirectTo: getRoleRedirectPath(role.data) };
   }
 
-  redirect(`/verify-otp?identifier=${encodeURIComponent(input.email)}&purpose=signup`);
+  return { redirectTo: `/verify-otp?identifier=${encodeURIComponent(input.email)}&purpose=signup` };
 }
 
 // ---------------------------------------------------------------------------
@@ -435,7 +451,7 @@ export async function updatePasswordAction(values: {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/login");
+    return { redirectTo: "/login" };
   }
 
   const { error } = await supabase.auth.updateUser({ password: parsed.data.password });
@@ -444,5 +460,5 @@ export async function updatePasswordAction(values: {
     return { error: error.message };
   }
 
-  redirect("/login");
+  return { redirectTo: "/login" };
 }

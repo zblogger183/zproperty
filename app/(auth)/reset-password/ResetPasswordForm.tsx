@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
@@ -11,6 +12,7 @@ import { resetPasswordSchema, type ResetPasswordInput } from "../schemas";
 import { updatePasswordAction } from "../actions";
 
 export function ResetPasswordForm() {
+  const router = useRouter();
   const [formError, setFormError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -27,7 +29,11 @@ export function ResetPasswordForm() {
     setFormError(null);
     startTransition(async () => {
       const result = await updatePasswordAction(values);
-      if (result?.error) setFormError(result.error);
+      if ("error" in result) {
+        setFormError(result.error);
+      } else {
+        router.push(result.redirectTo);
+      }
     });
   }
 
