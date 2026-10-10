@@ -121,7 +121,39 @@ function redirectPreservingCookies(url: URL, response: NextResponse): NextRespon
   return redirectResponse;
 }
 
+// Next.js's own docs for this Proxy/middleware file are explicit: "since
+// Proxy runs on every route, including prefetched routes, it's important to
+// only read the session from the cookie (optimistic checks), and avoid
+// database checks to prevent performance issues." This file was doing the
+// opposite — a live supabase.auth.getUser() round trip (token refresh + user
+// fetch) AND a `redirects` table lookup, unconditionally, on every matched
+// request. Next.js's App Router automatically prefetches every <Link> that
+// scrolls into view, and this site's footer/nav now link to dozens of
+// distinct city/area/tool pages — so a single real pageview was fanning out
+// into dozens of full middleware executions within the same second (confirmed
+// live via Supabase's own request logs: ~28 near-simultaneous token-refresh +
+// user-fetch pairs from one page load), each one a real network round trip.
+// That fan-out is the direct cause of a production "Worker exceeded resource
+// limits" (Cloudflare error 1102) outage with zero real traffic. Bailing out
+// immediately for prefetch requests removes the fan-out multiplier entirely:
+// the real navigation that follows a prefetch still runs this middleware in
+// full, and /admin, /dashboard, /buyer all have their own independent
+// server-side auth+role guard in their layout (see app/admin/layout.tsx),
+// so skipping this file's gating on a background prefetch never bypasses
+// real enforcement — at worst a prefetched RSC payload is itself a redirect.
+function isPrefetchRequest(request: NextRequest): boolean {
+  return (
+    request.headers.get("next-router-prefetch") !== null ||
+    request.headers.get("purpose") === "prefetch" ||
+    request.headers.get("sec-purpose") === "prefetch"
+  );
+}
+
 export async function proxy(request: NextRequest) {
+  if (isPrefetchRequest(request)) {
+    return NextResponse.next({ request });
+  }
+
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
