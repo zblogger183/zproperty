@@ -22,7 +22,14 @@ import { ListingCard } from "@/components/portal/ListingCard";
 import { SaveButton } from "@/components/portal/SaveButton";
 import MiniMapDynamic from "@/components/portal/listing/MiniMapLoader";
 
-export const revalidate = 300;
+// Was 300s (5 min) -- the shortest window on the site. Each ISR regeneration
+// writes several Workers KV keys at once (page metadata, one per cached
+// Supabase fetch the render makes, and the rendered HTML itself), and KV
+// writes are capped at 1,000/day on the Workers Free plan. With listings
+// cycling every 5 minutes this route alone was a major contributor to that
+// cap being hit most days -- 1800s (30 min) cuts its write volume ~6x while
+// still refreshing well within a browsing session.
+export const revalidate = 1800;
 
 // generateMetadata and the page body both need the same listing — cache()
 // dedupes that to a single Supabase round trip per request instead of two,

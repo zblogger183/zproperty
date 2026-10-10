@@ -13,7 +13,13 @@ import { ImageGallery, type GalleryImage } from "@/components/portal/listing/Ima
 import { ProjectEnquiryCard } from "@/components/portal/projects/ProjectEnquiryCard";
 import MiniMapDynamic from "@/components/portal/listing/MiniMapLoader";
 
-export const revalidate = 600;
+// Was 600s (10 min). Same Workers KV daily-write-cap reasoning as
+// listing/[slug] -- each regeneration writes several KV keys at once, and
+// with 144 active projects this route's short window was one of the two
+// biggest contributors to the Free plan's 1,000-write/day cap being hit most
+// days. 3600s (1 hour) matches the project list page's own window right
+// above this file's listing equivalent, and cuts write volume ~6x.
+export const revalidate = 3600;
 
 const PROJECT_DETAIL_COLUMNS = `
   id, slug, name, tagline, type, property_type,

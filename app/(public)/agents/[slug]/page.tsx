@@ -12,7 +12,10 @@ import { FacebookIcon, InstagramIcon, YoutubeIcon } from "@/components/portal/So
 import { AgentEnquiryForm } from "@/components/portal/agents/AgentEnquiryForm";
 import type { ListingCardData } from "@/types";
 
-export const revalidate = 600;
+// Was 600s (10 min) -- same Workers KV daily-write-cap reasoning as
+// listing/[slug] and new-projects/[slug]. 3600s (1 hour) matches the agents
+// directory page's own window and cuts this route's write volume ~6x.
+export const revalidate = 3600;
 
 interface AgentProfileRow {
   user_id: string;
