@@ -7,7 +7,11 @@ import { SITE_URL } from "@/lib/seo/metadata";
 import { ForumCategoryTabs } from "@/components/portal/forum/ForumCategoryTabs";
 import { FORUM_CATEGORIES } from "@/lib/constants/forumCategories";
 
-export const revalidate = 900;
+// Was 900s (15 min), the next-shortest window on the site after the three
+// per-row detail routes already fixed for the same KV-write-cap reason. This
+// page has no [slug] segment so the multiplier is far smaller, but there's
+// no reason to leave it shorter than everything else on the site.
+export const revalidate = 3600;
 
 const FORUM_TITLE = "Real Estate Forum Pakistan | ZProperty";
 const FORUM_DESC =
