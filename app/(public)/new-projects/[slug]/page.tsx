@@ -1,9 +1,9 @@
+import { cache } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { createPublicClient } from "@/lib/supabase/public";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { formatPrice } from "@/lib/utils/formatPrice";
 import { buildProjectWhatsAppMessage } from "@/lib/utils";
 import { projectMeta, SITE_URL } from "@/lib/seo/metadata";
@@ -35,6 +35,7 @@ const PROJECT_DETAIL_COLUMNS = `
   city:cities(name, slug),
   area:areas(name, slug),
   society:societies(name, slug),
+  developer:public_developer_contact(name, phone),
   images:project_images(url, thumb_url, type, title, display_order),
   payment_plans(
     id, unit_type, total_price, advance_pct,
@@ -102,11 +103,15 @@ interface ProjectDetail {
   city: { name: string; slug: string } | null;
   area: { name: string; slug: string } | null;
   society: { name: string; slug: string } | null;
+  developer: { name: string; phone: string | null } | null;
   images: ProjectImageRow[];
   payment_plans: PaymentPlanRow[];
 }
 
-async function getProject(slug: string): Promise<ProjectDetail | null> {
+// generateMetadata and the page body both need the same project — cache()
+// dedupes that to a single Supabase round trip per request instead of two,
+// same pattern as listing/[slug] and agents/[slug] already use.
+const getProject = cache(async (slug: string): Promise<ProjectDetail | null> => {
   const supabase = createPublicClient();
   const { data } = await supabase
     .from("projects")
@@ -115,8 +120,19 @@ async function getProject(slug: string): Promise<ProjectDetail | null> {
     .eq("status_platform", "active")
     .single();
 
-  return (data as unknown as ProjectDetail) ?? null;
-}
+  if (!data) return null;
+
+  // public_developer_contact is a view-based embed, like public_agent_contact
+  // elsewhere in this app — PostgREST's embed cardinality inference for
+  // those isn't always reliable and can come back as an array instead of a
+  // single object (see the matching note in app/admin/listings/actions.ts).
+  const raw = data as unknown as Omit<ProjectDetail, "developer"> & {
+    developer: ProjectDetail["developer"] | ProjectDetail["developer"][];
+  };
+  const developer = Array.isArray(raw.developer) ? (raw.developer[0] ?? null) : raw.developer;
+
+  return { ...raw, developer };
+});
 
 export async function generateStaticParams() {
   const supabase = createPublicClient();
@@ -178,13 +194,7 @@ export default async function ProjectDetailPage({
     notFound();
   }
 
-  let developer: { name: string; phone: string | null } | null = null;
-  if (project.developer_id) {
-    const admin = createAdminClient();
-    const { data } = await admin.from("users").select("name, phone").eq("id", project.developer_id).single();
-    developer = data;
-  }
-
+  const developer = project.developer;
   const images = project.images ?? [];
   const galleryImages: GalleryImage[] = images
     .filter((image) => image.type === "gallery")
